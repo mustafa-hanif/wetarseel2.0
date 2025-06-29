@@ -6,7 +6,8 @@
   ],
   "scripts": {
     "dev": "concurrently -n api,web -c magenta,cyan \"bun run --cwd apps/api dev\" \"bun run --cwd apps/web dev\"",
-    "build:web": "bun run --cwd apps/web build"
+    "build:web": "bun run --cwd apps/web build",
+    "run:server": "bun run --cwd apps/api dev"
   },
   "devDependencies": {
     "concurrently": "^9.2.0"
