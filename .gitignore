@@ -1,0 +1,4 @@
+.tanstack
+node_modules
+.DS_Store
+routeTree.gen.ts

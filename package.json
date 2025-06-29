@@ -1,0 +1,29 @@
+{
+  "name": "tanstack-router-solid-example-quickstart-file-based",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --port 3000",
+    "build": "vite build && tsc --noEmit",
+    "serve": "vite preview",
+    "start": "vite"
+  },
+  "dependencies": {
+    "@tailwindcss/postcss": "^4.1.11",
+    "@tailwindcss/vite": "^4.1.11",
+    "@tanstack/solid-router": "^1.122.0",
+    "@tanstack/solid-router-devtools": "^1.122.0",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "redaxios": "^0.5.1",
+    "solid-js": "latest",
+    "tailwindcss": "latest",
+    "zod": "latest"
+  },
+  "devDependencies": {
+    "@tanstack/router-plugin": "latest",
+    "typescript": "latest",
+    "vite": "latest",
+    "vite-plugin-solid": "latest"
+  }
+}
