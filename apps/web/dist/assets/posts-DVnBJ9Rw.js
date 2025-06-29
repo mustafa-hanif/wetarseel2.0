@@ -1,0 +1,1 @@
+import{R as i,t as s,i as o}from"./index-BMZMJ2oH.js";var p=s("<div class=p-2><h3>Welcome to the Posts Page!</h3><ul>"),m=s("<li>");const _=function(){const l=i.useLoaderData();return(()=>{var t=p(),r=t.firstChild,a=r.nextSibling;return o(a,()=>l().map(n=>(()=>{var e=m();return o(e,()=>n.title),e})())),t})()};export{_ as component};
