@@ -1,0 +1,85 @@
+{
+  "taskDefinitionArn": "arn:aws:ecs:me-central-1:147997141811:task-definition/wetarseelapi:3",
+  "containerDefinitions": [
+    {
+      "name": "weatarseel",
+      "image": "147997141811.dkr.ecr.me-central-1.amazonaws.com/my-ecr-repo:latest",
+      "cpu": 0,
+      "portMappings": [
+        {
+          "name": "weatarseel-4000-tcp",
+          "containerPort": 80,
+          "hostPort": 80,
+          "protocol": "tcp",
+          "appProtocol": "http"
+        }
+      ],
+      "essential": true,
+      "environment": [],
+      "environmentFiles": [],
+      "mountPoints": [],
+      "volumesFrom": [],
+      "ulimits": [],
+      "logConfiguration": {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/ecs/wetarseelapi",
+          "awslogs-create-group": "true",
+          "awslogs-region": "me-central-1",
+          "awslogs-stream-prefix": "ecs"
+        },
+        "secretOptions": []
+      },
+      "systemControls": []
+    }
+  ],
+  "family": "wetarseelapi",
+  "taskRoleArn": "arn:aws:iam::147997141811:role/ecsTaskExecutionRole",
+  "executionRoleArn": "arn:aws:iam::147997141811:role/ecsTaskExecutionRole",
+  "networkMode": "awsvpc",
+  "revision": 3,
+  "volumes": [],
+  "status": "ACTIVE",
+  "requiresAttributes": [
+    {
+      "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+    },
+    {
+      "name": "ecs.capability.execution-role-awslogs"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.ecr-auth"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.task-iam-role"
+    },
+    {
+      "name": "ecs.capability.execution-role-ecr-pull"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+    },
+    {
+      "name": "ecs.capability.task-eni"
+    },
+    {
+      "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+    }
+  ],
+  "placementConstraints": [],
+  "compatibilities": ["EC2", "FARGATE"],
+  "requiresCompatibilities": ["FARGATE"],
+  "cpu": "256",
+  "memory": "512",
+  "runtimePlatform": {
+    "cpuArchitecture": "ARM64",
+    "operatingSystemFamily": "LINUX"
+  },
+  "registeredAt": "2025-06-29T22:50:34.458Z",
+  "registeredBy": "arn:aws:iam::147997141811:root",
+  "enableFaultInjection": false,
+  "tags": []
+}
