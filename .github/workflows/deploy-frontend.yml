@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      AWS_REGION: me-central-1 # change if needed
+      AWS_REGION: ${{ env.AWS_REGION }} # change if needed
       S3_BUCKET: wetarseel-fe # <-- CHANGE THIS
       CLOUDFRONT_DISTRIBUTION_ID: E2OE9DGUYFVQEQ # <-- optional, for invalidation
 
