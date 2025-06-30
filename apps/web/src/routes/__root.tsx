@@ -3,12 +3,12 @@ import {
   Link,
   Outlet,
   createRootRoute,
-} from '@tanstack/solid-router'
-import { TanStackRouterDevtools } from '@tanstack/solid-router-devtools'
+} from "@tanstack/solid-router";
+import { TanStackRouterDevtools } from "@tanstack/solid-router-devtools";
 
 export const Route = createRootRoute({
   component: RootComponent,
-})
+});
 
 function RootComponent() {
   return (
@@ -18,24 +18,32 @@ function RootComponent() {
         <Link
           to="/"
           activeProps={{
-            class: 'font-bold',
+            class: "font-bold",
           }}
           activeOptions={{ exact: true }}
         >
           Home
-        </Link>{' '}
+        </Link>{" "}
         <Link
           to="/about"
           activeProps={{
-            class: 'font-bold',
+            class: "font-bold",
           }}
         >
           About
+        </Link>
+        <Link
+          to="/posts"
+          activeProps={{
+            class: "font-bold",
+          }}
+        >
+          Posts
         </Link>
       </div>
       <hr />
       <Outlet />
       <TanStackRouterDevtools position="bottom-right" />
     </>
-  )
+  );
 }
