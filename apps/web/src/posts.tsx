@@ -25,9 +25,6 @@ export const fetchPost = async (postId: string) => {
 
 export const fetchPosts = async () => {
   console.info("Fetching posts...");
-  const res = await fetch("/api/hello");
-  const text = await res.text();
-  console.log(text);
   return axios
     .get<Array<PostType>>("https://jsonplaceholder.typicode.com/posts")
     .then((r) => r.data.slice(0, 10));

@@ -4,12 +4,17 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun index.ts"
+    "dev": "bun --watch index.ts"
   },
   "devDependencies": {
-    "@types/bun": "latest"
+    "@types/bun": "latest",
+    "@types/pg": "^8.15.4"
   },
   "peerDependencies": {
     "typescript": "^5"
+  },
+  "dependencies": {
+    "better-auth": "^1.2.12",
+    "pg": "^8.16.3"
   }
 }
