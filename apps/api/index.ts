@@ -1,4 +1,5 @@
 import { auth } from "./auth";
+import doSomething from "./db";
 
 const server = Bun.serve({
   port: 4000,
@@ -9,7 +10,10 @@ const server = Bun.serve({
       const a = await auth.handler(req);
       return a;
     },
-    "/hello": () => new Response("Hello World!"),
+    "/hello": () => {
+      doSomething();
+      return new Response("Hello World!");
+    },
   },
 });
 

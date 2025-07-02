@@ -1,0 +1,27 @@
+# "org" ensures this Service is used with the correct Serverless Framework Access Key.
+org: wetarseel
+# "app" enables Serverless Framework Dashboard features and sharing them with other Services.
+app: wetarseel
+# "service" is the name of this project. This will also be added to your AWS resource names.
+service: wetarseel
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: me-central-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - execute-api:ManageConnections
+      Resource:
+        - arn:aws:execute-api:*:*:*/*/POST/@connections/*
+
+functions:
+  onconnect:
+    handler: handler.onconnect
+  ondisconnect:
+    handler: handler.ondisconnect
+  onmessage:
+    handler: handler.onmessage
+  ondefault:
+    handler: handler.ondefault

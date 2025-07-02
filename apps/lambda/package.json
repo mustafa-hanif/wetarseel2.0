@@ -1,0 +1,7 @@
+{
+  "type": "commonjs",
+  "dependencies": {
+    "@aws-sdk/client-apigatewaymanagementapi": "^3.840.0",
+    "buffer": "^6.0.3"
+  }
+}

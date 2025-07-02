@@ -37,7 +37,7 @@ function RouteComponent() {
                 <Link to="/profile">Profile</Link>
               </li>
               <li>
-                <Link to="/settings">Settings</Link>
+                <Link to="/chat">chat</Link>
               </li>
             </ul>
           </nav>

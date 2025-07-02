@@ -1,0 +1,1216 @@
+{
+  "/Users/mustafa.hanif/code/wetarseel2.0/apps/lambda/serverless.yml": {
+    "versionFramework": "4.17.1",
+    "servicePath": "/Users/mustafa.hanif/code/wetarseel2.0/apps/lambda/serverless.yml",
+    "serviceConfigFileName": "serverless.yml",
+    "service": {
+      "org": "wetarseel",
+      "app": "wetarseel",
+      "service": "wetarseel",
+      "provider": {
+        "name": "aws",
+        "runtime": "nodejs20.x",
+        "region": "me-central-1",
+        "iamRoleStatements": [
+          {
+            "Effect": "Allow",
+            "Action": [
+              "execute-api:ManageConnections"
+            ],
+            "Resource": "arn:aws:execute-api:*:*:*/*/POST/@connections/*"
+          }
+        ],
+        "stage": "dev",
+        "versionFunctions": true,
+        "iam": {
+          "role": {
+            "statements": [
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "execute-api:ManageConnections"
+                ],
+                "Resource": "arn:aws:execute-api:*:*:*/*/POST/@connections/*"
+              },
+              {
+                "Effect": "Allow",
+                "Action": [
+                  "iot:*"
+                ],
+                "Resource": "*"
+              }
+            ]
+          }
+        },
+        "compiledCloudFormationTemplate": {
+          "AWSTemplateFormatVersion": "2010-09-09",
+          "Description": "The AWS CloudFormation template for this Serverless application",
+          "Resources": {
+            "OnconnectLogGroup": {
+              "Type": "AWS::Logs::LogGroup",
+              "Properties": {
+                "LogGroupName": "/aws/lambda/wetarseel-dev-onconnect"
+              }
+            },
+            "OndisconnectLogGroup": {
+              "Type": "AWS::Logs::LogGroup",
+              "Properties": {
+                "LogGroupName": "/aws/lambda/wetarseel-dev-ondisconnect"
+              }
+            },
+            "OnmessageLogGroup": {
+              "Type": "AWS::Logs::LogGroup",
+              "Properties": {
+                "LogGroupName": "/aws/lambda/wetarseel-dev-onmessage"
+              }
+            },
+            "OndefaultLogGroup": {
+              "Type": "AWS::Logs::LogGroup",
+              "Properties": {
+                "LogGroupName": "/aws/lambda/wetarseel-dev-ondefault"
+              }
+            },
+            "IamRoleLambdaExecution": {
+              "Type": "AWS::IAM::Role",
+              "Properties": {
+                "AssumeRolePolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Principal": {
+                        "Service": [
+                          "lambda.amazonaws.com"
+                        ]
+                      },
+                      "Action": [
+                        "sts:AssumeRole"
+                      ]
+                    }
+                  ]
+                },
+                "Policies": [
+                  {
+                    "PolicyName": {
+                      "Fn::Join": [
+                        "-",
+                        [
+                          "wetarseel",
+                          "dev",
+                          "lambda"
+                        ]
+                      ]
+                    },
+                    "PolicyDocument": {
+                      "Version": "2012-10-17",
+                      "Statement": [
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "logs:CreateLogStream",
+                            "logs:CreateLogGroup",
+                            "logs:TagResource"
+                          ],
+                          "Resource": [
+                            {
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/wetarseel-dev*:*"
+                            }
+                          ]
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "logs:PutLogEvents"
+                          ],
+                          "Resource": [
+                            {
+                              "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/wetarseel-dev*:*:*"
+                            }
+                          ]
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "execute-api:ManageConnections"
+                          ],
+                          "Resource": "arn:aws:execute-api:*:*:*/*/POST/@connections/*"
+                        },
+                        {
+                          "Effect": "Allow",
+                          "Action": [
+                            "iot:*"
+                          ],
+                          "Resource": "*"
+                        }
+                      ]
+                    }
+                  }
+                ],
+                "Path": "/",
+                "RoleName": {
+                  "Fn::Join": [
+                    "-",
+                    [
+                      "wetarseel",
+                      "dev",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      "lambdaRole"
+                    ]
+                  ]
+                }
+              }
+            },
+            "OnconnectLambdaFunction": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "S3Bucket": "serverless-framework-deployments-me-central-1-2be18ea1-6773",
+                  "S3Key": "serverless/wetarseel/dev/1751447439591-2025-07-02T09:10:39.591Z/wetarseel.zip"
+                },
+                "Handler": "index.handler",
+                "Runtime": "nodejs20.x",
+                "FunctionName": "wetarseel-dev-onconnect",
+                "MemorySize": 1024,
+                "Timeout": 6,
+                "Environment": {
+                  "Variables": {
+                    "SLS_IOT_ENDPOINT": "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
+                    "SLS_SERVICE": "wetarseel",
+                    "SLS_STAGE": "dev",
+                    "SLS_FUNCTION": "onconnect"
+                  }
+                },
+                "Role": {
+                  "Fn::GetAtt": [
+                    "IamRoleLambdaExecution",
+                    "Arn"
+                  ]
+                }
+              },
+              "DependsOn": [
+                "OnconnectLogGroup"
+              ]
+            },
+            "OndisconnectLambdaFunction": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "S3Bucket": "serverless-framework-deployments-me-central-1-2be18ea1-6773",
+                  "S3Key": "serverless/wetarseel/dev/1751447439591-2025-07-02T09:10:39.591Z/wetarseel.zip"
+                },
+                "Handler": "index.handler",
+                "Runtime": "nodejs20.x",
+                "FunctionName": "wetarseel-dev-ondisconnect",
+                "MemorySize": 1024,
+                "Timeout": 6,
+                "Environment": {
+                  "Variables": {
+                    "SLS_IOT_ENDPOINT": "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
+                    "SLS_SERVICE": "wetarseel",
+                    "SLS_STAGE": "dev",
+                    "SLS_FUNCTION": "ondisconnect"
+                  }
+                },
+                "Role": {
+                  "Fn::GetAtt": [
+                    "IamRoleLambdaExecution",
+                    "Arn"
+                  ]
+                }
+              },
+              "DependsOn": [
+                "OndisconnectLogGroup"
+              ]
+            },
+            "OnmessageLambdaFunction": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "S3Bucket": "serverless-framework-deployments-me-central-1-2be18ea1-6773",
+                  "S3Key": "serverless/wetarseel/dev/1751447439591-2025-07-02T09:10:39.591Z/wetarseel.zip"
+                },
+                "Handler": "index.handler",
+                "Runtime": "nodejs20.x",
+                "FunctionName": "wetarseel-dev-onmessage",
+                "MemorySize": 1024,
+                "Timeout": 6,
+                "Environment": {
+                  "Variables": {
+                    "SLS_IOT_ENDPOINT": "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
+                    "SLS_SERVICE": "wetarseel",
+                    "SLS_STAGE": "dev",
+                    "SLS_FUNCTION": "onmessage"
+                  }
+                },
+                "Role": {
+                  "Fn::GetAtt": [
+                    "IamRoleLambdaExecution",
+                    "Arn"
+                  ]
+                }
+              },
+              "DependsOn": [
+                "OnmessageLogGroup"
+              ]
+            },
+            "OndefaultLambdaFunction": {
+              "Type": "AWS::Lambda::Function",
+              "Properties": {
+                "Code": {
+                  "S3Bucket": "serverless-framework-deployments-me-central-1-2be18ea1-6773",
+                  "S3Key": "serverless/wetarseel/dev/1751447439591-2025-07-02T09:10:39.591Z/wetarseel.zip"
+                },
+                "Handler": "index.handler",
+                "Runtime": "nodejs20.x",
+                "FunctionName": "wetarseel-dev-ondefault",
+                "MemorySize": 1024,
+                "Timeout": 6,
+                "Environment": {
+                  "Variables": {
+                    "SLS_IOT_ENDPOINT": "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
+                    "SLS_SERVICE": "wetarseel",
+                    "SLS_STAGE": "dev",
+                    "SLS_FUNCTION": "ondefault"
+                  }
+                },
+                "Role": {
+                  "Fn::GetAtt": [
+                    "IamRoleLambdaExecution",
+                    "Arn"
+                  ]
+                }
+              },
+              "DependsOn": [
+                "OndefaultLogGroup"
+              ]
+            },
+            "OnconnectLambdaVersionbgpMQ8nxsySVwklFHxR2e0BEJQrto9fwiliHSU2s": {
+              "Type": "AWS::Lambda::Version",
+              "DeletionPolicy": "Retain",
+              "Properties": {
+                "FunctionName": {
+                  "Ref": "OnconnectLambdaFunction"
+                },
+                "CodeSha256": "nOD2sEPVuLR9uUXdd91lwKwy95wO30vahHXDq9ELghA="
+              }
+            },
+            "OndisconnectLambdaVersionFG2RL4ZMnBN7UDObsNgnXkU5C3lvfZXzkvTPBpd0": {
+              "Type": "AWS::Lambda::Version",
+              "DeletionPolicy": "Retain",
+              "Properties": {
+                "FunctionName": {
+                  "Ref": "OndisconnectLambdaFunction"
+                },
+                "CodeSha256": "nOD2sEPVuLR9uUXdd91lwKwy95wO30vahHXDq9ELghA="
+              }
+            },
+            "OnmessageLambdaVersionKpwgHvDqXfM5ogqjutYEKgqs6xdjXglp9GfTf2esA": {
+              "Type": "AWS::Lambda::Version",
+              "DeletionPolicy": "Retain",
+              "Properties": {
+                "FunctionName": {
+                  "Ref": "OnmessageLambdaFunction"
+                },
+                "CodeSha256": "nOD2sEPVuLR9uUXdd91lwKwy95wO30vahHXDq9ELghA="
+              }
+            },
+            "OndefaultLambdaVersionbNcCyYWt14TJ1JGyMAmCnEOjDIfwhHqlp7P4CuDQh6E": {
+              "Type": "AWS::Lambda::Version",
+              "DeletionPolicy": "Retain",
+              "Properties": {
+                "FunctionName": {
+                  "Ref": "OndefaultLambdaFunction"
+                },
+                "CodeSha256": "nOD2sEPVuLR9uUXdd91lwKwy95wO30vahHXDq9ELghA="
+              }
+            }
+          },
+          "Outputs": {
+            "ServerlessDeploymentBucketName": {
+              "Value": "serverless-framework-deployments-me-central-1-2be18ea1-6773",
+              "Export": {
+                "Name": "sls-wetarseel-dev-ServerlessDeploymentBucketName"
+              }
+            },
+            "OnconnectLambdaFunctionQualifiedArn": {
+              "Description": "Current Lambda function version",
+              "Value": {
+                "Ref": "OnconnectLambdaVersionbgpMQ8nxsySVwklFHxR2e0BEJQrto9fwiliHSU2s"
+              },
+              "Export": {
+                "Name": "sls-wetarseel-dev-OnconnectLambdaFunctionQualifiedArn"
+              }
+            },
+            "OndisconnectLambdaFunctionQualifiedArn": {
+              "Description": "Current Lambda function version",
+              "Value": {
+                "Ref": "OndisconnectLambdaVersionFG2RL4ZMnBN7UDObsNgnXkU5C3lvfZXzkvTPBpd0"
+              },
+              "Export": {
+                "Name": "sls-wetarseel-dev-OndisconnectLambdaFunctionQualifiedArn"
+              }
+            },
+            "OnmessageLambdaFunctionQualifiedArn": {
+              "Description": "Current Lambda function version",
+              "Value": {
+                "Ref": "OnmessageLambdaVersionKpwgHvDqXfM5ogqjutYEKgqs6xdjXglp9GfTf2esA"
+              },
+              "Export": {
+                "Name": "sls-wetarseel-dev-OnmessageLambdaFunctionQualifiedArn"
+              }
+            },
+            "OndefaultLambdaFunctionQualifiedArn": {
+              "Description": "Current Lambda function version",
+              "Value": {
+                "Ref": "OndefaultLambdaVersionbNcCyYWt14TJ1JGyMAmCnEOjDIfwhHqlp7P4CuDQh6E"
+              },
+              "Export": {
+                "Name": "sls-wetarseel-dev-OndefaultLambdaFunctionQualifiedArn"
+              }
+            }
+          }
+        },
+        "vpc": {}
+      },
+      "functions": {
+        "onconnect": {
+          "handler": "index.handler",
+          "events": [],
+          "name": "wetarseel-dev-onconnect",
+          "originalHandler": "handler.onconnect",
+          "runtime": "nodejs20.x",
+          "environment": {
+            "SLS_IOT_ENDPOINT": "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
+            "SLS_SERVICE": "wetarseel",
+            "SLS_STAGE": "dev",
+            "SLS_FUNCTION": "onconnect"
+          },
+          "package": {
+            "artifact": "/Users/mustafa.hanif/code/wetarseel2.0/apps/lambda/.serverless/wetarseel.zip"
+          },
+          "memory": 1024,
+          "timeout": 6,
+          "vpc": {},
+          "versionLogicalId": "OnconnectLambdaVersionbgpMQ8nxsySVwklFHxR2e0BEJQrto9fwiliHSU2s"
+        },
+        "ondisconnect": {
+          "handler": "index.handler",
+          "events": [],
+          "name": "wetarseel-dev-ondisconnect",
+          "originalHandler": "handler.ondisconnect",
+          "runtime": "nodejs20.x",
+          "environment": {
+            "SLS_IOT_ENDPOINT": "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
+            "SLS_SERVICE": "wetarseel",
+            "SLS_STAGE": "dev",
+            "SLS_FUNCTION": "ondisconnect"
+          },
+          "package": {
+            "artifact": "/Users/mustafa.hanif/code/wetarseel2.0/apps/lambda/.serverless/wetarseel.zip"
+          },
+          "memory": 1024,
+          "timeout": 6,
+          "vpc": {},
+          "versionLogicalId": "OndisconnectLambdaVersionFG2RL4ZMnBN7UDObsNgnXkU5C3lvfZXzkvTPBpd0"
+        },
+        "onmessage": {
+          "handler": "index.handler",
+          "events": [],
+          "name": "wetarseel-dev-onmessage",
+          "originalHandler": "handler.onmessage",
+          "runtime": "nodejs20.x",
+          "environment": {
+            "SLS_IOT_ENDPOINT": "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
+            "SLS_SERVICE": "wetarseel",
+            "SLS_STAGE": "dev",
+            "SLS_FUNCTION": "onmessage"
+          },
+          "package": {
+            "artifact": "/Users/mustafa.hanif/code/wetarseel2.0/apps/lambda/.serverless/wetarseel.zip"
+          },
+          "memory": 1024,
+          "timeout": 6,
+          "vpc": {},
+          "versionLogicalId": "OnmessageLambdaVersionKpwgHvDqXfM5ogqjutYEKgqs6xdjXglp9GfTf2esA"
+        },
+        "ondefault": {
+          "handler": "index.handler",
+          "events": [],
+          "name": "wetarseel-dev-ondefault",
+          "originalHandler": "handler.ondefault",
+          "runtime": "nodejs20.x",
+          "environment": {
+            "SLS_IOT_ENDPOINT": "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
+            "SLS_SERVICE": "wetarseel",
+            "SLS_STAGE": "dev",
+            "SLS_FUNCTION": "ondefault"
+          },
+          "package": {
+            "artifact": "/Users/mustafa.hanif/code/wetarseel2.0/apps/lambda/.serverless/wetarseel.zip"
+          },
+          "memory": 1024,
+          "timeout": 6,
+          "vpc": {},
+          "versionLogicalId": "OndefaultLambdaVersionbNcCyYWt14TJ1JGyMAmCnEOjDIfwhHqlp7P4CuDQh6E"
+        }
+      }
+    },
+    "provider": {
+      "name": "aws",
+      "runtime": "nodejs20.x",
+      "region": "me-central-1",
+      "iamRoleStatements": [
+        {
+          "Effect": "Allow",
+          "Action": [
+            "execute-api:ManageConnections"
+          ],
+          "Resource": "arn:aws:execute-api:*:*:*/*/POST/@connections/*"
+        }
+      ],
+      "stage": "dev",
+      "versionFunctions": true,
+      "iam": {
+        "role": {
+          "statements": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "execute-api:ManageConnections"
+              ],
+              "Resource": "arn:aws:execute-api:*:*:*/*/POST/@connections/*"
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "iot:*"
+              ],
+              "Resource": "*"
+            }
+          ]
+        }
+      },
+      "compiledCloudFormationTemplate": {
+        "AWSTemplateFormatVersion": "2010-09-09",
+        "Description": "The AWS CloudFormation template for this Serverless application",
+        "Resources": {
+          "OnconnectLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/wetarseel-dev-onconnect"
+            }
+          },
+          "OndisconnectLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/wetarseel-dev-ondisconnect"
+            }
+          },
+          "OnmessageLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/wetarseel-dev-onmessage"
+            }
+          },
+          "OndefaultLogGroup": {
+            "Type": "AWS::Logs::LogGroup",
+            "Properties": {
+              "LogGroupName": "/aws/lambda/wetarseel-dev-ondefault"
+            }
+          },
+          "IamRoleLambdaExecution": {
+            "Type": "AWS::IAM::Role",
+            "Properties": {
+              "AssumeRolePolicyDocument": {
+                "Version": "2012-10-17",
+                "Statement": [
+                  {
+                    "Effect": "Allow",
+                    "Principal": {
+                      "Service": [
+                        "lambda.amazonaws.com"
+                      ]
+                    },
+                    "Action": [
+                      "sts:AssumeRole"
+                    ]
+                  }
+                ]
+              },
+              "Policies": [
+                {
+                  "PolicyName": {
+                    "Fn::Join": [
+                      "-",
+                      [
+                        "wetarseel",
+                        "dev",
+                        "lambda"
+                      ]
+                    ]
+                  },
+                  "PolicyDocument": {
+                    "Version": "2012-10-17",
+                    "Statement": [
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:CreateLogStream",
+                          "logs:CreateLogGroup",
+                          "logs:TagResource"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/wetarseel-dev*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "logs:PutLogEvents"
+                        ],
+                        "Resource": [
+                          {
+                            "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/wetarseel-dev*:*:*"
+                          }
+                        ]
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "execute-api:ManageConnections"
+                        ],
+                        "Resource": "arn:aws:execute-api:*:*:*/*/POST/@connections/*"
+                      },
+                      {
+                        "Effect": "Allow",
+                        "Action": [
+                          "iot:*"
+                        ],
+                        "Resource": "*"
+                      }
+                    ]
+                  }
+                }
+              ],
+              "Path": "/",
+              "RoleName": {
+                "Fn::Join": [
+                  "-",
+                  [
+                    "wetarseel",
+                    "dev",
+                    {
+                      "Ref": "AWS::Region"
+                    },
+                    "lambdaRole"
+                  ]
+                ]
+              }
+            }
+          },
+          "OnconnectLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-me-central-1-2be18ea1-6773",
+                "S3Key": "serverless/wetarseel/dev/1751447439591-2025-07-02T09:10:39.591Z/wetarseel.zip"
+              },
+              "Handler": "index.handler",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "wetarseel-dev-onconnect",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "SLS_IOT_ENDPOINT": "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
+                  "SLS_SERVICE": "wetarseel",
+                  "SLS_STAGE": "dev",
+                  "SLS_FUNCTION": "onconnect"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "OnconnectLogGroup"
+            ]
+          },
+          "OndisconnectLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-me-central-1-2be18ea1-6773",
+                "S3Key": "serverless/wetarseel/dev/1751447439591-2025-07-02T09:10:39.591Z/wetarseel.zip"
+              },
+              "Handler": "index.handler",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "wetarseel-dev-ondisconnect",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "SLS_IOT_ENDPOINT": "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
+                  "SLS_SERVICE": "wetarseel",
+                  "SLS_STAGE": "dev",
+                  "SLS_FUNCTION": "ondisconnect"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "OndisconnectLogGroup"
+            ]
+          },
+          "OnmessageLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-me-central-1-2be18ea1-6773",
+                "S3Key": "serverless/wetarseel/dev/1751447439591-2025-07-02T09:10:39.591Z/wetarseel.zip"
+              },
+              "Handler": "index.handler",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "wetarseel-dev-onmessage",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "SLS_IOT_ENDPOINT": "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
+                  "SLS_SERVICE": "wetarseel",
+                  "SLS_STAGE": "dev",
+                  "SLS_FUNCTION": "onmessage"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "OnmessageLogGroup"
+            ]
+          },
+          "OndefaultLambdaFunction": {
+            "Type": "AWS::Lambda::Function",
+            "Properties": {
+              "Code": {
+                "S3Bucket": "serverless-framework-deployments-me-central-1-2be18ea1-6773",
+                "S3Key": "serverless/wetarseel/dev/1751447439591-2025-07-02T09:10:39.591Z/wetarseel.zip"
+              },
+              "Handler": "index.handler",
+              "Runtime": "nodejs20.x",
+              "FunctionName": "wetarseel-dev-ondefault",
+              "MemorySize": 1024,
+              "Timeout": 6,
+              "Environment": {
+                "Variables": {
+                  "SLS_IOT_ENDPOINT": "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
+                  "SLS_SERVICE": "wetarseel",
+                  "SLS_STAGE": "dev",
+                  "SLS_FUNCTION": "ondefault"
+                }
+              },
+              "Role": {
+                "Fn::GetAtt": [
+                  "IamRoleLambdaExecution",
+                  "Arn"
+                ]
+              }
+            },
+            "DependsOn": [
+              "OndefaultLogGroup"
+            ]
+          },
+          "OnconnectLambdaVersionbgpMQ8nxsySVwklFHxR2e0BEJQrto9fwiliHSU2s": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "OnconnectLambdaFunction"
+              },
+              "CodeSha256": "nOD2sEPVuLR9uUXdd91lwKwy95wO30vahHXDq9ELghA="
+            }
+          },
+          "OndisconnectLambdaVersionFG2RL4ZMnBN7UDObsNgnXkU5C3lvfZXzkvTPBpd0": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "OndisconnectLambdaFunction"
+              },
+              "CodeSha256": "nOD2sEPVuLR9uUXdd91lwKwy95wO30vahHXDq9ELghA="
+            }
+          },
+          "OnmessageLambdaVersionKpwgHvDqXfM5ogqjutYEKgqs6xdjXglp9GfTf2esA": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "OnmessageLambdaFunction"
+              },
+              "CodeSha256": "nOD2sEPVuLR9uUXdd91lwKwy95wO30vahHXDq9ELghA="
+            }
+          },
+          "OndefaultLambdaVersionbNcCyYWt14TJ1JGyMAmCnEOjDIfwhHqlp7P4CuDQh6E": {
+            "Type": "AWS::Lambda::Version",
+            "DeletionPolicy": "Retain",
+            "Properties": {
+              "FunctionName": {
+                "Ref": "OndefaultLambdaFunction"
+              },
+              "CodeSha256": "nOD2sEPVuLR9uUXdd91lwKwy95wO30vahHXDq9ELghA="
+            }
+          }
+        },
+        "Outputs": {
+          "ServerlessDeploymentBucketName": {
+            "Value": "serverless-framework-deployments-me-central-1-2be18ea1-6773",
+            "Export": {
+              "Name": "sls-wetarseel-dev-ServerlessDeploymentBucketName"
+            }
+          },
+          "OnconnectLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "OnconnectLambdaVersionbgpMQ8nxsySVwklFHxR2e0BEJQrto9fwiliHSU2s"
+            },
+            "Export": {
+              "Name": "sls-wetarseel-dev-OnconnectLambdaFunctionQualifiedArn"
+            }
+          },
+          "OndisconnectLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "OndisconnectLambdaVersionFG2RL4ZMnBN7UDObsNgnXkU5C3lvfZXzkvTPBpd0"
+            },
+            "Export": {
+              "Name": "sls-wetarseel-dev-OndisconnectLambdaFunctionQualifiedArn"
+            }
+          },
+          "OnmessageLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "OnmessageLambdaVersionKpwgHvDqXfM5ogqjutYEKgqs6xdjXglp9GfTf2esA"
+            },
+            "Export": {
+              "Name": "sls-wetarseel-dev-OnmessageLambdaFunctionQualifiedArn"
+            }
+          },
+          "OndefaultLambdaFunctionQualifiedArn": {
+            "Description": "Current Lambda function version",
+            "Value": {
+              "Ref": "OndefaultLambdaVersionbNcCyYWt14TJ1JGyMAmCnEOjDIfwhHqlp7P4CuDQh6E"
+            },
+            "Export": {
+              "Name": "sls-wetarseel-dev-OndefaultLambdaFunctionQualifiedArn"
+            }
+          }
+        }
+      },
+      "vpc": {}
+    },
+    "dashboard": {
+      "isEnabledForService": true,
+      "requiredAuthentication": false,
+      "orgFeaturesInUse": {
+        "providers": false,
+        "monitoring": false
+      },
+      "orgObservabilityIntegrations": null,
+      "serviceAppId": "CJhVVF69n2qn9nbBmq",
+      "serviceProvider": null,
+      "instanceParameters": null
+    },
+    "serviceRawFile": "# \"org\" ensures this Service is used with the correct Serverless Framework Access Key.\norg: wetarseel\n# \"app\" enables Serverless Framework Dashboard features and sharing them with other Services.\napp: wetarseel\n# \"service\" is the name of this project. This will also be added to your AWS resource names.\nservice: wetarseel\n\nprovider:\n  name: aws\n  runtime: nodejs20.x\n  region: me-central-1\n  iamRoleStatements:\n    - Effect: Allow\n      Action:\n        - execute-api:ManageConnections\n      Resource:\n        - arn:aws:execute-api:*:*:*/*/POST/@connections/*\n\nfunctions:\n  onconnect:\n    handler: handler.onconnect\n  ondisconnect:\n    handler: handler.ondisconnect\n  onmessage:\n    handler: handler.onmessage\n  ondefault:\n    handler: handler.ondefault\n",
+    "command": [
+      "dev"
+    ],
+    "options": {},
+    "orgId": "6606ad25-854c-46a2-b807-01608ab0a33a",
+    "orgName": "wetarseel",
+    "userId": "4mtcpQMlNYtBTgzw8X",
+    "userName": "wetarseel",
+    "serviceProviderAwsAccountId": "147997141811",
+    "serviceProviderAwsCfStackName": "wetarseel-dev",
+    "serviceProviderAwsCfStackId": "arn:aws:cloudformation:me-central-1:147997141811:stack/wetarseel-dev/3d69a4f0-56ad-11f0-b937-0a51ba916e17",
+    "serviceProviderAwsCfStackCreated": "2025-07-01T18:57:31.494Z",
+    "serviceProviderAwsCfStackUpdated": "2025-07-02T08:53:11.871Z",
+    "serviceProviderAwsCfStackStatus": "UPDATE_COMPLETE",
+    "serviceProviderAwsCfStackOutputs": [
+      {
+        "OutputKey": "OnconnectLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:me-central-1:147997141811:function:wetarseel-dev-onconnect:1",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-wetarseel-dev-OnconnectLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "OndefaultLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:me-central-1:147997141811:function:wetarseel-dev-ondefault:1",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-wetarseel-dev-OndefaultLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "OnmessageLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:me-central-1:147997141811:function:wetarseel-dev-onmessage:1",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-wetarseel-dev-OnmessageLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "OndisconnectLambdaFunctionQualifiedArn",
+        "OutputValue": "arn:aws:lambda:me-central-1:147997141811:function:wetarseel-dev-ondisconnect:1",
+        "Description": "Current Lambda function version",
+        "ExportName": "sls-wetarseel-dev-OndisconnectLambdaFunctionQualifiedArn"
+      },
+      {
+        "OutputKey": "ServerlessDeploymentBucketName",
+        "OutputValue": "serverless-framework-deployments-me-central-1-2be18ea1-6773",
+        "ExportName": "sls-wetarseel-dev-ServerlessDeploymentBucketName"
+      }
+    ],
+    "compiledCloudFormationTemplate": {
+      "AWSTemplateFormatVersion": "2010-09-09",
+      "Description": "The AWS CloudFormation template for this Serverless application",
+      "Resources": {
+        "OnconnectLogGroup": {
+          "Type": "AWS::Logs::LogGroup",
+          "Properties": {
+            "LogGroupName": "/aws/lambda/wetarseel-dev-onconnect"
+          }
+        },
+        "OndisconnectLogGroup": {
+          "Type": "AWS::Logs::LogGroup",
+          "Properties": {
+            "LogGroupName": "/aws/lambda/wetarseel-dev-ondisconnect"
+          }
+        },
+        "OnmessageLogGroup": {
+          "Type": "AWS::Logs::LogGroup",
+          "Properties": {
+            "LogGroupName": "/aws/lambda/wetarseel-dev-onmessage"
+          }
+        },
+        "OndefaultLogGroup": {
+          "Type": "AWS::Logs::LogGroup",
+          "Properties": {
+            "LogGroupName": "/aws/lambda/wetarseel-dev-ondefault"
+          }
+        },
+        "IamRoleLambdaExecution": {
+          "Type": "AWS::IAM::Role",
+          "Properties": {
+            "AssumeRolePolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Principal": {
+                    "Service": [
+                      "lambda.amazonaws.com"
+                    ]
+                  },
+                  "Action": [
+                    "sts:AssumeRole"
+                  ]
+                }
+              ]
+            },
+            "Policies": [
+              {
+                "PolicyName": {
+                  "Fn::Join": [
+                    "-",
+                    [
+                      "wetarseel",
+                      "dev",
+                      "lambda"
+                    ]
+                  ]
+                },
+                "PolicyDocument": {
+                  "Version": "2012-10-17",
+                  "Statement": [
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "logs:CreateLogStream",
+                        "logs:CreateLogGroup",
+                        "logs:TagResource"
+                      ],
+                      "Resource": [
+                        {
+                          "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/wetarseel-dev*:*"
+                        }
+                      ]
+                    },
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "logs:PutLogEvents"
+                      ],
+                      "Resource": [
+                        {
+                          "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/wetarseel-dev*:*:*"
+                        }
+                      ]
+                    },
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "execute-api:ManageConnections"
+                      ],
+                      "Resource": "arn:aws:execute-api:*:*:*/*/POST/@connections/*"
+                    },
+                    {
+                      "Effect": "Allow",
+                      "Action": [
+                        "iot:*"
+                      ],
+                      "Resource": "*"
+                    }
+                  ]
+                }
+              }
+            ],
+            "Path": "/",
+            "RoleName": {
+              "Fn::Join": [
+                "-",
+                [
+                  "wetarseel",
+                  "dev",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  "lambdaRole"
+                ]
+              ]
+            }
+          }
+        },
+        "OnconnectLambdaFunction": {
+          "Type": "AWS::Lambda::Function",
+          "Properties": {
+            "Code": {
+              "S3Bucket": "serverless-framework-deployments-me-central-1-2be18ea1-6773",
+              "S3Key": "serverless/wetarseel/dev/1751447439591-2025-07-02T09:10:39.591Z/wetarseel.zip"
+            },
+            "Handler": "index.handler",
+            "Runtime": "nodejs20.x",
+            "FunctionName": "wetarseel-dev-onconnect",
+            "MemorySize": 1024,
+            "Timeout": 6,
+            "Environment": {
+              "Variables": {
+                "SLS_IOT_ENDPOINT": "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
+                "SLS_SERVICE": "wetarseel",
+                "SLS_STAGE": "dev",
+                "SLS_FUNCTION": "onconnect"
+              }
+            },
+            "Role": {
+              "Fn::GetAtt": [
+                "IamRoleLambdaExecution",
+                "Arn"
+              ]
+            }
+          },
+          "DependsOn": [
+            "OnconnectLogGroup"
+          ]
+        },
+        "OndisconnectLambdaFunction": {
+          "Type": "AWS::Lambda::Function",
+          "Properties": {
+            "Code": {
+              "S3Bucket": "serverless-framework-deployments-me-central-1-2be18ea1-6773",
+              "S3Key": "serverless/wetarseel/dev/1751447439591-2025-07-02T09:10:39.591Z/wetarseel.zip"
+            },
+            "Handler": "index.handler",
+            "Runtime": "nodejs20.x",
+            "FunctionName": "wetarseel-dev-ondisconnect",
+            "MemorySize": 1024,
+            "Timeout": 6,
+            "Environment": {
+              "Variables": {
+                "SLS_IOT_ENDPOINT": "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
+                "SLS_SERVICE": "wetarseel",
+                "SLS_STAGE": "dev",
+                "SLS_FUNCTION": "ondisconnect"
+              }
+            },
+            "Role": {
+              "Fn::GetAtt": [
+                "IamRoleLambdaExecution",
+                "Arn"
+              ]
+            }
+          },
+          "DependsOn": [
+            "OndisconnectLogGroup"
+          ]
+        },
+        "OnmessageLambdaFunction": {
+          "Type": "AWS::Lambda::Function",
+          "Properties": {
+            "Code": {
+              "S3Bucket": "serverless-framework-deployments-me-central-1-2be18ea1-6773",
+              "S3Key": "serverless/wetarseel/dev/1751447439591-2025-07-02T09:10:39.591Z/wetarseel.zip"
+            },
+            "Handler": "index.handler",
+            "Runtime": "nodejs20.x",
+            "FunctionName": "wetarseel-dev-onmessage",
+            "MemorySize": 1024,
+            "Timeout": 6,
+            "Environment": {
+              "Variables": {
+                "SLS_IOT_ENDPOINT": "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
+                "SLS_SERVICE": "wetarseel",
+                "SLS_STAGE": "dev",
+                "SLS_FUNCTION": "onmessage"
+              }
+            },
+            "Role": {
+              "Fn::GetAtt": [
+                "IamRoleLambdaExecution",
+                "Arn"
+              ]
+            }
+          },
+          "DependsOn": [
+            "OnmessageLogGroup"
+          ]
+        },
+        "OndefaultLambdaFunction": {
+          "Type": "AWS::Lambda::Function",
+          "Properties": {
+            "Code": {
+              "S3Bucket": "serverless-framework-deployments-me-central-1-2be18ea1-6773",
+              "S3Key": "serverless/wetarseel/dev/1751447439591-2025-07-02T09:10:39.591Z/wetarseel.zip"
+            },
+            "Handler": "index.handler",
+            "Runtime": "nodejs20.x",
+            "FunctionName": "wetarseel-dev-ondefault",
+            "MemorySize": 1024,
+            "Timeout": 6,
+            "Environment": {
+              "Variables": {
+                "SLS_IOT_ENDPOINT": "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
+                "SLS_SERVICE": "wetarseel",
+                "SLS_STAGE": "dev",
+                "SLS_FUNCTION": "ondefault"
+              }
+            },
+            "Role": {
+              "Fn::GetAtt": [
+                "IamRoleLambdaExecution",
+                "Arn"
+              ]
+            }
+          },
+          "DependsOn": [
+            "OndefaultLogGroup"
+          ]
+        },
+        "OnconnectLambdaVersionbgpMQ8nxsySVwklFHxR2e0BEJQrto9fwiliHSU2s": {
+          "Type": "AWS::Lambda::Version",
+          "DeletionPolicy": "Retain",
+          "Properties": {
+            "FunctionName": {
+              "Ref": "OnconnectLambdaFunction"
+            },
+            "CodeSha256": "nOD2sEPVuLR9uUXdd91lwKwy95wO30vahHXDq9ELghA="
+          }
+        },
+        "OndisconnectLambdaVersionFG2RL4ZMnBN7UDObsNgnXkU5C3lvfZXzkvTPBpd0": {
+          "Type": "AWS::Lambda::Version",
+          "DeletionPolicy": "Retain",
+          "Properties": {
+            "FunctionName": {
+              "Ref": "OndisconnectLambdaFunction"
+            },
+            "CodeSha256": "nOD2sEPVuLR9uUXdd91lwKwy95wO30vahHXDq9ELghA="
+          }
+        },
+        "OnmessageLambdaVersionKpwgHvDqXfM5ogqjutYEKgqs6xdjXglp9GfTf2esA": {
+          "Type": "AWS::Lambda::Version",
+          "DeletionPolicy": "Retain",
+          "Properties": {
+            "FunctionName": {
+              "Ref": "OnmessageLambdaFunction"
+            },
+            "CodeSha256": "nOD2sEPVuLR9uUXdd91lwKwy95wO30vahHXDq9ELghA="
+          }
+        },
+        "OndefaultLambdaVersionbNcCyYWt14TJ1JGyMAmCnEOjDIfwhHqlp7P4CuDQh6E": {
+          "Type": "AWS::Lambda::Version",
+          "DeletionPolicy": "Retain",
+          "Properties": {
+            "FunctionName": {
+              "Ref": "OndefaultLambdaFunction"
+            },
+            "CodeSha256": "nOD2sEPVuLR9uUXdd91lwKwy95wO30vahHXDq9ELghA="
+          }
+        }
+      },
+      "Outputs": {
+        "ServerlessDeploymentBucketName": {
+          "Value": "serverless-framework-deployments-me-central-1-2be18ea1-6773",
+          "Export": {
+            "Name": "sls-wetarseel-dev-ServerlessDeploymentBucketName"
+          }
+        },
+        "OnconnectLambdaFunctionQualifiedArn": {
+          "Description": "Current Lambda function version",
+          "Value": {
+            "Ref": "OnconnectLambdaVersionbgpMQ8nxsySVwklFHxR2e0BEJQrto9fwiliHSU2s"
+          },
+          "Export": {
+            "Name": "sls-wetarseel-dev-OnconnectLambdaFunctionQualifiedArn"
+          }
+        },
+        "OndisconnectLambdaFunctionQualifiedArn": {
+          "Description": "Current Lambda function version",
+          "Value": {
+            "Ref": "OndisconnectLambdaVersionFG2RL4ZMnBN7UDObsNgnXkU5C3lvfZXzkvTPBpd0"
+          },
+          "Export": {
+            "Name": "sls-wetarseel-dev-OndisconnectLambdaFunctionQualifiedArn"
+          }
+        },
+        "OnmessageLambdaFunctionQualifiedArn": {
+          "Description": "Current Lambda function version",
+          "Value": {
+            "Ref": "OnmessageLambdaVersionKpwgHvDqXfM5ogqjutYEKgqs6xdjXglp9GfTf2esA"
+          },
+          "Export": {
+            "Name": "sls-wetarseel-dev-OnmessageLambdaFunctionQualifiedArn"
+          }
+        },
+        "OndefaultLambdaFunctionQualifiedArn": {
+          "Description": "Current Lambda function version",
+          "Value": {
+            "Ref": "OndefaultLambdaVersionbNcCyYWt14TJ1JGyMAmCnEOjDIfwhHqlp7P4CuDQh6E"
+          },
+          "Export": {
+            "Name": "sls-wetarseel-dev-OndefaultLambdaFunctionQualifiedArn"
+          }
+        }
+      }
+    }
+  }
+}
