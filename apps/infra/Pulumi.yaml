@@ -1,0 +1,10 @@
+name: wetarseel
+description: wetarseel pulumi
+runtime:
+  name: nodejs
+  options:
+    packagemanager: pnpm
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: https://www.pulumi.com/ai/api/project/0ec806b9-311b-4584-9aca-a92797ff7348.zip

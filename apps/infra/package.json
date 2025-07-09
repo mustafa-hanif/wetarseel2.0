@@ -1,0 +1,32 @@
+{
+  "name": "wetarseel-infra",
+  "version": "1.0.0",
+  "description": "Wetarseel infrastructure as code with Pulumi",
+  "main": "index.ts",
+  "scripts": {
+    "build": "tsc",
+    "preview": "pulumi preview",
+    "up": "pulumi up",
+    "destroy": "pulumi destroy",
+    "refresh": "pulumi refresh",
+    "stack": "pulumi stack",
+    "config": "pulumi config"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "typescript": "^5.3.3"
+  },
+  "dependencies": {
+    "@pulumi/aws": "^6.50.0",
+    "@pulumi/pulumi": "^3.110.0"
+  },
+  "keywords": [
+    "pulumi",
+    "aws",
+    "infrastructure",
+    "postgres",
+    "rds"
+  ],
+  "author": "Wetarseel Team",
+  "license": "MIT"
+}

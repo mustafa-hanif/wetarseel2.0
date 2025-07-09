@@ -5,16 +5,19 @@
     "apps/*"
   ],
   "scripts": {
-    "dev": "concurrently -n api,web -c magenta,cyan \"bun run --cwd apps/api dev\" \"bun run --cwd apps/web dev\"",
     "build:web": "bun run --cwd apps/web build",
+    "dev": "concurrently -n api,web -c magenta,cyan \"bun run --cwd apps/api dev\" \"bun run --cwd apps/web dev\"",
     "run:server": "bun run --cwd apps/api dev"
   },
   "devDependencies": {
+    "@types/aws-lambda": "8.10.150",
     "concurrently": "^9.2.0"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.840.0",
     "@aws-sdk/lib-dynamodb": "^3.840.0",
-    "dynamodb-toolbox": "^2.6.4"
+    "@pulumi/aws": "^6.83.0",
+    "dynamodb-toolbox": "^2.6.4",
+    "sst": "3.17.10"
   }
 }

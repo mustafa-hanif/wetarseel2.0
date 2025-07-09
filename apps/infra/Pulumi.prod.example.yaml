@@ -1,0 +1,40 @@
+# Example Pulumi configuration for production environment
+# Copy this file to Pulumi.prod.yaml and customize the values
+
+config:
+  # Required: Database password (use pulumi config set --secret dbPassword <your-password>)
+  wetarseel-infra:dbPassword:
+    secure: <encrypted-password>
+
+  # Environment configuration
+  wetarseel-infra:environment: "production"
+
+  # Production database configuration
+  wetarseel-infra:dbName: "wetarseel"
+  wetarseel-infra:dbUsername: "dbadmin"
+  wetarseel-infra:dbInstanceClass: "db.r6g.large" # More powerful instance for production
+
+  # Security configuration - RESTRICT ACCESS IN PRODUCTION
+  wetarseel-infra:allowedCidrBlocks:
+    - "10.0.0.0/8" # Replace with your VPC CIDR
+    - "172.16.0.0/12" # Replace with your office IP range
+
+  # Production availability and backup settings (MAXIMUM SAFETY)
+  wetarseel-infra:multiAz: true # Enable Multi-AZ for high availability
+  wetarseel-infra:publiclyAccessible: false # Keep database private in production
+  wetarseel-infra:backupRetentionDays: 30 # Longer backup retention
+  wetarseel-infra:skipFinalSnapshot: false # CRITICAL: Take final snapshot on deletion
+  wetarseel-infra:deletionProtection: true # CRITICAL: Enable deletion protection
+
+  # AWS Configuration
+  aws:region: "us-east-1"
+  aws:profile: "production"
+
+# Stack tags applied to all resources
+pulumi:
+  tags:
+    project: "wetarseel"
+    environment: "production"
+    owner: "platform-team"
+    cost-center: "infrastructure"
+    compliance: "required"

@@ -4,3 +4,6 @@ node_modules
 routeTree.gen.ts
 apps/web/dist
 .env
+
+# sst
+.sst

@@ -1,0 +1,4 @@
+config:
+  aws:region: me-central-1
+  wetarseel:dbPassword:
+    secure: AAABABE9LBgTptiWF59iugK7sMbyXUxT6FsO4+hvJuqRKhs9dFHRYUQ=

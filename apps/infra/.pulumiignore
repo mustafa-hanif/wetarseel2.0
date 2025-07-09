@@ -1,0 +1,32 @@
+# Pulumi ignore file - prevents accidental inclusion of sensitive files
+
+# Local configuration files (should be copied from examples)
+
+Pulumi._.yaml
+!Pulumi.yaml
+!Pulumi._.example.yaml
+
+# Backup files
+
+_.bak
+_.backup
+
+# IDE files
+
+.vscode/
+.idea/
+
+# Node modules (if any)
+
+node_modules/
+
+# OS files
+
+.DS_Store
+Thumbs.db
+
+# Local environment files
+
+.env
+.env.local
+.env.\*.local

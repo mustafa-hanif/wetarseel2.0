@@ -1,0 +1,38 @@
+# Example Pulumi configuration for development environment
+# Copy this file to Pulumi.dev.yaml and customize the values
+
+config:
+  # Required: Database password (use pulumi config set --secret dbPassword <your-password>)
+  wetarseel-infra:dbPassword:
+    secure: <encrypted-password>
+
+  # Optional: Environment name (defaults to stack name)
+  wetarseel-infra:environment: "development"
+
+  # Optional: Database configuration
+  wetarseel-infra:dbName: "wetarseel_dev"
+  wetarseel-infra:dbUsername: "dbadmin"
+  wetarseel-infra:dbInstanceClass: "db.t3.micro"
+
+  # Optional: Security configuration
+  wetarseel-infra:allowedCidrBlocks:
+    - "0.0.0.0/0" # Replace with your IP range in production
+
+  # Optional: Availability and backup settings (SAFE DEFAULTS)
+  wetarseel-infra:multiAz: false
+  wetarseel-infra:publiclyAccessible: true
+  wetarseel-infra:backupRetentionDays: 7
+  wetarseel-infra:skipFinalSnapshot: true # OK for dev: faster cleanup
+  wetarseel-infra:deletionProtection: false # OK for dev: easier cleanup
+
+  # AWS Configuration
+  aws:region: "us-east-1"
+  aws:profile: "default"
+
+# Stack tags applied to all resources
+pulumi:
+  tags:
+    project: "wetarseel"
+    environment: "development"
+    owner: "team"
+    cost-center: "engineering"
