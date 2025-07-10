@@ -7,7 +7,7 @@ deployments:
     source:
       branch: main
       directory: apps/infra
-    stack: wetarseel2.0/dev
+    stack: icemelt7-org/wetarseel/dev
     trigger:
       paths:
         - apps/infra/**
@@ -21,14 +21,14 @@ deployments:
           bun run build
       - name: build-frontend
         run: |
-          cd ../../web
+          cd ../web
           bun install
           bun run build
     # Post-deployment steps
     postActions:
       - name: deploy-website
         run: |
-          cd ../../scripts
+          cd scripts
           ./deploy-website.sh dev
     environment:
       AWS_REGION: me-central-1
@@ -45,7 +45,7 @@ deployments:
     source:
       branch: main
       directory: apps/infra
-    stack: wetarseel2.0/prod
+    stack: icemelt7-org/wetarseel/prod
     trigger:
       paths:
         - apps/infra/**
@@ -60,14 +60,14 @@ deployments:
           bun run build
       - name: build-frontend
         run: |
-          cd ../../web
+          cd ../web
           bun install
           bun run build
     # Post-deployment steps
     postActions:
       - name: deploy-website
         run: |
-          cd ../../scripts
+          cd scripts
           ./deploy-website.sh prod
     environment:
       AWS_REGION: me-central-1

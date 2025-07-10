@@ -11,7 +11,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 # Configuration
-FRONTEND_DIR="../../web"
+FRONTEND_DIR="../web"
 BUILD_DIR="$FRONTEND_DIR/dist"
 STACK_NAME=${1:-dev}
 
@@ -19,8 +19,8 @@ echo -e "${GREEN}🚀 Building and deploying website for stack: $STACK_NAME${NC}
 
 # Step 1: Get Pulumi stack outputs
 echo -e "${YELLOW}📋 Getting stack outputs...${NC}"
-cd "$(dirname "$0")"
-pulumi stack select $STACK_NAME
+cd "$(dirname "$0")/../apps/infra"
+pulumi stack select icemelt7-org/wetarseel/$STACK_NAME
 
 # Get S3 bucket name and CloudFront distribution ID
 BUCKET_NAME=$(pulumi stack output websiteBucketName 2>/dev/null || echo "")
@@ -92,8 +92,8 @@ fi
 echo -e "\n${GREEN}🎉 Deployment completed successfully!${NC}"
 echo -e "${GREEN}📋 Website URLs:${NC}"
 
-WEBSITE_URL=$(cd ../infra && pulumi stack output websiteUrl 2>/dev/null || echo "")
-CLOUDFRONT_URL=$(cd ../infra && pulumi stack output cloudfrontUrl 2>/dev/null || echo "")
+WEBSITE_URL=$(pulumi stack output websiteUrl 2>/dev/null || echo "")
+CLOUDFRONT_URL=$(pulumi stack output cloudfrontUrl 2>/dev/null || echo "")
 
 if [ ! -z "$WEBSITE_URL" ]; then
     echo -e "${GREEN}   S3 Website: $WEBSITE_URL${NC}"
