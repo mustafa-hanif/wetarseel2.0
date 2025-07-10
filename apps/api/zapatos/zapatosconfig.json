@@ -1,0 +1,5 @@
+{
+  "db": {
+    "connectionString": "postgres://dbadmin:Jojo.3344@wetarseel-dev-postgres-v2.c78288muwwks.me-central-1.rds.amazonaws.com:5432/wetarseel?ssl=true&sslmode=require&rejectUnauthorized=false"
+  }
+}

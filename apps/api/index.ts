@@ -1,6 +1,5 @@
 import { auth } from "./auth";
-import doSomething from "./db";
-
+import items from "./routes/items";
 const server = Bun.serve({
   port: 4000,
   routes: {
@@ -10,8 +9,10 @@ const server = Bun.serve({
       const a = await auth.handler(req);
       return a;
     },
+    "/api/items/*": async (req: Request) => {
+      return items.fetch(req);
+    },
     "/hello": () => {
-      doSomething();
       return new Response("Hello World!");
     },
   },

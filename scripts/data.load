@@ -1,0 +1,8 @@
+LOAD DATABASE
+    FROM sqlite:///Users/mustafa.hanif/Downloads/@auto_pb_backup_we_tarseel_20250709000000/data.db  
+    INTO pgsql://dbadmin:Jojo.3344@wetarseel-dev-postgres-v2.c78288muwwks.me-central-1.rds.amazonaws.com:5432/wetarseel
+
+WITH include drop, create tables, reset sequences,
+     schema only
+
+INCLUDING ONLY TABLE NAMES LIKE 'leads';
