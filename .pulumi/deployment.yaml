@@ -18,7 +18,6 @@ deployments:
       - name: install-dependencies
         run: |
           bun install
-          bun run build
       - name: build-frontend
         run: |
           cd ../web

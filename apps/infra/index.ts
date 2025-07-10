@@ -1,5 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
+import * as command from "@pulumi/command";
+import * as fs from "fs";
 
 // Install @pulumi/command for build automation
 // Run: npm install @pulumi/command
@@ -262,18 +264,44 @@ export const dbSubnetGroupArn = dbSubnetGroup.arn;
 // STATIC WEBSITE INFRASTRUCTURE
 // ============================================================================
 
-// S3 Bucket for static website hosting
-const websiteBucket = new aws.s3.Bucket("website-bucket", {
-  bucket: `${projectName}-${environment}-website`,
-  website: {
-    indexDocument: "index.html",
-    errorDocument: "404.html",
-  },
-  tags: {
-    ...commonTags,
-    Purpose: "StaticWebsite",
-  },
+const installDeps = new command.local.Command("install-deps", {
+  create: "cd ../web && pnpm install",
 });
+
+const buildSite = new command.local.Command(
+  "build",
+  {
+    create: "cd ../web && pnpm run build",
+  },
+  { dependsOn: [installDeps] }
+);
+
+// S3 Bucket for static website hosting
+const websiteBucket = new aws.s3.Bucket(
+  "website-bucket",
+  {
+    bucket: `${projectName}-${environment}-website`,
+    website: {
+      indexDocument: "index.html",
+      errorDocument: "404.html",
+    },
+    tags: {
+      ...commonTags,
+      Purpose: "StaticWebsite",
+    },
+  },
+  { dependsOn: [buildSite] }
+);
+
+const websiteBucketOwnership = new aws.s3.BucketOwnershipControls(
+  "website-bucket-ownership",
+  {
+    bucket: websiteBucket.id,
+    rule: {
+      objectOwnership: "ObjectWriter",
+    },
+  }
+);
 
 // S3 Bucket public access configuration
 const websiteBucketPublicAccessBlock = new aws.s3.BucketPublicAccessBlock(
@@ -284,11 +312,26 @@ const websiteBucketPublicAccessBlock = new aws.s3.BucketPublicAccessBlock(
     blockPublicPolicy: false,
     ignorePublicAcls: false,
     restrictPublicBuckets: false,
+  },
+  { dependsOn: [websiteBucketOwnership] }
+);
+
+const deploySite = new command.local.Command(
+  "deploy",
+  {
+    create: pulumi.interpolate`aws s3 sync ../web/dist s3://${websiteBucket.bucket} --delete --acl public-read`,
+  },
+  {
+    dependsOn: [
+      buildSite,
+      websiteBucket,
+      websiteBucketOwnership,
+      websiteBucketPublicAccessBlock,
+    ],
   }
 );
 
-// S3 Bucket Policy for public read access
-const websiteBucketPolicy = new aws.s3.BucketPolicy(
+const websiteBucketPolicy2 = new aws.s3.BucketPolicy(
   "website-bucket-policy",
   {
     bucket: websiteBucket.id,
@@ -297,6 +340,7 @@ const websiteBucketPolicy = new aws.s3.BucketPolicy(
         Version: "2012-10-17",
         Statement: [
           {
+            Sid: "PublicReadGetObject",
             Effect: "Allow",
             Principal: "*",
             Action: "s3:GetObject",
@@ -381,3 +425,11 @@ export const websiteBucketName = websiteBucket.bucket;
 export const websiteUrl = pulumi.interpolate`http://${websiteBucket.websiteEndpoint}`;
 export const cloudfrontUrl = pulumi.interpolate`https://${cloudfrontDistribution.domainName}`;
 export const cloudfrontDistributionId = cloudfrontDistribution.id;
+
+const invalidateCloudFront = new command.local.Command(
+  "invalidate",
+  {
+    create: pulumi.interpolate`aws cloudfront create-invalidation --distribution-id ${cloudfrontDistributionId} --paths "/*"`,
+  },
+  { dependsOn: [deploySite] }
+);
