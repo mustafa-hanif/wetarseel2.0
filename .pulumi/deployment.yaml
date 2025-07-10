@@ -15,6 +15,11 @@ deployments:
         - .pulumi/deployment.yaml
     # Pre-deployment build steps
     preActions:
+      - name: install-dependencies
+        run: |
+          bun install
+          pulumi install
+          bun run build
       - name: build-frontend
         run: |
           cd ../../web
@@ -49,6 +54,11 @@ deployments:
       approval: required
     # Pre-deployment build steps
     preActions:
+      - name: install-dependencies
+        run: |
+          bun install
+          pulumi install
+          bun run build
       - name: build-frontend
         run: |
           cd ../../web
