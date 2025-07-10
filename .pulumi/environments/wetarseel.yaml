@@ -1,0 +1,36 @@
+# Pulumi ESC Environment Configuration
+# This defines environment-specific secrets and configuration
+
+values:
+  aws:
+    region: me-central-1
+
+  # Development environment configuration
+  dev:
+    environment: dev
+    dbInstanceClass: db.t3.micro
+    publiclyAccessible: true
+    multiAz: false
+    backupRetentionDays: 3
+    skipFinalSnapshot: true
+    deletionProtection: false
+
+  # Production environment configuration
+  prod:
+    environment: prod
+    dbInstanceClass: db.t3.small
+    publiclyAccessible: false
+    multiAz: true
+    backupRetentionDays: 30
+    skipFinalSnapshot: false
+    deletionProtection: true
+
+  # Shared secrets (managed via Pulumi ESC)
+  secrets:
+    dbPassword:
+      fn::secret: ${pulumi.env.DB_PASSWORD}
+    aws:
+      accessKeyId:
+        fn::secret: ${pulumi.env.AWS_ACCESS_KEY_ID}
+      secretAccessKey:
+        fn::secret: ${pulumi.env.AWS_SECRET_ACCESS_KEY}

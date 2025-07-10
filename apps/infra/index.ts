@@ -1,6 +1,9 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 
+// Install @pulumi/command for build automation
+// Run: npm install @pulumi/command
+
 // Stack configuration
 const config = new pulumi.Config();
 const stackName = pulumi.getStack();
@@ -156,55 +159,82 @@ const dbParameterGroup = new aws.rds.ParameterGroup("db-parameter-group", {
   tags: commonTags,
 });
 
-// RDS PostgreSQL Instance with modern configuration
-const dbInstance = new aws.rds.Instance("my-postgres", {
-  identifier: `${projectName}-${environment}-postgres-v2`, // v2 to prevent accidental replacement
-  allocatedStorage: 20,
-  maxAllocatedStorage: 100, // Enable storage autoscaling
-  storageType: "gp3", // Use GP3 for better performance and cost
-  storageEncrypted: true, // Enable encryption at rest
+// RDS PostgreSQL Instance
+const dbInstance = new aws.rds.Instance(
+  "my-postgres",
+  {
+    identifier: `${projectName}-${environment}-postgres-v2`, // v2 to prevent accidental replacement
+    allocatedStorage: 20,
+    maxAllocatedStorage: 100, // Enable storage autoscaling
+    storageType: "gp3", // Use GP3 for better performance and cost
+    storageEncrypted: true, // Enable encryption at rest
 
-  engine: "postgres",
-  engineVersion: "16.4", // Latest PostgreSQL version
-  instanceClass: config.get("dbInstanceClass") ?? "db.t3.micro",
+    engine: "postgres",
+    engineVersion: "16.4", // Latest PostgreSQL version
+    instanceClass: config.get("dbInstanceClass") ?? "db.t3.micro",
 
-  dbName: config.get("dbName") ?? "wetarseel",
-  username: config.get("dbUsername") ?? "dbadmin",
-  password: dbPassword,
+    dbName: config.get("dbName") ?? "wetarseel",
+    username: config.get("dbUsername") ?? "dbadmin",
+    password: dbPassword,
 
-  dbSubnetGroupName: dbSubnetGroup.name,
-  vpcSecurityGroupIds: [dbSecurityGroup.id],
-  parameterGroupName: dbParameterGroup.name,
+    dbSubnetGroupName: dbSubnetGroup.name,
+    vpcSecurityGroupIds: [dbSecurityGroup.id],
+    parameterGroupName: dbParameterGroup.name,
 
-  // Backup and maintenance
-  backupRetentionPeriod: config.getNumber("backupRetentionDays") ?? 7,
-  backupWindow: "03:00-04:00", // UTC
-  maintenanceWindow: "sun:04:00-sun:05:00", // UTC
-  autoMinorVersionUpgrade: true,
+    // Backup and maintenance
+    backupRetentionPeriod: config.getNumber("backupRetentionDays") ?? 7,
+    backupWindow: "03:00-04:00", // UTC
+    maintenanceWindow: "sun:04:00-sun:05:00", // UTC
+    autoMinorVersionUpgrade: true,
 
-  // Availability and access
-  publiclyAccessible: config.getBoolean("publiclyAccessible") ?? true,
-  multiAz: config.getBoolean("multiAz") ?? false,
+    // Availability and access
+    publiclyAccessible: config.getBoolean("publiclyAccessible") ?? true,
+    multiAz: config.getBoolean("multiAz") ?? false,
 
-  // Performance and monitoring
-  performanceInsightsEnabled: true,
-  performanceInsightsRetentionPeriod: 7,
-  monitoringInterval: 60,
-  monitoringRoleArn: enhancedMonitoringRole.arn,
-  enabledCloudwatchLogsExports: ["postgresql"],
+    // Performance and monitoring
+    performanceInsightsEnabled: true,
+    performanceInsightsRetentionPeriod: 7,
+    monitoringInterval: 60,
+    monitoringRoleArn: enhancedMonitoringRole.arn,
+    enabledCloudwatchLogsExports: ["postgresql"],
 
-  // Deletion protection - CRITICAL for production safety
-  skipFinalSnapshot: config.getBoolean("skipFinalSnapshot") ?? false, // Safe default: take snapshot
-  deletionProtection: config.getBoolean("deletionProtection") ?? true, // Safe default: enable protection
+    // Deletion protection - CRITICAL for production safety
+    skipFinalSnapshot: config.getBoolean("skipFinalSnapshot") ?? false, // Safe default: take snapshot
+    deletionProtection: config.getBoolean("deletionProtection") ?? true, // Safe default: enable protection
 
-  tags: {
-    ...commonTags,
-    Name: `${projectName}-${environment}-postgres`,
-    Purpose: "Database",
-    Engine: "PostgreSQL",
-    Version: "16.4",
+    tags: {
+      ...commonTags,
+      Name: `${projectName}-${environment}-postgres`,
+      Purpose: "Database",
+      Engine: "PostgreSQL",
+      Version: "16.4",
+    },
   },
-});
+  {
+    // Protect the RDS instance from accidental deletion/replacement
+    protect: isProduction,
+    // Prevent replacement by ignoring changes to certain properties
+    ignoreChanges: [
+      "availabilityZone",
+      "backupTarget",
+      "caCertIdentifier",
+      "databaseInsightsMode",
+      "engineLifecycleSupport",
+      "iops",
+      "kmsKeyId",
+      "licenseModel",
+      "networkType",
+      "optionGroupName",
+      "allocatedStorage", // Prevent replacement due to storage changes
+      "engineVersion", // Prevent replacement due to version changes
+      "backupRetentionPeriod", // Ignore backup retention changes
+      "skipFinalSnapshot", // Ignore snapshot setting changes
+      "deletionProtection", // Ignore deletion protection changes
+      "applyImmediately", // Ignore apply immediately changes
+      "password", // Ignore password changes to prevent updates
+    ],
+  }
+);
 
 // Outputs for other applications to consume
 export const dbEndpoint = dbInstance.endpoint;
@@ -227,3 +257,127 @@ export const vpcId = vpc.then((v) => v.id);
 // Resource ARNs for cross-stack references
 export const dbInstanceArn = dbInstance.arn;
 export const dbSubnetGroupArn = dbSubnetGroup.arn;
+
+// ============================================================================
+// STATIC WEBSITE INFRASTRUCTURE
+// ============================================================================
+
+// S3 Bucket for static website hosting
+const websiteBucket = new aws.s3.Bucket("website-bucket", {
+  bucket: `${projectName}-${environment}-website`,
+  website: {
+    indexDocument: "index.html",
+    errorDocument: "404.html",
+  },
+  tags: {
+    ...commonTags,
+    Purpose: "StaticWebsite",
+  },
+});
+
+// S3 Bucket public access configuration
+const websiteBucketPublicAccessBlock = new aws.s3.BucketPublicAccessBlock(
+  "website-bucket-pab",
+  {
+    bucket: websiteBucket.id,
+    blockPublicAcls: false,
+    blockPublicPolicy: false,
+    ignorePublicAcls: false,
+    restrictPublicBuckets: false,
+  }
+);
+
+// S3 Bucket Policy for public read access
+const websiteBucketPolicy = new aws.s3.BucketPolicy(
+  "website-bucket-policy",
+  {
+    bucket: websiteBucket.id,
+    policy: websiteBucket.arn.apply((bucketArn) =>
+      JSON.stringify({
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Principal: "*",
+            Action: "s3:GetObject",
+            Resource: `${bucketArn}/*`,
+          },
+        ],
+      })
+    ),
+  },
+  { dependsOn: [websiteBucketPublicAccessBlock] }
+);
+
+// CloudFront Distribution for CDN
+const cloudfrontDistribution = new aws.cloudfront.Distribution("website-cdn", {
+  origins: [
+    {
+      domainName: websiteBucket.websiteEndpoint,
+      originId: "S3-website",
+      customOriginConfig: {
+        httpPort: 80,
+        httpsPort: 443,
+        originProtocolPolicy: "http-only",
+        originSslProtocols: ["TLSv1.2"],
+      },
+    },
+  ],
+  enabled: true,
+  isIpv6Enabled: true,
+  defaultRootObject: "index.html",
+  defaultCacheBehavior: {
+    allowedMethods: [
+      "DELETE",
+      "GET",
+      "HEAD",
+      "OPTIONS",
+      "PATCH",
+      "POST",
+      "PUT",
+    ],
+    cachedMethods: ["GET", "HEAD"],
+    targetOriginId: "S3-website",
+    compress: true,
+    viewerProtocolPolicy: "redirect-to-https",
+    forwardedValues: {
+      queryString: false,
+      cookies: { forward: "none" },
+    },
+    minTtl: 0,
+    defaultTtl: 86400,
+    maxTtl: 31536000,
+  },
+  customErrorResponses: [
+    {
+      errorCode: 404,
+      responseCode: 200,
+      responsePagePath: "/index.html",
+      errorCachingMinTtl: 300,
+    },
+    {
+      errorCode: 403,
+      responseCode: 200,
+      responsePagePath: "/index.html",
+      errorCachingMinTtl: 300,
+    },
+  ],
+  restrictions: {
+    geoRestriction: {
+      restrictionType: "none",
+    },
+  },
+  viewerCertificate: {
+    cloudfrontDefaultCertificate: true,
+  },
+  tags: {
+    ...commonTags,
+    Purpose: "CDN",
+  },
+});
+
+// Website outputs
+export const websiteBucketName = websiteBucket.bucket;
+export const websiteUrl = pulumi.interpolate`http://${websiteBucket.websiteEndpoint}`;
+export const cloudfrontUrl = pulumi.interpolate`https://${cloudfrontDistribution.domainName}`;
+export const cloudfrontDistributionId = cloudfrontDistribution.id;

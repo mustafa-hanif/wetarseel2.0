@@ -1,0 +1,20 @@
+config:
+  aws:region: me-central-1
+  # Import ESC environment for centralized configuration
+  pulumi:environment: wetarseel/prod
+
+  # Production-specific configuration
+  wetarseel:environment: prod
+  wetarseel:dbInstanceClass: db.t3.small
+  wetarseel:publiclyAccessible: false
+  wetarseel:multiAz: true
+  wetarseel:backupRetentionDays: 30
+  wetarseel:skipFinalSnapshot: false
+  wetarseel:deletionProtection: true
+
+  # Database configuration (secrets managed via ESC)
+
+  # Security settings
+  wetarseel:allowedCidrBlocks:
+    - "10.0.0.0/8" # Internal VPC only
+    - "172.16.0.0/12" # Private networks only

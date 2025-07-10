@@ -1,0 +1,78 @@
+# Pulumi Deployments Configuration
+# This file configures automatic deployments via Pulumi Cloud
+
+deployments:
+  # Development environment
+  - name: dev
+    source:
+      branch: main
+      directory: apps/infra
+    stack: wetarseel2.0/dev
+    trigger:
+      paths:
+        - apps/infra/**
+        - apps/web/**
+        - .pulumi/deployment.yaml
+    # Pre-deployment build steps
+    preActions:
+      - name: build-frontend
+        run: |
+          cd ../../web
+          bun install
+          bun run build
+    # Post-deployment steps
+    postActions:
+      - name: deploy-website
+        run: |
+          cd ../../scripts
+          ./deploy-website.sh dev
+    environment:
+      AWS_REGION: me-central-1
+    secrets:
+      - name: dbPassword
+        value: ${PULUMI_SECRET_DB_PASSWORD_DEV}
+      - name: aws:accessKeyId
+        value: ${AWS_ACCESS_KEY_ID}
+      - name: aws:secretAccessKey
+        value: ${AWS_SECRET_ACCESS_KEY}
+
+  # Production environment (manual approval required)
+  - name: prod
+    source:
+      branch: main
+      directory: apps/infra
+    stack: wetarseel2.0/prod
+    trigger:
+      paths:
+        - apps/infra/**
+        - apps/web/**
+      approval: required
+    # Pre-deployment build steps
+    preActions:
+      - name: build-frontend
+        run: |
+          cd ../../web
+          bun install
+          bun run build
+    # Post-deployment steps
+    postActions:
+      - name: deploy-website
+        run: |
+          cd ../../scripts
+          ./deploy-website.sh prod
+    environment:
+      AWS_REGION: me-central-1
+    secrets:
+      - name: dbPassword
+        value: ${PULUMI_SECRET_DB_PASSWORD_PROD}
+      - name: aws:accessKeyId
+        value: ${AWS_ACCESS_KEY_ID}
+      - name: aws:secretAccessKey
+        value: ${AWS_SECRET_ACCESS_KEY}
+
+# Preview deployments for pull requests
+previews:
+  enabled: true
+  paths:
+    - apps/infra/**
+    - apps/web/**
