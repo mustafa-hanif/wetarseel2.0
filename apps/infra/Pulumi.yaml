@@ -1,9 +1,9 @@
 name: wetarseel
 description: wetarseel pulumi
 runtime:
-  name: bun
+  name: nodejs
   options:
-    packagemanager: bun
+    packagemanager: pnpm
 config:
   pulumi:tags:
     value:
