@@ -1,7 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as command from "@pulumi/command";
-import * as fs from "fs";
 
 // Install @pulumi/command for build automation
 // Run: npm install @pulumi/command
