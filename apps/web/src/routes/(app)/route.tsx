@@ -21,7 +21,7 @@ function RouteComponent() {
       console.log("User is authenticated:", data.data.email);
     }
     if (data.isError) {
-      router.history.push("/sign-in");
+      router.history.push("/auth/sign-in");
     }
   });
   return (

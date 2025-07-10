@@ -10,14 +10,14 @@ import {
 import { TextField, TextFieldRoot } from "@/components/ui/textfield";
 
 import { Checkbox } from "@/components/ui/checkbox";
-import { Loader2, Key } from "lucide-solid";
+import Loader2 from "lucide-solid/icons/loader-2";
 import { useForm } from "@/lib/validation";
-import { createFileRoute, useRouter } from "@tanstack/solid-router";
+import { createFileRoute, Link, useRouter } from "@tanstack/solid-router";
 import { createEffect, createSignal, Show } from "solid-js";
 import { authClient, signIn } from "@/lib/auth-client";
 import { useAuth } from "@/hooks/useAuth";
 
-export const Route = createFileRoute("/sign-in")({
+export const Route = createFileRoute("/auth/sign-in")({
   component: SignIn,
 });
 
@@ -26,6 +26,7 @@ function SignIn() {
   const [password, setPassword] = createSignal("");
   const [loading, setLoading] = createSignal(false);
   const [rememberMe, setRememberMe] = createSignal(false);
+  const [error, setError] = createSignal("");
   const router = useRouter();
 
   const data = useAuth();
@@ -39,9 +40,6 @@ function SignIn() {
   });
 
   const fn = async (form: any) => {
-    // form.submit()
-    console.log("Done");
-
     const response = await signIn.email(
       {
         email: email(),
@@ -56,15 +54,19 @@ function SignIn() {
         },
       }
     );
-
+    console.log("Sign in response:", response);
+    if (response.error) {
+      setError(response.error.message || "An error occurred during sign in.");
+      return;
+    }
     router.history.push("/");
   };
   return (
-    <Show when={!data.isPending}>
+    <Show when={true}>
       <div class="flex justify-center py-4 w-full">
         <Card class="max-w-md shrink-0">
           <CardHeader>
-            <CardTitle class="text-lg md:text-xl">Sign In</CardTitle>
+            <CardTitle class="text-lg md:text-xl">Sign In </CardTitle>
             <CardDescription class="text-xs md:text-sm">
               Enter your email below to login to your account
             </CardDescription>
@@ -73,7 +75,7 @@ function SignIn() {
             <form use:formSubmit={fn}>
               <div class="grid gap-4">
                 <div class="grid gap-2">
-                  <label for="email">Email</label>
+                  <label for="email">Email </label>
                   <TextFieldRoot>
                     <TextField
                       id="email"
@@ -92,7 +94,9 @@ function SignIn() {
                   <div class="flex items-center">
                     <label for="password">Password</label>
                     <div class="ml-auto inline-block text-sm underline">
-                      Forgot your password?
+                      <Link to="/auth/forgot-password">
+                        Forgot your password?
+                      </Link>
                     </div>
                   </div>
 
@@ -119,7 +123,7 @@ function SignIn() {
                 </div>
 
                 <Button type="submit" class="w-full" disabled={loading()}>
-                  {loading() ? (
+                  {loading() || data.isPending ? (
                     <Loader2 size={16} class="animate-spin" />
                   ) : (
                     <p> Login </p>
@@ -178,20 +182,11 @@ function SignIn() {
             </form>
           </CardContent>
           <CardFooter>
-            <div class="flex justify-center w-full border-t py-4">
-              <p class="text-center text-xs text-neutral-500">
-                built with{" "}
-                <a
-                  href="https://better-auth.com"
-                  class="underline"
-                  target="_blank"
-                >
-                  <span class="dark:text-white/70 cursor-pointer">
-                    better-auth.
-                  </span>
-                </a>
-              </p>
-            </div>
+            <Show when={error() !== ""}>
+              <div class="flex justify-center w-full border-t py-4 text-red-800">
+                {error()}
+              </div>
+            </Show>
           </CardFooter>
         </Card>
       </div>

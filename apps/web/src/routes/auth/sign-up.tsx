@@ -16,7 +16,7 @@ import { useForm } from "@/lib/validation";
 import { createSignal } from "solid-js";
 import { authClient, signUp } from "@/lib/auth-client";
 
-export const Route = createFileRoute("/sign-up")({
+export const Route = createFileRoute("/auth/sign-up")({
   component: SignUp,
 });
 

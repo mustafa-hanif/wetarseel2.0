@@ -1,4 +1,5 @@
 import { auth } from "./auth";
+import { migrateUsers } from "./migrate-users";
 import items from "./routes/items";
 const server = Bun.serve({
   port: 4000,
@@ -13,6 +14,7 @@ const server = Bun.serve({
       return items.fetch(req);
     },
     "/hello": () => {
+      migrateUsers();
       return new Response("Hello World!");
     },
   },
