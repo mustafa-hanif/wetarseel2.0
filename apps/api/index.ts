@@ -3,6 +3,7 @@ import { auth } from "./auth";
 import { db, type s, pool } from "./db";
 import { migrateUsers } from "./migrate-users";
 import items from "./routes/items";
+import mutations from "./routes/mutations"; // Add this import
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { LRUCache } from "lru-cache";
@@ -24,7 +25,7 @@ app.use(
   cors({
     origin: "http://localhost:3000", // replace with your origin
     allowHeaders: ["Content-Type", "Authorization"],
-    allowMethods: ["POST", "GET", "OPTIONS"],
+    allowMethods: ["POST", "GET", "OPTIONS", "PUT", "DELETE"],
     exposeHeaders: ["Content-Length"],
     maxAge: 600,
     credentials: true,
@@ -77,6 +78,29 @@ app.on(["GET", "POST", "PUT", "DELETE"], "/api/items/**", async (c) => {
     return response;
   } catch (error) {
     console.error("Error handling items request:", error);
+    return c.json({ error: "Internal Server Error" }, 500);
+  }
+});
+
+app.on(["POST", "PUT", "DELETE"], "/api/mutations/**", async (c) => {
+  const user = c.get("user");
+  let skipAccountCheck = false;
+  if (c.req.query("skipAccountCheck") === "true") {
+    skipAccountCheck = true;
+  }
+  if (!user) {
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  try {
+    const response = await mutations.fetch(
+      c.req.raw,
+      user?.accountId ?? "",
+      skipAccountCheck
+    );
+    return response;
+  } catch (error) {
+    console.error("Error handling mutation request:", error);
     return c.json({ error: "Internal Server Error" }, 500);
   }
 });

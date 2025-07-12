@@ -1,8 +1,23 @@
-import { Button } from "@/components/ui/button";
-import { TextField, TextFieldRoot } from "@/components/ui/textfield";
 import { useAuth } from "@/hooks/useAuth";
 import { createFileRoute } from "@tanstack/solid-router";
-import { createEffect, createSignal, For } from "solid-js";
+import { Show } from "solid-js";
+import {
+  mockTeams,
+  mockAgents,
+  mockConversations,
+  mockMessages,
+} from "@/data/mockData";
+import { useChatState } from "@/hooks/useChatState";
+
+// Components
+import { TeamAgentSidebar } from "@/components/chat/TeamAgentSidebar";
+import { ConversationFilters } from "@/components/chat/ConversationFilters";
+import { ConversationList } from "@/components/chat/ConversationList";
+import { ChatHeader } from "@/components/chat/ChatHeader";
+import { MessagesArea } from "@/components/chat/MessagesArea";
+import { MessageInput } from "@/components/chat/MessageInput";
+import { ContactSidebar } from "@/components/chat/ContactSidebar";
+import { EmptyState } from "@/components/chat/EmptyState";
 
 export const Route = createFileRoute("/(app)/chat")({
   component: RouteComponent,
@@ -10,50 +25,86 @@ export const Route = createFileRoute("/(app)/chat")({
 
 function RouteComponent() {
   const data = useAuth();
-  const [socket, setSocket] = createSignal<WebSocket | null>(null);
-  const [messages, setMessages] = createSignal<string[]>([]);
-  createEffect(() => {
-    if (data.data && !socket()) {
-      const id = data.data.id;
-      const websocketUrl = `wss://99afqhaebh.execute-api.me-central-1.amazonaws.com/production?userId=${id}`;
-      console.log("User is authenticated:", id);
-      const socket = new WebSocket(websocketUrl);
-      socket.onmessage = (event) => {
-        console.log("Message from server:", event.data);
-        const message = JSON.parse(event.data).message.message;
-        setMessages((prev) => [...prev, message]);
-      };
-      setSocket(socket);
-    }
-  });
-  const sendMessage = (event: Event) => {
-    event.preventDefault();
-    const form = event.target as HTMLFormElement;
-    const message = form.message.value;
-    form.reset();
-    console.log("Sending message:", message);
-    socket()?.send(JSON.stringify({ action: "sendmessage", message: message }));
-  };
-  return (
-    <div class="flex gap-2">
-      <ul>
-        <li>Conversation 1</li>
-      </ul>
+  const chatState = useChatState(mockConversations, mockMessages);
 
-      <div>
-        <h2>Chat</h2>
-        <ul>
-          <For each={messages()}>{(message) => <li>{message}</li>}</For>
-        </ul>
-        <div>
-          <form on:submit={sendMessage}>
-            <TextFieldRoot>
-              <TextField name="message" placeholder="Type a message..." />
-            </TextFieldRoot>
-            <Button type="submit">Send</Button>
-          </form>
-        </div>
+  return (
+    <div class="flex h-full bg-gray-100">
+      {/* Left Sidebar - Teams and Agents */}
+      <TeamAgentSidebar
+        teams={mockTeams}
+        agents={mockAgents}
+        selectedTeam={chatState.selectedTeam()}
+        selectedAgent={chatState.selectedAgent()}
+        conversationCount={chatState.conversations().length}
+        onTeamSelect={chatState.selectTeam}
+        onAgentSelect={chatState.selectAgent}
+      />
+
+      {/* Conversations List */}
+      <div class="w-80 bg-white border-r border-gray-200 flex flex-col">
+        <ConversationFilters
+          searchQuery={chatState.searchQuery()}
+          onSearchChange={chatState.setSearchQuery}
+          dateFilterEnabled={chatState.dateFilterEnabled()}
+          onDateFilterToggle={() =>
+            chatState.setDateFilterEnabled(!chatState.dateFilterEnabled())
+          }
+          dateWindowStart={chatState.dateWindowStart()}
+          onDateWindowMove={chatState.moveDateWindow}
+          onDateWindowReset={chatState.resetDateWindow}
+          showUnreadOnly={chatState.showUnreadOnly()}
+          onUnreadToggle={() =>
+            chatState.setShowUnreadOnly(!chatState.showUnreadOnly())
+          }
+          showTagFilter={chatState.showTagFilter()}
+          onTagFilterToggle={() =>
+            chatState.setShowTagFilter(!chatState.showTagFilter())
+          }
+          selectedTags={chatState.selectedTags()}
+          allTags={chatState.allTags()}
+          onTagToggle={chatState.toggleTag}
+          onClearTags={chatState.clearTags}
+        />
+
+        <ConversationList
+          conversations={chatState.filteredConversations()}
+          selectedConversation={chatState.selectedConversation()}
+          onConversationSelect={chatState.setSelectedConversation}
+        />
       </div>
+
+      {/* Main Chat Area */}
+      <div class="flex-1 flex flex-col">
+        <Show when={chatState.selectedConversation()} fallback={<EmptyState />}>
+          <ChatHeader
+            conversation={chatState.selectedConversation()!}
+            showRightSidebar={chatState.showRightSidebar()}
+            onToggleRightSidebar={() =>
+              chatState.setShowRightSidebar(!chatState.showRightSidebar())
+            }
+          />
+
+          <MessagesArea messages={chatState.messages()} />
+
+          <MessageInput
+            newMessage={chatState.newMessage()}
+            onMessageChange={chatState.setNewMessage}
+            onSendMessage={chatState.sendMessage}
+          />
+        </Show>
+      </div>
+
+      {/* Right Sidebar - Conversation Details */}
+      <Show
+        when={chatState.showRightSidebar() && chatState.selectedConversation()}
+      >
+        <ContactSidebar
+          conversation={chatState.selectedConversation()!}
+          teams={mockTeams}
+          agents={mockAgents}
+          onClose={() => chatState.setShowRightSidebar(false)}
+        />
+      </Show>
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardTitle } from "@/components/ui/card";
 import { TextField, TextFieldRoot } from "@/components/ui/textfield";
 import { Checkbox, CheckboxControl } from "@/components/ui/checkbox";
+import { createRecord } from "@/hooks/useMutations";
 import ChevronDown from "lucide-solid/icons/chevron-down";
 import Loader2 from "lucide-solid/icons/loader-2";
 
@@ -65,8 +66,20 @@ type ViewAll = RoleType;
 
 function RouteComponent() {
   const [page, setPage] = createSignal(1);
-  const [isPending, setIsPending] = createSignal(false);
   const [alertOpen, setAlertOpen] = createSignal(false);
+
+  // Set up agent creation mutation
+  const agentCreation = createRecord("users", {
+    skipAccountCheck: true,
+    onSuccess: (data) => {
+      console.log("Agent created successfully:", data);
+      setAlertOpen(true);
+    },
+    onError: (error) => {
+      console.error("Error creating agent:", error.message);
+      // You could add a toast notification here
+    },
+  });
 
   const [formData, setFormData] = createSignal<FormData>({
     userName: "",
@@ -159,20 +172,20 @@ function RouteComponent() {
   };
 
   const handleAgentCreation = async () => {
-    setIsPending(true);
     try {
-      // Mock API call - replace with actual implementation
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-      console.log("Creating agent with data:", {
-        formData: formData(),
-        selectedOptions: selectedOptions(),
-        viewAllArray: viewAllArray(),
+      // Prepare the agent data for creation
+      agentCreation.create({
+        name: formData().userName,
+        email: formData().email,
+        phonenumber: formData().phone || "", // Optional field
+        // Store role assignments as JSON
+        roles: JSON.stringify(selectedOptions()),
+        view_all: JSON.stringify(selectedOptions()),
+        // You might want to hash the password on the backend
       });
-      setAlertOpen(true);
     } catch (error) {
       console.error("Error creating agent:", error);
     }
-    setIsPending(false);
   };
 
   const handleFormSubmit = (e: Event) => {
@@ -252,6 +265,30 @@ function RouteComponent() {
                       />
                     </TextFieldRoot>
                   </div>
+
+                  <div>
+                    <label
+                      for="phone"
+                      class="text-sm text-gray-600 font-semibold mb-2 block"
+                    >
+                      Phone (Optional)
+                    </label>
+                    <TextFieldRoot>
+                      <TextField
+                        type="tel"
+                        name="phone"
+                        value={formData().phone}
+                        placeholder="+1 (555) 123-4567"
+                        class="border border-gray-300 p-2"
+                        onInput={(e) =>
+                          handleInputChange(
+                            "phone",
+                            (e.target as HTMLInputElement).value
+                          )
+                        }
+                      />
+                    </TextFieldRoot>
+                  </div>
                 </div>
               </div>
 
@@ -296,6 +333,16 @@ function RouteComponent() {
                 </Button>
               </div>
             </div>
+          </div>
+        </Show>
+
+        {/* Error Display */}
+        <Show when={agentCreation.error}>
+          <div class="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <h4 class="text-red-800 font-medium">Error Creating Agent</h4>
+            <p class="text-red-600 text-sm mt-1">
+              {agentCreation.error?.message}
+            </p>
           </div>
         </Show>
 
@@ -362,7 +409,7 @@ function RouteComponent() {
         <div class="flex justify-center mt-4 gap-2">
           <Button onClick={() => setPage(1)}>Go Back</Button>
           <Show
-            when={!isPending()}
+            when={!agentCreation.isPending}
             fallback={
               <Button disabled variant="secondary">
                 <Loader2 size={16} class="mr-2 animate-spin" />
