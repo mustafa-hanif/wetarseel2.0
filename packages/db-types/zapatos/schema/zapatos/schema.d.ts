@@ -1963,6 +1963,419 @@ declare module 'zapatos/schema' {
   }
 
   /**
+   * **account**
+   * - Table in database
+   */
+  export namespace account {
+    export type Table = 'account';
+    export interface Selectable {
+      /**
+      * **account.accessToken**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      accessToken: string | null;
+      /**
+      * **account.accessTokenExpiresAt**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      accessTokenExpiresAt: Date | null;
+      /**
+      * **account.accountId**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      accountId: string;
+      /**
+      * **account.createdAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      createdAt: Date;
+      /**
+      * **account.id**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      id: string;
+      /**
+      * **account.idToken**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      idToken: string | null;
+      /**
+      * **account.password**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      password: string | null;
+      /**
+      * **account.providerId**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      providerId: string;
+      /**
+      * **account.refreshToken**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      refreshToken: string | null;
+      /**
+      * **account.refreshTokenExpiresAt**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      refreshTokenExpiresAt: Date | null;
+      /**
+      * **account.scope**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      scope: string | null;
+      /**
+      * **account.updatedAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      updatedAt: Date;
+      /**
+      * **account.userId**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      userId: string;
+    }
+    export interface JSONSelectable {
+      /**
+      * **account.accessToken**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      accessToken: string | null;
+      /**
+      * **account.accessTokenExpiresAt**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      accessTokenExpiresAt: db.TimestampString | null;
+      /**
+      * **account.accountId**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      accountId: string;
+      /**
+      * **account.createdAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      createdAt: db.TimestampString;
+      /**
+      * **account.id**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      id: string;
+      /**
+      * **account.idToken**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      idToken: string | null;
+      /**
+      * **account.password**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      password: string | null;
+      /**
+      * **account.providerId**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      providerId: string;
+      /**
+      * **account.refreshToken**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      refreshToken: string | null;
+      /**
+      * **account.refreshTokenExpiresAt**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      refreshTokenExpiresAt: db.TimestampString | null;
+      /**
+      * **account.scope**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      scope: string | null;
+      /**
+      * **account.updatedAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      updatedAt: db.TimestampString;
+      /**
+      * **account.userId**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      userId: string;
+    }
+    export interface Whereable {
+      /**
+      * **account.accessToken**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      accessToken?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **account.accessTokenExpiresAt**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      accessTokenExpiresAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **account.accountId**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      accountId?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **account.createdAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      createdAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **account.id**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      id?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **account.idToken**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      idToken?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **account.password**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      password?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **account.providerId**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      providerId?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **account.refreshToken**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      refreshToken?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **account.refreshTokenExpiresAt**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      refreshTokenExpiresAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **account.scope**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      scope?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **account.updatedAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      updatedAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **account.userId**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      userId?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+    }
+    export interface Insertable {
+      /**
+      * **account.accessToken**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      accessToken?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment;
+      /**
+      * **account.accessTokenExpiresAt**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      accessTokenExpiresAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | null | db.DefaultType | db.SQLFragment;
+      /**
+      * **account.accountId**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      accountId: string | db.Parameter<string> | db.SQLFragment;
+      /**
+      * **account.createdAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      createdAt: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment;
+      /**
+      * **account.id**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      id: string | db.Parameter<string> | db.SQLFragment;
+      /**
+      * **account.idToken**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      idToken?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment;
+      /**
+      * **account.password**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      password?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment;
+      /**
+      * **account.providerId**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      providerId: string | db.Parameter<string> | db.SQLFragment;
+      /**
+      * **account.refreshToken**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      refreshToken?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment;
+      /**
+      * **account.refreshTokenExpiresAt**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      refreshTokenExpiresAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | null | db.DefaultType | db.SQLFragment;
+      /**
+      * **account.scope**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      scope?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment;
+      /**
+      * **account.updatedAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      updatedAt: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment;
+      /**
+      * **account.userId**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      userId: string | db.Parameter<string> | db.SQLFragment;
+    }
+    export interface Updatable {
+      /**
+      * **account.accessToken**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      accessToken?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment>;
+      /**
+      * **account.accessTokenExpiresAt**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      accessTokenExpiresAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | null | db.DefaultType | db.SQLFragment>;
+      /**
+      * **account.accountId**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      accountId?: string | db.Parameter<string> | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment>;
+      /**
+      * **account.createdAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      createdAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment>;
+      /**
+      * **account.id**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      id?: string | db.Parameter<string> | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment>;
+      /**
+      * **account.idToken**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      idToken?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment>;
+      /**
+      * **account.password**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      password?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment>;
+      /**
+      * **account.providerId**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      providerId?: string | db.Parameter<string> | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment>;
+      /**
+      * **account.refreshToken**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      refreshToken?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment>;
+      /**
+      * **account.refreshTokenExpiresAt**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      refreshTokenExpiresAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | null | db.DefaultType | db.SQLFragment>;
+      /**
+      * **account.scope**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      scope?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment>;
+      /**
+      * **account.updatedAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      updatedAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment>;
+      /**
+      * **account.userId**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      userId?: string | db.Parameter<string> | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment>;
+    }
+    export type UniqueIndex = 'account_pkey';
+    export type Column = keyof Selectable;
+    export type OnlyCols<T extends readonly Column[]> = Pick<Selectable, T[number]>;
+    export type SQLExpression = Table | db.ColumnNames<Updatable | (keyof Updatable)[]> | db.ColumnValues<Updatable> | Whereable | Column | db.ParentColumn | db.GenericSQLExpression;
+    export type SQL = SQLExpression | SQLExpression[];
+  }
+
+  /**
    * **account_limit_history**
    * - Table in database
    */
@@ -13056,6 +13469,299 @@ declare module 'zapatos/schema' {
   }
 
   /**
+   * **session**
+   * - Table in database
+   */
+  export namespace session {
+    export type Table = 'session';
+    export interface Selectable {
+      /**
+      * **session.createdAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      createdAt: Date;
+      /**
+      * **session.expiresAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      expiresAt: Date;
+      /**
+      * **session.id**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      id: string;
+      /**
+      * **session.impersonatedBy**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      impersonatedBy: string | null;
+      /**
+      * **session.ipAddress**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      ipAddress: string | null;
+      /**
+      * **session.token**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      token: string;
+      /**
+      * **session.updatedAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      updatedAt: Date;
+      /**
+      * **session.userAgent**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      userAgent: string | null;
+      /**
+      * **session.userId**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      userId: string;
+    }
+    export interface JSONSelectable {
+      /**
+      * **session.createdAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      createdAt: db.TimestampString;
+      /**
+      * **session.expiresAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      expiresAt: db.TimestampString;
+      /**
+      * **session.id**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      id: string;
+      /**
+      * **session.impersonatedBy**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      impersonatedBy: string | null;
+      /**
+      * **session.ipAddress**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      ipAddress: string | null;
+      /**
+      * **session.token**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      token: string;
+      /**
+      * **session.updatedAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      updatedAt: db.TimestampString;
+      /**
+      * **session.userAgent**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      userAgent: string | null;
+      /**
+      * **session.userId**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      userId: string;
+    }
+    export interface Whereable {
+      /**
+      * **session.createdAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      createdAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **session.expiresAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      expiresAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **session.id**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      id?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **session.impersonatedBy**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      impersonatedBy?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **session.ipAddress**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      ipAddress?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **session.token**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      token?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **session.updatedAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      updatedAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **session.userAgent**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      userAgent?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **session.userId**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      userId?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+    }
+    export interface Insertable {
+      /**
+      * **session.createdAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      createdAt: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment;
+      /**
+      * **session.expiresAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      expiresAt: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment;
+      /**
+      * **session.id**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      id: string | db.Parameter<string> | db.SQLFragment;
+      /**
+      * **session.impersonatedBy**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      impersonatedBy?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment;
+      /**
+      * **session.ipAddress**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      ipAddress?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment;
+      /**
+      * **session.token**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      token: string | db.Parameter<string> | db.SQLFragment;
+      /**
+      * **session.updatedAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      updatedAt: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment;
+      /**
+      * **session.userAgent**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      userAgent?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment;
+      /**
+      * **session.userId**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      userId: string | db.Parameter<string> | db.SQLFragment;
+    }
+    export interface Updatable {
+      /**
+      * **session.createdAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      createdAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment>;
+      /**
+      * **session.expiresAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      expiresAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment>;
+      /**
+      * **session.id**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      id?: string | db.Parameter<string> | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment>;
+      /**
+      * **session.impersonatedBy**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      impersonatedBy?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment>;
+      /**
+      * **session.ipAddress**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      ipAddress?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment>;
+      /**
+      * **session.token**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      token?: string | db.Parameter<string> | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment>;
+      /**
+      * **session.updatedAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      updatedAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment>;
+      /**
+      * **session.userAgent**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      userAgent?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment>;
+      /**
+      * **session.userId**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      userId?: string | db.Parameter<string> | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment>;
+    }
+    export type UniqueIndex = 'session_pkey' | 'session_token_key';
+    export type Column = keyof Selectable;
+    export type OnlyCols<T extends readonly Column[]> = Pick<Selectable, T[number]>;
+    export type SQLExpression = Table | db.ColumnNames<Updatable | (keyof Updatable)[]> | db.ColumnValues<Updatable> | Whereable | Column | db.ParentColumn | db.GenericSQLExpression;
+    export type SQL = SQLExpression | SQLExpression[];
+  }
+
+  /**
    * **shopify_accounts**
    * - Table in database
    */
@@ -15280,6 +15986,359 @@ declare module 'zapatos/schema' {
   }
 
   /**
+   * **user**
+   * - Table in database
+   */
+  export namespace user {
+    export type Table = 'user';
+    export interface Selectable {
+      /**
+      * **user.banExpires**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      banExpires: Date | null;
+      /**
+      * **user.banReason**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      banReason: string | null;
+      /**
+      * **user.banned**
+      * - `bool` in database
+      * - Nullable, no default
+      */
+      banned: boolean | null;
+      /**
+      * **user.createdAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      createdAt: Date;
+      /**
+      * **user.email**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      email: string;
+      /**
+      * **user.emailVerified**
+      * - `bool` in database
+      * - `NOT NULL`, no default
+      */
+      emailVerified: boolean;
+      /**
+      * **user.id**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      id: string;
+      /**
+      * **user.image**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      image: string | null;
+      /**
+      * **user.name**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      name: string;
+      /**
+      * **user.role**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      role: string | null;
+      /**
+      * **user.updatedAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      updatedAt: Date;
+    }
+    export interface JSONSelectable {
+      /**
+      * **user.banExpires**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      banExpires: db.TimestampString | null;
+      /**
+      * **user.banReason**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      banReason: string | null;
+      /**
+      * **user.banned**
+      * - `bool` in database
+      * - Nullable, no default
+      */
+      banned: boolean | null;
+      /**
+      * **user.createdAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      createdAt: db.TimestampString;
+      /**
+      * **user.email**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      email: string;
+      /**
+      * **user.emailVerified**
+      * - `bool` in database
+      * - `NOT NULL`, no default
+      */
+      emailVerified: boolean;
+      /**
+      * **user.id**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      id: string;
+      /**
+      * **user.image**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      image: string | null;
+      /**
+      * **user.name**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      name: string;
+      /**
+      * **user.role**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      role: string | null;
+      /**
+      * **user.updatedAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      updatedAt: db.TimestampString;
+    }
+    export interface Whereable {
+      /**
+      * **user.banExpires**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      banExpires?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **user.banReason**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      banReason?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **user.banned**
+      * - `bool` in database
+      * - Nullable, no default
+      */
+      banned?: boolean | db.Parameter<boolean> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, boolean | db.Parameter<boolean> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **user.createdAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      createdAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **user.email**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      email?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **user.emailVerified**
+      * - `bool` in database
+      * - `NOT NULL`, no default
+      */
+      emailVerified?: boolean | db.Parameter<boolean> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, boolean | db.Parameter<boolean> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **user.id**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      id?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **user.image**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      image?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **user.name**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      name?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **user.role**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      role?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **user.updatedAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      updatedAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn>;
+    }
+    export interface Insertable {
+      /**
+      * **user.banExpires**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      banExpires?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | null | db.DefaultType | db.SQLFragment;
+      /**
+      * **user.banReason**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      banReason?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment;
+      /**
+      * **user.banned**
+      * - `bool` in database
+      * - Nullable, no default
+      */
+      banned?: boolean | db.Parameter<boolean> | null | db.DefaultType | db.SQLFragment;
+      /**
+      * **user.createdAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      createdAt: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment;
+      /**
+      * **user.email**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      email: string | db.Parameter<string> | db.SQLFragment;
+      /**
+      * **user.emailVerified**
+      * - `bool` in database
+      * - `NOT NULL`, no default
+      */
+      emailVerified: boolean | db.Parameter<boolean> | db.SQLFragment;
+      /**
+      * **user.id**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      id: string | db.Parameter<string> | db.SQLFragment;
+      /**
+      * **user.image**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      image?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment;
+      /**
+      * **user.name**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      name: string | db.Parameter<string> | db.SQLFragment;
+      /**
+      * **user.role**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      role?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment;
+      /**
+      * **user.updatedAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      updatedAt: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment;
+    }
+    export interface Updatable {
+      /**
+      * **user.banExpires**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      banExpires?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | null | db.DefaultType | db.SQLFragment>;
+      /**
+      * **user.banReason**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      banReason?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment>;
+      /**
+      * **user.banned**
+      * - `bool` in database
+      * - Nullable, no default
+      */
+      banned?: boolean | db.Parameter<boolean> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, boolean | db.Parameter<boolean> | null | db.DefaultType | db.SQLFragment>;
+      /**
+      * **user.createdAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      createdAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment>;
+      /**
+      * **user.email**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      email?: string | db.Parameter<string> | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment>;
+      /**
+      * **user.emailVerified**
+      * - `bool` in database
+      * - `NOT NULL`, no default
+      */
+      emailVerified?: boolean | db.Parameter<boolean> | db.SQLFragment | db.SQLFragment<any, boolean | db.Parameter<boolean> | db.SQLFragment>;
+      /**
+      * **user.id**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      id?: string | db.Parameter<string> | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment>;
+      /**
+      * **user.image**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      image?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment>;
+      /**
+      * **user.name**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      name?: string | db.Parameter<string> | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment>;
+      /**
+      * **user.role**
+      * - `text` in database
+      * - Nullable, no default
+      */
+      role?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment>;
+      /**
+      * **user.updatedAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      updatedAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment>;
+    }
+    export type UniqueIndex = 'user_email_key' | 'user_pkey';
+    export type Column = keyof Selectable;
+    export type OnlyCols<T extends readonly Column[]> = Pick<Selectable, T[number]>;
+    export type SQLExpression = Table | db.ColumnNames<Updatable | (keyof Updatable)[]> | db.ColumnValues<Updatable> | Whereable | Column | db.ParentColumn | db.GenericSQLExpression;
+    export type SQL = SQLExpression | SQLExpression[];
+  }
+
+  /**
    * **user_bank_session**
    * - Table in database
    */
@@ -16166,6 +17225,209 @@ declare module 'zapatos/schema' {
   }
 
   /**
+   * **verification**
+   * - Table in database
+   */
+  export namespace verification {
+    export type Table = 'verification';
+    export interface Selectable {
+      /**
+      * **verification.createdAt**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      createdAt: Date | null;
+      /**
+      * **verification.expiresAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      expiresAt: Date;
+      /**
+      * **verification.id**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      id: string;
+      /**
+      * **verification.identifier**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      identifier: string;
+      /**
+      * **verification.updatedAt**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      updatedAt: Date | null;
+      /**
+      * **verification.value**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      value: string;
+    }
+    export interface JSONSelectable {
+      /**
+      * **verification.createdAt**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      createdAt: db.TimestampString | null;
+      /**
+      * **verification.expiresAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      expiresAt: db.TimestampString;
+      /**
+      * **verification.id**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      id: string;
+      /**
+      * **verification.identifier**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      identifier: string;
+      /**
+      * **verification.updatedAt**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      updatedAt: db.TimestampString | null;
+      /**
+      * **verification.value**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      value: string;
+    }
+    export interface Whereable {
+      /**
+      * **verification.createdAt**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      createdAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **verification.expiresAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      expiresAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **verification.id**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      id?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **verification.identifier**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      identifier?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **verification.updatedAt**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      updatedAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.ParentColumn>;
+      /**
+      * **verification.value**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      value?: string | db.Parameter<string> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment | db.ParentColumn>;
+    }
+    export interface Insertable {
+      /**
+      * **verification.createdAt**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      createdAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | null | db.DefaultType | db.SQLFragment;
+      /**
+      * **verification.expiresAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      expiresAt: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment;
+      /**
+      * **verification.id**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      id: string | db.Parameter<string> | db.SQLFragment;
+      /**
+      * **verification.identifier**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      identifier: string | db.Parameter<string> | db.SQLFragment;
+      /**
+      * **verification.updatedAt**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      updatedAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | null | db.DefaultType | db.SQLFragment;
+      /**
+      * **verification.value**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      value: string | db.Parameter<string> | db.SQLFragment;
+    }
+    export interface Updatable {
+      /**
+      * **verification.createdAt**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      createdAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | null | db.DefaultType | db.SQLFragment>;
+      /**
+      * **verification.expiresAt**
+      * - `timestamp` in database
+      * - `NOT NULL`, no default
+      */
+      expiresAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | db.SQLFragment>;
+      /**
+      * **verification.id**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      id?: string | db.Parameter<string> | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment>;
+      /**
+      * **verification.identifier**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      identifier?: string | db.Parameter<string> | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment>;
+      /**
+      * **verification.updatedAt**
+      * - `timestamp` in database
+      * - Nullable, no default
+      */
+      updatedAt?: (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, (db.TimestampString | Date) | db.Parameter<(db.TimestampString | Date)> | null | db.DefaultType | db.SQLFragment>;
+      /**
+      * **verification.value**
+      * - `text` in database
+      * - `NOT NULL`, no default
+      */
+      value?: string | db.Parameter<string> | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | db.SQLFragment>;
+    }
+    export type UniqueIndex = 'verification_pkey';
+    export type Column = keyof Selectable;
+    export type OnlyCols<T extends readonly Column[]> = Pick<Selectable, T[number]>;
+    export type SQLExpression = Table | db.ColumnNames<Updatable | (keyof Updatable)[]> | db.ColumnValues<Updatable> | Whereable | Column | db.ParentColumn | db.GenericSQLExpression;
+    export type SQL = SQLExpression | SQLExpression[];
+  }
+
+  /**
    * **videos**
    * - Table in database
    */
@@ -16574,20 +17836,20 @@ declare module 'zapatos/schema' {
   /* --- aggregate types --- */
 
   export namespace public {  
-    export type Table = _authorigins.Table | _collections.Table | _externalauths.Table | _litestream_lock.Table | _litestream_seq.Table | _mfas.Table | _migrations.Table | _otps.Table | _params.Table | _superusers.Table | account_limit_history.Table | accounts.Table | api_settings.Table | audios.Table | automation_templates.Table | automations.Table | campaigns.Table | catalogs.Table | conversation_campaign.Table | conversations.Table | country.Table | documents.Table | images.Table | interactive_messages.Table | invoice.Table | leads.Table | leads_replied_campaign.Table | list_filters.Table | lists.Table | logs.Table | message_logs.Table | messages.Table | messaging_limit.Table | office_settings.Table | packages_tier.Table | payment.Table | pending_contacts.Table | pending_logs.Table | pricing.Table | roles.Table | saved_messages.Table | shopify_accounts.Table | shopify_orders.Table | sqlite_stat1.Table | sqlite_stat4.Table | teams.Table | templates.Table | third_party.Table | transaction_log.Table | user_bank_session.Table | users.Table | videos.Table | wav_files.Table;
-    export type Selectable = _authorigins.Selectable | _collections.Selectable | _externalauths.Selectable | _litestream_lock.Selectable | _litestream_seq.Selectable | _mfas.Selectable | _migrations.Selectable | _otps.Selectable | _params.Selectable | _superusers.Selectable | account_limit_history.Selectable | accounts.Selectable | api_settings.Selectable | audios.Selectable | automation_templates.Selectable | automations.Selectable | campaigns.Selectable | catalogs.Selectable | conversation_campaign.Selectable | conversations.Selectable | country.Selectable | documents.Selectable | images.Selectable | interactive_messages.Selectable | invoice.Selectable | leads.Selectable | leads_replied_campaign.Selectable | list_filters.Selectable | lists.Selectable | logs.Selectable | message_logs.Selectable | messages.Selectable | messaging_limit.Selectable | office_settings.Selectable | packages_tier.Selectable | payment.Selectable | pending_contacts.Selectable | pending_logs.Selectable | pricing.Selectable | roles.Selectable | saved_messages.Selectable | shopify_accounts.Selectable | shopify_orders.Selectable | sqlite_stat1.Selectable | sqlite_stat4.Selectable | teams.Selectable | templates.Selectable | third_party.Selectable | transaction_log.Selectable | user_bank_session.Selectable | users.Selectable | videos.Selectable | wav_files.Selectable;
-    export type JSONSelectable = _authorigins.JSONSelectable | _collections.JSONSelectable | _externalauths.JSONSelectable | _litestream_lock.JSONSelectable | _litestream_seq.JSONSelectable | _mfas.JSONSelectable | _migrations.JSONSelectable | _otps.JSONSelectable | _params.JSONSelectable | _superusers.JSONSelectable | account_limit_history.JSONSelectable | accounts.JSONSelectable | api_settings.JSONSelectable | audios.JSONSelectable | automation_templates.JSONSelectable | automations.JSONSelectable | campaigns.JSONSelectable | catalogs.JSONSelectable | conversation_campaign.JSONSelectable | conversations.JSONSelectable | country.JSONSelectable | documents.JSONSelectable | images.JSONSelectable | interactive_messages.JSONSelectable | invoice.JSONSelectable | leads.JSONSelectable | leads_replied_campaign.JSONSelectable | list_filters.JSONSelectable | lists.JSONSelectable | logs.JSONSelectable | message_logs.JSONSelectable | messages.JSONSelectable | messaging_limit.JSONSelectable | office_settings.JSONSelectable | packages_tier.JSONSelectable | payment.JSONSelectable | pending_contacts.JSONSelectable | pending_logs.JSONSelectable | pricing.JSONSelectable | roles.JSONSelectable | saved_messages.JSONSelectable | shopify_accounts.JSONSelectable | shopify_orders.JSONSelectable | sqlite_stat1.JSONSelectable | sqlite_stat4.JSONSelectable | teams.JSONSelectable | templates.JSONSelectable | third_party.JSONSelectable | transaction_log.JSONSelectable | user_bank_session.JSONSelectable | users.JSONSelectable | videos.JSONSelectable | wav_files.JSONSelectable;
-    export type Whereable = _authorigins.Whereable | _collections.Whereable | _externalauths.Whereable | _litestream_lock.Whereable | _litestream_seq.Whereable | _mfas.Whereable | _migrations.Whereable | _otps.Whereable | _params.Whereable | _superusers.Whereable | account_limit_history.Whereable | accounts.Whereable | api_settings.Whereable | audios.Whereable | automation_templates.Whereable | automations.Whereable | campaigns.Whereable | catalogs.Whereable | conversation_campaign.Whereable | conversations.Whereable | country.Whereable | documents.Whereable | images.Whereable | interactive_messages.Whereable | invoice.Whereable | leads.Whereable | leads_replied_campaign.Whereable | list_filters.Whereable | lists.Whereable | logs.Whereable | message_logs.Whereable | messages.Whereable | messaging_limit.Whereable | office_settings.Whereable | packages_tier.Whereable | payment.Whereable | pending_contacts.Whereable | pending_logs.Whereable | pricing.Whereable | roles.Whereable | saved_messages.Whereable | shopify_accounts.Whereable | shopify_orders.Whereable | sqlite_stat1.Whereable | sqlite_stat4.Whereable | teams.Whereable | templates.Whereable | third_party.Whereable | transaction_log.Whereable | user_bank_session.Whereable | users.Whereable | videos.Whereable | wav_files.Whereable;
-    export type Insertable = _authorigins.Insertable | _collections.Insertable | _externalauths.Insertable | _litestream_lock.Insertable | _litestream_seq.Insertable | _mfas.Insertable | _migrations.Insertable | _otps.Insertable | _params.Insertable | _superusers.Insertable | account_limit_history.Insertable | accounts.Insertable | api_settings.Insertable | audios.Insertable | automation_templates.Insertable | automations.Insertable | campaigns.Insertable | catalogs.Insertable | conversation_campaign.Insertable | conversations.Insertable | country.Insertable | documents.Insertable | images.Insertable | interactive_messages.Insertable | invoice.Insertable | leads.Insertable | leads_replied_campaign.Insertable | list_filters.Insertable | lists.Insertable | logs.Insertable | message_logs.Insertable | messages.Insertable | messaging_limit.Insertable | office_settings.Insertable | packages_tier.Insertable | payment.Insertable | pending_contacts.Insertable | pending_logs.Insertable | pricing.Insertable | roles.Insertable | saved_messages.Insertable | shopify_accounts.Insertable | shopify_orders.Insertable | sqlite_stat1.Insertable | sqlite_stat4.Insertable | teams.Insertable | templates.Insertable | third_party.Insertable | transaction_log.Insertable | user_bank_session.Insertable | users.Insertable | videos.Insertable | wav_files.Insertable;
-    export type Updatable = _authorigins.Updatable | _collections.Updatable | _externalauths.Updatable | _litestream_lock.Updatable | _litestream_seq.Updatable | _mfas.Updatable | _migrations.Updatable | _otps.Updatable | _params.Updatable | _superusers.Updatable | account_limit_history.Updatable | accounts.Updatable | api_settings.Updatable | audios.Updatable | automation_templates.Updatable | automations.Updatable | campaigns.Updatable | catalogs.Updatable | conversation_campaign.Updatable | conversations.Updatable | country.Updatable | documents.Updatable | images.Updatable | interactive_messages.Updatable | invoice.Updatable | leads.Updatable | leads_replied_campaign.Updatable | list_filters.Updatable | lists.Updatable | logs.Updatable | message_logs.Updatable | messages.Updatable | messaging_limit.Updatable | office_settings.Updatable | packages_tier.Updatable | payment.Updatable | pending_contacts.Updatable | pending_logs.Updatable | pricing.Updatable | roles.Updatable | saved_messages.Updatable | shopify_accounts.Updatable | shopify_orders.Updatable | sqlite_stat1.Updatable | sqlite_stat4.Updatable | teams.Updatable | templates.Updatable | third_party.Updatable | transaction_log.Updatable | user_bank_session.Updatable | users.Updatable | videos.Updatable | wav_files.Updatable;
-    export type UniqueIndex = _authorigins.UniqueIndex | _collections.UniqueIndex | _externalauths.UniqueIndex | _litestream_lock.UniqueIndex | _litestream_seq.UniqueIndex | _mfas.UniqueIndex | _migrations.UniqueIndex | _otps.UniqueIndex | _params.UniqueIndex | _superusers.UniqueIndex | account_limit_history.UniqueIndex | accounts.UniqueIndex | api_settings.UniqueIndex | audios.UniqueIndex | automation_templates.UniqueIndex | automations.UniqueIndex | campaigns.UniqueIndex | catalogs.UniqueIndex | conversation_campaign.UniqueIndex | conversations.UniqueIndex | country.UniqueIndex | documents.UniqueIndex | images.UniqueIndex | interactive_messages.UniqueIndex | invoice.UniqueIndex | leads.UniqueIndex | leads_replied_campaign.UniqueIndex | list_filters.UniqueIndex | lists.UniqueIndex | logs.UniqueIndex | message_logs.UniqueIndex | messages.UniqueIndex | messaging_limit.UniqueIndex | office_settings.UniqueIndex | packages_tier.UniqueIndex | payment.UniqueIndex | pending_contacts.UniqueIndex | pending_logs.UniqueIndex | pricing.UniqueIndex | roles.UniqueIndex | saved_messages.UniqueIndex | shopify_accounts.UniqueIndex | shopify_orders.UniqueIndex | sqlite_stat1.UniqueIndex | sqlite_stat4.UniqueIndex | teams.UniqueIndex | templates.UniqueIndex | third_party.UniqueIndex | transaction_log.UniqueIndex | user_bank_session.UniqueIndex | users.UniqueIndex | videos.UniqueIndex | wav_files.UniqueIndex;
-    export type Column = _authorigins.Column | _collections.Column | _externalauths.Column | _litestream_lock.Column | _litestream_seq.Column | _mfas.Column | _migrations.Column | _otps.Column | _params.Column | _superusers.Column | account_limit_history.Column | accounts.Column | api_settings.Column | audios.Column | automation_templates.Column | automations.Column | campaigns.Column | catalogs.Column | conversation_campaign.Column | conversations.Column | country.Column | documents.Column | images.Column | interactive_messages.Column | invoice.Column | leads.Column | leads_replied_campaign.Column | list_filters.Column | lists.Column | logs.Column | message_logs.Column | messages.Column | messaging_limit.Column | office_settings.Column | packages_tier.Column | payment.Column | pending_contacts.Column | pending_logs.Column | pricing.Column | roles.Column | saved_messages.Column | shopify_accounts.Column | shopify_orders.Column | sqlite_stat1.Column | sqlite_stat4.Column | teams.Column | templates.Column | third_party.Column | transaction_log.Column | user_bank_session.Column | users.Column | videos.Column | wav_files.Column;
+    export type Table = _authorigins.Table | _collections.Table | _externalauths.Table | _litestream_lock.Table | _litestream_seq.Table | _mfas.Table | _migrations.Table | _otps.Table | _params.Table | _superusers.Table | account.Table | account_limit_history.Table | accounts.Table | api_settings.Table | audios.Table | automation_templates.Table | automations.Table | campaigns.Table | catalogs.Table | conversation_campaign.Table | conversations.Table | country.Table | documents.Table | images.Table | interactive_messages.Table | invoice.Table | leads.Table | leads_replied_campaign.Table | list_filters.Table | lists.Table | logs.Table | message_logs.Table | messages.Table | messaging_limit.Table | office_settings.Table | packages_tier.Table | payment.Table | pending_contacts.Table | pending_logs.Table | pricing.Table | roles.Table | saved_messages.Table | session.Table | shopify_accounts.Table | shopify_orders.Table | sqlite_stat1.Table | sqlite_stat4.Table | teams.Table | templates.Table | third_party.Table | transaction_log.Table | user.Table | user_bank_session.Table | users.Table | verification.Table | videos.Table | wav_files.Table;
+    export type Selectable = _authorigins.Selectable | _collections.Selectable | _externalauths.Selectable | _litestream_lock.Selectable | _litestream_seq.Selectable | _mfas.Selectable | _migrations.Selectable | _otps.Selectable | _params.Selectable | _superusers.Selectable | account.Selectable | account_limit_history.Selectable | accounts.Selectable | api_settings.Selectable | audios.Selectable | automation_templates.Selectable | automations.Selectable | campaigns.Selectable | catalogs.Selectable | conversation_campaign.Selectable | conversations.Selectable | country.Selectable | documents.Selectable | images.Selectable | interactive_messages.Selectable | invoice.Selectable | leads.Selectable | leads_replied_campaign.Selectable | list_filters.Selectable | lists.Selectable | logs.Selectable | message_logs.Selectable | messages.Selectable | messaging_limit.Selectable | office_settings.Selectable | packages_tier.Selectable | payment.Selectable | pending_contacts.Selectable | pending_logs.Selectable | pricing.Selectable | roles.Selectable | saved_messages.Selectable | session.Selectable | shopify_accounts.Selectable | shopify_orders.Selectable | sqlite_stat1.Selectable | sqlite_stat4.Selectable | teams.Selectable | templates.Selectable | third_party.Selectable | transaction_log.Selectable | user.Selectable | user_bank_session.Selectable | users.Selectable | verification.Selectable | videos.Selectable | wav_files.Selectable;
+    export type JSONSelectable = _authorigins.JSONSelectable | _collections.JSONSelectable | _externalauths.JSONSelectable | _litestream_lock.JSONSelectable | _litestream_seq.JSONSelectable | _mfas.JSONSelectable | _migrations.JSONSelectable | _otps.JSONSelectable | _params.JSONSelectable | _superusers.JSONSelectable | account.JSONSelectable | account_limit_history.JSONSelectable | accounts.JSONSelectable | api_settings.JSONSelectable | audios.JSONSelectable | automation_templates.JSONSelectable | automations.JSONSelectable | campaigns.JSONSelectable | catalogs.JSONSelectable | conversation_campaign.JSONSelectable | conversations.JSONSelectable | country.JSONSelectable | documents.JSONSelectable | images.JSONSelectable | interactive_messages.JSONSelectable | invoice.JSONSelectable | leads.JSONSelectable | leads_replied_campaign.JSONSelectable | list_filters.JSONSelectable | lists.JSONSelectable | logs.JSONSelectable | message_logs.JSONSelectable | messages.JSONSelectable | messaging_limit.JSONSelectable | office_settings.JSONSelectable | packages_tier.JSONSelectable | payment.JSONSelectable | pending_contacts.JSONSelectable | pending_logs.JSONSelectable | pricing.JSONSelectable | roles.JSONSelectable | saved_messages.JSONSelectable | session.JSONSelectable | shopify_accounts.JSONSelectable | shopify_orders.JSONSelectable | sqlite_stat1.JSONSelectable | sqlite_stat4.JSONSelectable | teams.JSONSelectable | templates.JSONSelectable | third_party.JSONSelectable | transaction_log.JSONSelectable | user.JSONSelectable | user_bank_session.JSONSelectable | users.JSONSelectable | verification.JSONSelectable | videos.JSONSelectable | wav_files.JSONSelectable;
+    export type Whereable = _authorigins.Whereable | _collections.Whereable | _externalauths.Whereable | _litestream_lock.Whereable | _litestream_seq.Whereable | _mfas.Whereable | _migrations.Whereable | _otps.Whereable | _params.Whereable | _superusers.Whereable | account.Whereable | account_limit_history.Whereable | accounts.Whereable | api_settings.Whereable | audios.Whereable | automation_templates.Whereable | automations.Whereable | campaigns.Whereable | catalogs.Whereable | conversation_campaign.Whereable | conversations.Whereable | country.Whereable | documents.Whereable | images.Whereable | interactive_messages.Whereable | invoice.Whereable | leads.Whereable | leads_replied_campaign.Whereable | list_filters.Whereable | lists.Whereable | logs.Whereable | message_logs.Whereable | messages.Whereable | messaging_limit.Whereable | office_settings.Whereable | packages_tier.Whereable | payment.Whereable | pending_contacts.Whereable | pending_logs.Whereable | pricing.Whereable | roles.Whereable | saved_messages.Whereable | session.Whereable | shopify_accounts.Whereable | shopify_orders.Whereable | sqlite_stat1.Whereable | sqlite_stat4.Whereable | teams.Whereable | templates.Whereable | third_party.Whereable | transaction_log.Whereable | user.Whereable | user_bank_session.Whereable | users.Whereable | verification.Whereable | videos.Whereable | wav_files.Whereable;
+    export type Insertable = _authorigins.Insertable | _collections.Insertable | _externalauths.Insertable | _litestream_lock.Insertable | _litestream_seq.Insertable | _mfas.Insertable | _migrations.Insertable | _otps.Insertable | _params.Insertable | _superusers.Insertable | account.Insertable | account_limit_history.Insertable | accounts.Insertable | api_settings.Insertable | audios.Insertable | automation_templates.Insertable | automations.Insertable | campaigns.Insertable | catalogs.Insertable | conversation_campaign.Insertable | conversations.Insertable | country.Insertable | documents.Insertable | images.Insertable | interactive_messages.Insertable | invoice.Insertable | leads.Insertable | leads_replied_campaign.Insertable | list_filters.Insertable | lists.Insertable | logs.Insertable | message_logs.Insertable | messages.Insertable | messaging_limit.Insertable | office_settings.Insertable | packages_tier.Insertable | payment.Insertable | pending_contacts.Insertable | pending_logs.Insertable | pricing.Insertable | roles.Insertable | saved_messages.Insertable | session.Insertable | shopify_accounts.Insertable | shopify_orders.Insertable | sqlite_stat1.Insertable | sqlite_stat4.Insertable | teams.Insertable | templates.Insertable | third_party.Insertable | transaction_log.Insertable | user.Insertable | user_bank_session.Insertable | users.Insertable | verification.Insertable | videos.Insertable | wav_files.Insertable;
+    export type Updatable = _authorigins.Updatable | _collections.Updatable | _externalauths.Updatable | _litestream_lock.Updatable | _litestream_seq.Updatable | _mfas.Updatable | _migrations.Updatable | _otps.Updatable | _params.Updatable | _superusers.Updatable | account.Updatable | account_limit_history.Updatable | accounts.Updatable | api_settings.Updatable | audios.Updatable | automation_templates.Updatable | automations.Updatable | campaigns.Updatable | catalogs.Updatable | conversation_campaign.Updatable | conversations.Updatable | country.Updatable | documents.Updatable | images.Updatable | interactive_messages.Updatable | invoice.Updatable | leads.Updatable | leads_replied_campaign.Updatable | list_filters.Updatable | lists.Updatable | logs.Updatable | message_logs.Updatable | messages.Updatable | messaging_limit.Updatable | office_settings.Updatable | packages_tier.Updatable | payment.Updatable | pending_contacts.Updatable | pending_logs.Updatable | pricing.Updatable | roles.Updatable | saved_messages.Updatable | session.Updatable | shopify_accounts.Updatable | shopify_orders.Updatable | sqlite_stat1.Updatable | sqlite_stat4.Updatable | teams.Updatable | templates.Updatable | third_party.Updatable | transaction_log.Updatable | user.Updatable | user_bank_session.Updatable | users.Updatable | verification.Updatable | videos.Updatable | wav_files.Updatable;
+    export type UniqueIndex = _authorigins.UniqueIndex | _collections.UniqueIndex | _externalauths.UniqueIndex | _litestream_lock.UniqueIndex | _litestream_seq.UniqueIndex | _mfas.UniqueIndex | _migrations.UniqueIndex | _otps.UniqueIndex | _params.UniqueIndex | _superusers.UniqueIndex | account.UniqueIndex | account_limit_history.UniqueIndex | accounts.UniqueIndex | api_settings.UniqueIndex | audios.UniqueIndex | automation_templates.UniqueIndex | automations.UniqueIndex | campaigns.UniqueIndex | catalogs.UniqueIndex | conversation_campaign.UniqueIndex | conversations.UniqueIndex | country.UniqueIndex | documents.UniqueIndex | images.UniqueIndex | interactive_messages.UniqueIndex | invoice.UniqueIndex | leads.UniqueIndex | leads_replied_campaign.UniqueIndex | list_filters.UniqueIndex | lists.UniqueIndex | logs.UniqueIndex | message_logs.UniqueIndex | messages.UniqueIndex | messaging_limit.UniqueIndex | office_settings.UniqueIndex | packages_tier.UniqueIndex | payment.UniqueIndex | pending_contacts.UniqueIndex | pending_logs.UniqueIndex | pricing.UniqueIndex | roles.UniqueIndex | saved_messages.UniqueIndex | session.UniqueIndex | shopify_accounts.UniqueIndex | shopify_orders.UniqueIndex | sqlite_stat1.UniqueIndex | sqlite_stat4.UniqueIndex | teams.UniqueIndex | templates.UniqueIndex | third_party.UniqueIndex | transaction_log.UniqueIndex | user.UniqueIndex | user_bank_session.UniqueIndex | users.UniqueIndex | verification.UniqueIndex | videos.UniqueIndex | wav_files.UniqueIndex;
+    export type Column = _authorigins.Column | _collections.Column | _externalauths.Column | _litestream_lock.Column | _litestream_seq.Column | _mfas.Column | _migrations.Column | _otps.Column | _params.Column | _superusers.Column | account.Column | account_limit_history.Column | accounts.Column | api_settings.Column | audios.Column | automation_templates.Column | automations.Column | campaigns.Column | catalogs.Column | conversation_campaign.Column | conversations.Column | country.Column | documents.Column | images.Column | interactive_messages.Column | invoice.Column | leads.Column | leads_replied_campaign.Column | list_filters.Column | lists.Column | logs.Column | message_logs.Column | messages.Column | messaging_limit.Column | office_settings.Column | packages_tier.Column | payment.Column | pending_contacts.Column | pending_logs.Column | pricing.Column | roles.Column | saved_messages.Column | session.Column | shopify_accounts.Column | shopify_orders.Column | sqlite_stat1.Column | sqlite_stat4.Column | teams.Column | templates.Column | third_party.Column | transaction_log.Column | user.Column | user_bank_session.Column | users.Column | verification.Column | videos.Column | wav_files.Column;
   
-    export type AllBaseTables = [_authorigins.Table, _collections.Table, _externalauths.Table, _litestream_lock.Table, _litestream_seq.Table, _mfas.Table, _migrations.Table, _otps.Table, _params.Table, _superusers.Table, account_limit_history.Table, accounts.Table, api_settings.Table, audios.Table, automation_templates.Table, automations.Table, campaigns.Table, catalogs.Table, conversation_campaign.Table, conversations.Table, country.Table, documents.Table, images.Table, interactive_messages.Table, invoice.Table, leads.Table, leads_replied_campaign.Table, list_filters.Table, lists.Table, logs.Table, message_logs.Table, messages.Table, messaging_limit.Table, office_settings.Table, packages_tier.Table, payment.Table, pending_contacts.Table, pending_logs.Table, pricing.Table, roles.Table, saved_messages.Table, shopify_accounts.Table, shopify_orders.Table, sqlite_stat1.Table, sqlite_stat4.Table, teams.Table, templates.Table, third_party.Table, transaction_log.Table, user_bank_session.Table, users.Table, videos.Table, wav_files.Table];
+    export type AllBaseTables = [_authorigins.Table, _collections.Table, _externalauths.Table, _litestream_lock.Table, _litestream_seq.Table, _mfas.Table, _migrations.Table, _otps.Table, _params.Table, _superusers.Table, account.Table, account_limit_history.Table, accounts.Table, api_settings.Table, audios.Table, automation_templates.Table, automations.Table, campaigns.Table, catalogs.Table, conversation_campaign.Table, conversations.Table, country.Table, documents.Table, images.Table, interactive_messages.Table, invoice.Table, leads.Table, leads_replied_campaign.Table, list_filters.Table, lists.Table, logs.Table, message_logs.Table, messages.Table, messaging_limit.Table, office_settings.Table, packages_tier.Table, payment.Table, pending_contacts.Table, pending_logs.Table, pricing.Table, roles.Table, saved_messages.Table, session.Table, shopify_accounts.Table, shopify_orders.Table, sqlite_stat1.Table, sqlite_stat4.Table, teams.Table, templates.Table, third_party.Table, transaction_log.Table, user.Table, user_bank_session.Table, users.Table, verification.Table, videos.Table, wav_files.Table];
     export type AllForeignTables = [];
     export type AllViews = [];
     export type AllMaterializedViews = [];
-    export type AllTablesAndViews = [_authorigins.Table, _collections.Table, _externalauths.Table, _litestream_lock.Table, _litestream_seq.Table, _mfas.Table, _migrations.Table, _otps.Table, _params.Table, _superusers.Table, account_limit_history.Table, accounts.Table, api_settings.Table, audios.Table, automation_templates.Table, automations.Table, campaigns.Table, catalogs.Table, conversation_campaign.Table, conversations.Table, country.Table, documents.Table, images.Table, interactive_messages.Table, invoice.Table, leads.Table, leads_replied_campaign.Table, list_filters.Table, lists.Table, logs.Table, message_logs.Table, messages.Table, messaging_limit.Table, office_settings.Table, packages_tier.Table, payment.Table, pending_contacts.Table, pending_logs.Table, pricing.Table, roles.Table, saved_messages.Table, shopify_accounts.Table, shopify_orders.Table, sqlite_stat1.Table, sqlite_stat4.Table, teams.Table, templates.Table, third_party.Table, transaction_log.Table, user_bank_session.Table, users.Table, videos.Table, wav_files.Table];
+    export type AllTablesAndViews = [_authorigins.Table, _collections.Table, _externalauths.Table, _litestream_lock.Table, _litestream_seq.Table, _mfas.Table, _migrations.Table, _otps.Table, _params.Table, _superusers.Table, account.Table, account_limit_history.Table, accounts.Table, api_settings.Table, audios.Table, automation_templates.Table, automations.Table, campaigns.Table, catalogs.Table, conversation_campaign.Table, conversations.Table, country.Table, documents.Table, images.Table, interactive_messages.Table, invoice.Table, leads.Table, leads_replied_campaign.Table, list_filters.Table, lists.Table, logs.Table, message_logs.Table, messages.Table, messaging_limit.Table, office_settings.Table, packages_tier.Table, payment.Table, pending_contacts.Table, pending_logs.Table, pricing.Table, roles.Table, saved_messages.Table, session.Table, shopify_accounts.Table, shopify_orders.Table, sqlite_stat1.Table, sqlite_stat4.Table, teams.Table, templates.Table, third_party.Table, transaction_log.Table, user.Table, user_bank_session.Table, users.Table, verification.Table, videos.Table, wav_files.Table];
   }
 
 
@@ -16625,6 +17887,7 @@ declare module 'zapatos/schema' {
     "_otps": _otps.Selectable;
     "_params": _params.Selectable;
     "_superusers": _superusers.Selectable;
+    "account": account.Selectable;
     "account_limit_history": account_limit_history.Selectable;
     "accounts": accounts.Selectable;
     "api_settings": api_settings.Selectable;
@@ -16656,6 +17919,7 @@ declare module 'zapatos/schema' {
     "pricing": pricing.Selectable;
     "roles": roles.Selectable;
     "saved_messages": saved_messages.Selectable;
+    "session": session.Selectable;
     "shopify_accounts": shopify_accounts.Selectable;
     "shopify_orders": shopify_orders.Selectable;
     "sqlite_stat1": sqlite_stat1.Selectable;
@@ -16664,8 +17928,10 @@ declare module 'zapatos/schema' {
     "templates": templates.Selectable;
     "third_party": third_party.Selectable;
     "transaction_log": transaction_log.Selectable;
+    "user": user.Selectable;
     "user_bank_session": user_bank_session.Selectable;
     "users": users.Selectable;
+    "verification": verification.Selectable;
     "videos": videos.Selectable;
     "wav_files": wav_files.Selectable;
   }[T];
@@ -16681,6 +17947,7 @@ declare module 'zapatos/schema' {
     "_otps": _otps.JSONSelectable;
     "_params": _params.JSONSelectable;
     "_superusers": _superusers.JSONSelectable;
+    "account": account.JSONSelectable;
     "account_limit_history": account_limit_history.JSONSelectable;
     "accounts": accounts.JSONSelectable;
     "api_settings": api_settings.JSONSelectable;
@@ -16712,6 +17979,7 @@ declare module 'zapatos/schema' {
     "pricing": pricing.JSONSelectable;
     "roles": roles.JSONSelectable;
     "saved_messages": saved_messages.JSONSelectable;
+    "session": session.JSONSelectable;
     "shopify_accounts": shopify_accounts.JSONSelectable;
     "shopify_orders": shopify_orders.JSONSelectable;
     "sqlite_stat1": sqlite_stat1.JSONSelectable;
@@ -16720,8 +17988,10 @@ declare module 'zapatos/schema' {
     "templates": templates.JSONSelectable;
     "third_party": third_party.JSONSelectable;
     "transaction_log": transaction_log.JSONSelectable;
+    "user": user.JSONSelectable;
     "user_bank_session": user_bank_session.JSONSelectable;
     "users": users.JSONSelectable;
+    "verification": verification.JSONSelectable;
     "videos": videos.JSONSelectable;
     "wav_files": wav_files.JSONSelectable;
   }[T];
@@ -16737,6 +18007,7 @@ declare module 'zapatos/schema' {
     "_otps": _otps.Whereable;
     "_params": _params.Whereable;
     "_superusers": _superusers.Whereable;
+    "account": account.Whereable;
     "account_limit_history": account_limit_history.Whereable;
     "accounts": accounts.Whereable;
     "api_settings": api_settings.Whereable;
@@ -16768,6 +18039,7 @@ declare module 'zapatos/schema' {
     "pricing": pricing.Whereable;
     "roles": roles.Whereable;
     "saved_messages": saved_messages.Whereable;
+    "session": session.Whereable;
     "shopify_accounts": shopify_accounts.Whereable;
     "shopify_orders": shopify_orders.Whereable;
     "sqlite_stat1": sqlite_stat1.Whereable;
@@ -16776,8 +18048,10 @@ declare module 'zapatos/schema' {
     "templates": templates.Whereable;
     "third_party": third_party.Whereable;
     "transaction_log": transaction_log.Whereable;
+    "user": user.Whereable;
     "user_bank_session": user_bank_session.Whereable;
     "users": users.Whereable;
+    "verification": verification.Whereable;
     "videos": videos.Whereable;
     "wav_files": wav_files.Whereable;
   }[T];
@@ -16793,6 +18067,7 @@ declare module 'zapatos/schema' {
     "_otps": _otps.Insertable;
     "_params": _params.Insertable;
     "_superusers": _superusers.Insertable;
+    "account": account.Insertable;
     "account_limit_history": account_limit_history.Insertable;
     "accounts": accounts.Insertable;
     "api_settings": api_settings.Insertable;
@@ -16824,6 +18099,7 @@ declare module 'zapatos/schema' {
     "pricing": pricing.Insertable;
     "roles": roles.Insertable;
     "saved_messages": saved_messages.Insertable;
+    "session": session.Insertable;
     "shopify_accounts": shopify_accounts.Insertable;
     "shopify_orders": shopify_orders.Insertable;
     "sqlite_stat1": sqlite_stat1.Insertable;
@@ -16832,8 +18108,10 @@ declare module 'zapatos/schema' {
     "templates": templates.Insertable;
     "third_party": third_party.Insertable;
     "transaction_log": transaction_log.Insertable;
+    "user": user.Insertable;
     "user_bank_session": user_bank_session.Insertable;
     "users": users.Insertable;
+    "verification": verification.Insertable;
     "videos": videos.Insertable;
     "wav_files": wav_files.Insertable;
   }[T];
@@ -16849,6 +18127,7 @@ declare module 'zapatos/schema' {
     "_otps": _otps.Updatable;
     "_params": _params.Updatable;
     "_superusers": _superusers.Updatable;
+    "account": account.Updatable;
     "account_limit_history": account_limit_history.Updatable;
     "accounts": accounts.Updatable;
     "api_settings": api_settings.Updatable;
@@ -16880,6 +18159,7 @@ declare module 'zapatos/schema' {
     "pricing": pricing.Updatable;
     "roles": roles.Updatable;
     "saved_messages": saved_messages.Updatable;
+    "session": session.Updatable;
     "shopify_accounts": shopify_accounts.Updatable;
     "shopify_orders": shopify_orders.Updatable;
     "sqlite_stat1": sqlite_stat1.Updatable;
@@ -16888,8 +18168,10 @@ declare module 'zapatos/schema' {
     "templates": templates.Updatable;
     "third_party": third_party.Updatable;
     "transaction_log": transaction_log.Updatable;
+    "user": user.Updatable;
     "user_bank_session": user_bank_session.Updatable;
     "users": users.Updatable;
+    "verification": verification.Updatable;
     "videos": videos.Updatable;
     "wav_files": wav_files.Updatable;
   }[T];
@@ -16905,6 +18187,7 @@ declare module 'zapatos/schema' {
     "_otps": _otps.UniqueIndex;
     "_params": _params.UniqueIndex;
     "_superusers": _superusers.UniqueIndex;
+    "account": account.UniqueIndex;
     "account_limit_history": account_limit_history.UniqueIndex;
     "accounts": accounts.UniqueIndex;
     "api_settings": api_settings.UniqueIndex;
@@ -16936,6 +18219,7 @@ declare module 'zapatos/schema' {
     "pricing": pricing.UniqueIndex;
     "roles": roles.UniqueIndex;
     "saved_messages": saved_messages.UniqueIndex;
+    "session": session.UniqueIndex;
     "shopify_accounts": shopify_accounts.UniqueIndex;
     "shopify_orders": shopify_orders.UniqueIndex;
     "sqlite_stat1": sqlite_stat1.UniqueIndex;
@@ -16944,8 +18228,10 @@ declare module 'zapatos/schema' {
     "templates": templates.UniqueIndex;
     "third_party": third_party.UniqueIndex;
     "transaction_log": transaction_log.UniqueIndex;
+    "user": user.UniqueIndex;
     "user_bank_session": user_bank_session.UniqueIndex;
     "users": users.UniqueIndex;
+    "verification": verification.UniqueIndex;
     "videos": videos.UniqueIndex;
     "wav_files": wav_files.UniqueIndex;
   }[T];
@@ -16961,6 +18247,7 @@ declare module 'zapatos/schema' {
     "_otps": _otps.Column;
     "_params": _params.Column;
     "_superusers": _superusers.Column;
+    "account": account.Column;
     "account_limit_history": account_limit_history.Column;
     "accounts": accounts.Column;
     "api_settings": api_settings.Column;
@@ -16992,6 +18279,7 @@ declare module 'zapatos/schema' {
     "pricing": pricing.Column;
     "roles": roles.Column;
     "saved_messages": saved_messages.Column;
+    "session": session.Column;
     "shopify_accounts": shopify_accounts.Column;
     "shopify_orders": shopify_orders.Column;
     "sqlite_stat1": sqlite_stat1.Column;
@@ -17000,8 +18288,10 @@ declare module 'zapatos/schema' {
     "templates": templates.Column;
     "third_party": third_party.Column;
     "transaction_log": transaction_log.Column;
+    "user": user.Column;
     "user_bank_session": user_bank_session.Column;
     "users": users.Column;
+    "verification": verification.Column;
     "videos": videos.Column;
     "wav_files": wav_files.Column;
   }[T];
@@ -17017,6 +18307,7 @@ declare module 'zapatos/schema' {
     "_otps": _otps.SQL;
     "_params": _params.SQL;
     "_superusers": _superusers.SQL;
+    "account": account.SQL;
     "account_limit_history": account_limit_history.SQL;
     "accounts": accounts.SQL;
     "api_settings": api_settings.SQL;
@@ -17048,6 +18339,7 @@ declare module 'zapatos/schema' {
     "pricing": pricing.SQL;
     "roles": roles.SQL;
     "saved_messages": saved_messages.SQL;
+    "session": session.SQL;
     "shopify_accounts": shopify_accounts.SQL;
     "shopify_orders": shopify_orders.SQL;
     "sqlite_stat1": sqlite_stat1.SQL;
@@ -17056,8 +18348,10 @@ declare module 'zapatos/schema' {
     "templates": templates.SQL;
     "third_party": third_party.SQL;
     "transaction_log": transaction_log.SQL;
+    "user": user.SQL;
     "user_bank_session": user_bank_session.SQL;
     "users": users.SQL;
+    "verification": verification.SQL;
     "videos": videos.SQL;
     "wav_files": wav_files.SQL;
   }[T];

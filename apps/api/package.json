@@ -8,7 +8,8 @@
   },
   "devDependencies": {
     "@types/bun": "latest",
-    "@types/pg": "^8.15.4"
+    "@types/pg": "^8.15.4",
+    "@wetarseel/db-types": "../../packages/db-types"
   },
   "peerDependencies": {
     "typescript": "^5"
@@ -19,6 +20,8 @@
     "better-auth": "^1.2.12",
     "dotenv": "^17.2.0",
     "dynamodb-toolbox": "^2.6.4",
+    "hono": "^4.8.4",
+    "lru-cache": "^11.1.0",
     "pg": "^8.16.3",
     "react": "^19.1.0",
     "resend": "^4.6.0",

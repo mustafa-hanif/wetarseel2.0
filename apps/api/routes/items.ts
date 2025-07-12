@@ -3,7 +3,7 @@ import { db, type s, pool } from "../db";
 import { expand } from "../expand";
 
 export default {
-  async fetch(req: Request) {
+  async fetch(req: Request, accountId: string) {
     const url = new URL(req.url);
     const [, , , table] = url.pathname.split("/"); // /items/:table
     const expandParam = url.searchParams.get("expand");
@@ -21,7 +21,7 @@ export default {
     const query = db.sql`
       SELECT * FROM ${db.raw(table)} 
       WHERE name ILIKE ${db.param("%" + filterParam + "%")}
-      LIMIT ${db.param(limit)}
+      LIMIT ${db.param(limit)} AND account_id = ${db.param(accountId)}
     `;
 
     const rows = await query.run(pool);

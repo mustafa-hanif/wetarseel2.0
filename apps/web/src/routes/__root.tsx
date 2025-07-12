@@ -14,36 +14,10 @@ function RootComponent() {
   return (
     <>
       <HeadContent />
-      <div class="p-2 flex gap-2 text-lg">
-        <Link
-          to="/"
-          activeProps={{
-            class: "font-bold",
-          }}
-          activeOptions={{ exact: true }}
-        >
-          Home
-        </Link>{" "}
-        <Link
-          to="/about"
-          activeProps={{
-            class: "font-bold",
-          }}
-        >
-          About
-        </Link>
-        <Link
-          to="/posts"
-          activeProps={{
-            class: "font-bold",
-          }}
-        >
-          Posts
-        </Link>
-      </div>
-      <hr />
       <Outlet />
-      <TanStackRouterDevtools position="bottom-right" />
+      {import.meta.env.MODE === "development" ? (
+        <TanStackRouterDevtools position="bottom-right" />
+      ) : null}
     </>
   );
 }

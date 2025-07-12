@@ -2,7 +2,9 @@
   "name": "my-app",
   "private": true,
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "!apps/legacy-wetarseel",
+    "packages/*"
   ],
   "scripts": {
     "build:web": "bun run --cwd apps/web build",

@@ -17,6 +17,12 @@
     "verbatimModuleSyntax": true,
     "noEmit": true,
 
+    // Path mapping to point zapatos/schema to your custom location
+    "baseUrl": ".",
+    "paths": {
+      "zapatos/schema": ["../../packages/db-types/zapatos/schema/zapatos/schema"]
+    },
+
     // Best practices
     "strict": true,
     "skipLibCheck": true,

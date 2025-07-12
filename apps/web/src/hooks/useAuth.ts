@@ -9,7 +9,9 @@ export const useAuth = () => {
       if (!session?.data?.user?.email) {
         throw new Error("Not authenticated");
       }
-      return session.data.user;
+      return session.data.user as typeof session.data.user & {
+        accountId: string;
+      };
     },
   }));
 };
