@@ -1,18 +1,14 @@
-import { createSignal, createMemo } from "solid-js";
+import { createSignal, createMemo, createEffect, Accessor } from "solid-js";
 import { Conversation, Message, Team, Agent } from "@/types/chat";
 import { isWithinDateWindow } from "@/utils/chatUtils";
+import { UseQueryResult } from "@tanstack/solid-query";
 
 export function useChatState(
-  initialConversations: Conversation[],
-  initialMessages: Message[]
+  conversations: Accessor<UseQueryResult<Conversation[], Error>>
 ) {
   // Core state
   const [selectedConversation, setSelectedConversation] =
-    createSignal<Conversation | null>(initialConversations[0] || null);
-  const [messages, setMessages] = createSignal<Message[]>(initialMessages);
-  const [newMessage, setNewMessage] = createSignal("");
-  const [conversations, setConversations] =
-    createSignal<Conversation[]>(initialConversations);
+    createSignal<Conversation | null>(conversations().data?.[0] || null);
 
   // Filter state
   const [searchQuery, setSearchQuery] = createSignal("");
@@ -32,47 +28,51 @@ export function useChatState(
   // Computed values
   const allTags = createMemo(() => {
     const tagSet = new Set<string>();
-    conversations().forEach((conv) => {
-      conv.tags.forEach((tag) => tagSet.add(tag));
+    conversations()?.data?.forEach((conv) => {
+      ((conv?.leads?.tags ?? []) as string[]).forEach((tag) => tagSet.add(tag));
     });
     return Array.from(tagSet).sort();
   });
 
   const filteredConversations = createMemo(() => {
-    let filtered = conversations();
+    let filtered = conversations().data ?? [];
 
     if (searchQuery()) {
       filtered = filtered.filter(
         (conv) =>
-          conv.name.toLowerCase().includes(searchQuery().toLowerCase()) ||
-          conv.phone.includes(searchQuery()) ||
-          conv.lastMessage.toLowerCase().includes(searchQuery().toLowerCase())
+          (conv?.leads?.name ?? "")
+            .toLowerCase()
+            .includes(searchQuery().toLowerCase()) ||
+          (conv?.leads?.phone_number ?? "").includes(searchQuery()) // ||
+        // conv.lastMessage.toLowerCase().includes(searchQuery().toLowerCase())
       );
     }
 
-    if (selectedTeam()) {
-      filtered = filtered.filter((conv) => conv.teamId === selectedTeam());
-    }
+    // if (selectedTeam()) {
+    //   filtered = filtered.filter((conv) => conv.teamId === selectedTeam());
+    // }
 
     if (selectedAgent()) {
       filtered = filtered.filter(
-        (conv) => conv.assignedAgent === selectedAgent()
+        (conv) => conv.assigned_agent === selectedAgent()
       );
     }
 
     if (selectedTags().length > 0) {
       filtered = filtered.filter((conv) =>
-        selectedTags().some((tag) => conv.tags.includes(tag))
+        selectedTags().some((tag) =>
+          ((conv?.leads?.tags ?? []) as string[]).includes(tag)
+        )
       );
     }
 
     if (showUnreadOnly()) {
-      filtered = filtered.filter((conv) => conv.unreadCount > 0);
+      filtered = filtered.filter((conv) => Number(conv.unread_count) > 0);
     }
 
     if (dateFilterEnabled()) {
       filtered = filtered.filter((conv) =>
-        isWithinDateWindow(conv.lastActivity, dateWindowStart())
+        isWithinDateWindow(conv.updated ?? "", dateWindowStart())
       );
     }
 
@@ -105,23 +105,6 @@ export function useChatState(
     setSelectedTags([]);
   };
 
-  const sendMessage = (event: Event) => {
-    event.preventDefault();
-    if (!newMessage().trim()) return;
-
-    const message: Message = {
-      id: Date.now().toString(),
-      text: newMessage(),
-      timestamp: new Date().toISOString(),
-      isOutgoing: true,
-      status: "sent",
-      type: "text",
-    };
-
-    setMessages((prev) => [...prev, message]);
-    setNewMessage("");
-  };
-
   const selectTeam = (teamId: string | null) => {
     setSelectedTeam(teamId);
     setSelectedAgent(null);
@@ -136,9 +119,6 @@ export function useChatState(
     // State
     selectedConversation,
     setSelectedConversation,
-    messages,
-    newMessage,
-    setNewMessage,
     conversations,
     searchQuery,
     setSearchQuery,
@@ -162,7 +142,6 @@ export function useChatState(
     // Actions
     toggleTag,
     clearTags,
-    sendMessage,
     selectTeam,
     selectAgent,
     moveDateWindow,

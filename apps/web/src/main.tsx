@@ -8,6 +8,7 @@ import {
 import { routeTree } from "./routeTree.gen";
 import "./styles.css";
 import { queryClient } from "./hooks/useQuery";
+import { SolidQueryDevtools } from "@tanstack/solid-query-devtools";
 
 // Set up a Router instance
 const router = createRouter({
@@ -31,6 +32,7 @@ if (!rootElement.innerHTML) {
     () => (
       <QueryClientProvider client={queryClient}>
         <RouterProvider router={router} />
+        <SolidQueryDevtools initialIsOpen={false} />
       </QueryClientProvider>
     ),
     rootElement

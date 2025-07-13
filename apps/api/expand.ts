@@ -1,6 +1,8 @@
 // expand.ts
 import { db, type s, pool } from "./db";
 
+// example, I want to expand the "from" key in conversation, which is a row of leads
+// I will put "from.leads"
 export async function expand<T extends keyof s.Table>(
   table: T,
   rows: s.Selectable[],
@@ -10,7 +12,8 @@ export async function expand<T extends keyof s.Table>(
   const result = [...rows];
 
   for (const path of expansions) {
-    const [field, subfield] = path.split(".");
+    // from leads
+    const [field, foreignTable] = path.split(".");
 
     // Check if field is a foreign key on this table
     const fk = field as keyof s.Selectable;
@@ -20,7 +23,6 @@ export async function expand<T extends keyof s.Table>(
       if (!fkId) continue;
 
       if (!field) continue;
-      const foreignTable = guessForeignTable(field);
 
       const related = await db
         .select(foreignTable as any, { id: fkId })
@@ -29,13 +31,13 @@ export async function expand<T extends keyof s.Table>(
       (row as any)[field] = related[0];
 
       // Sub-expand if nested
-      if (subfield && related[0]) {
-        (row as any)[field] = await expand(
-          foreignTable as any,
-          [related[0]],
-          subfield
-        );
-      }
+      // if (subfield && related[0]) {
+      //   (row as any)[field] = await expand(
+      //     foreignTable as any,
+      //     [related[0]],
+      //     subfield
+      //   );
+      // }
     }
   }
 

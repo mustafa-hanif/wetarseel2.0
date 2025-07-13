@@ -1,14 +1,14 @@
-// Chat-related type definitions
-export interface Message {
-  id: string;
-  text: string;
-  timestamp: string;
-  isOutgoing: boolean;
-  status: "sent" | "delivered" | "read";
-  type: "text" | "image" | "document";
+import { conversations, leads, messages } from "zapatos/schema";
+
+export interface Conversation extends conversations.Selectable {
+  leads: leads.Selectable;
+  messages: messages.Selectable;
 }
 
-export interface Conversation {
+// Chat-related type definitions
+export type Message = messages.Selectable;
+
+/* export interface Conversation {
   id: string;
   name: string;
   phone: string;
@@ -25,7 +25,7 @@ export interface Conversation {
   notes?: string;
   createdAt: string;
   lastActivity: string;
-}
+} */
 
 export interface Team {
   id: string;

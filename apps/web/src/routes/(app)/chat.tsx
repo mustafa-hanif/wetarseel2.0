@@ -1,6 +1,13 @@
 import { useAuth } from "@/hooks/useAuth";
 import { createFileRoute } from "@tanstack/solid-router";
-import { Show } from "solid-js";
+import {
+  Accessor,
+  createEffect,
+  createMemo,
+  createSignal,
+  Show,
+  Suspense,
+} from "solid-js";
 import {
   mockTeams,
   mockAgents,
@@ -18,14 +25,41 @@ import { MessagesArea } from "@/components/chat/MessagesArea";
 import { MessageInput } from "@/components/chat/MessageInput";
 import { ContactSidebar } from "@/components/chat/ContactSidebar";
 import { EmptyState } from "@/components/chat/EmptyState";
+import { dbquery } from "@/lib/useQueryTable";
+import { Conversation, Message } from "@/types/chat";
+import { UseQueryResult } from "@tanstack/solid-query";
+import { useMessageState } from "@/hooks/useMessageState";
+import { useSequentialConversations } from "@/hooks/useSequentialQuery";
 
 export const Route = createFileRoute("/(app)/chat")({
   component: RouteComponent,
+  errorComponent: ({ error }) => {
+    // Render an error message
+    console.error(error);
+    return <div>{error.message}</div>;
+  },
 });
 
 function RouteComponent() {
-  const data = useAuth();
-  const chatState = useChatState(mockConversations, mockMessages);
+  const conversationsState = useSequentialConversations();
+
+  const chatState = useChatState(
+    conversationsState.query as Accessor<UseQueryResult<Conversation[], Error>>
+  );
+  const messages = dbquery(
+    "messages",
+    () => ({
+      filter: `convo_id.=.` + chatState.selectedConversation()?.id,
+      limit: 10,
+    }),
+    () => [chatState.selectedConversation()?.id ?? "0"], // Dependencies array
+    {
+      enabled: () => !!chatState.selectedConversation()?.id,
+      staleTime: () => 0,
+    }
+  );
+
+  const messageState = useMessageState();
 
   return (
     <div class="flex h-full bg-gray-100">
@@ -35,7 +69,7 @@ function RouteComponent() {
         agents={mockAgents}
         selectedTeam={chatState.selectedTeam()}
         selectedAgent={chatState.selectedAgent()}
-        conversationCount={chatState.conversations().length}
+        conversationCount={chatState.conversations()?.data?.length ?? 0}
         onTeamSelect={chatState.selectTeam}
         onAgentSelect={chatState.selectAgent}
       />
@@ -67,7 +101,7 @@ function RouteComponent() {
         />
 
         <ConversationList
-          conversations={chatState.filteredConversations()}
+          conversations={chatState.filteredConversations() ?? []}
           selectedConversation={chatState.selectedConversation()}
           onConversationSelect={chatState.setSelectedConversation}
         />
@@ -84,12 +118,13 @@ function RouteComponent() {
             }
           />
 
-          <MessagesArea messages={chatState.messages()} />
-
+          <Show when={!messages().isPending}>
+            <MessagesArea messages={messages().data} />
+          </Show>
           <MessageInput
-            newMessage={chatState.newMessage()}
-            onMessageChange={chatState.setNewMessage}
-            onSendMessage={chatState.sendMessage}
+            newMessage={messageState.newMessage()}
+            onMessageChange={messageState.setNewMessage}
+            onSendMessage={messageState.sendMessage}
           />
         </Show>
       </div>

@@ -42,7 +42,7 @@ export function ContactSidebar(props: ContactSidebarProps) {
           <h4 class="text-xl font-semibold text-gray-900">
             {props.conversation.name}
           </h4>
-          <p class="text-gray-500">{props.conversation.phone}</p>
+          <p class="text-gray-500">{props.conversation.phone_number}</p>
         </div>
 
         {/* Contact Information */}

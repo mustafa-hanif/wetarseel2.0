@@ -42,7 +42,7 @@ app.use("*", async (c, next) => {
   } else {
     session = await auth.api.getSession({ headers: c.req.raw.headers });
     const account = await getAccountFromUser(session?.user.email ?? "");
-    if (session?.user?.accountId) {
+    if (session?.user) {
       session.user.accountId = account?.id ?? "";
     }
     cache.set(
@@ -69,12 +69,12 @@ app.on(["GET", "POST", "PUT", "DELETE"], "/api/auth/**", (c) => {
 app.on(["GET", "POST", "PUT", "DELETE"], "/api/items/**", async (c) => {
   const user = c.get("user");
   // Optional: Check authentication
-  if (!user) {
+  if (!user || !user?.accountId) {
     return c.json({ error: "Unauthorized" }, 401);
   }
 
   try {
-    const response = await items.fetch(c.req.raw, user?.accountId ?? "");
+    const response = await items.fetch(c.req.raw, user.accountId);
     return response;
   } catch (error) {
     console.error("Error handling items request:", error);
@@ -109,7 +109,7 @@ app.on(["POST", "PUT", "DELETE"], "/api/mutations/**", async (c) => {
 app.get("/api/accounts/users", async (c) => {
   const user = c.get("user");
 
-  if (!user) {
+  if (!user || !user?.accountId) {
     return c.json({ error: "Unauthorized" }, 401);
   }
 

@@ -44,6 +44,7 @@ export const isWithinDateWindow = (
   dateWindowStart: Date
 ) => {
   const messageDate = new Date(timestamp);
+  console.log({ messageDate, dateWindowStart });
   const windowStart = new Date(dateWindowStart);
   const windowEnd = new Date(windowStart);
   windowEnd.setDate(windowStart.getDate() + 2);
