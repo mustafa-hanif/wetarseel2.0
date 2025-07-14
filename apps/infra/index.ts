@@ -781,8 +781,12 @@ const cloudfrontDistribution = new aws.cloudfront.Distribution("website-cdn", {
       restrictionType: "none",
     },
   },
+  aliases: ["uae.wetarseel.ai"],
   viewerCertificate: {
-    cloudfrontDefaultCertificate: true,
+    acmCertificateArn:
+      "arn:aws:acm:us-east-1:147997141811:certificate/46ffa677-09d8-4140-b93c-1be7642a8412",
+    sslSupportMethod: "sni-only",
+    minimumProtocolVersion: "TLSv1.2_2021",
   },
   tags: {
     ...commonTags,
@@ -805,6 +809,160 @@ const invalidateCloudFront = new command.local.Command(
 );
 
 // ============================================================================
+// WHATSAPP WEBHOOK INFRASTRUCTURE
+// ============================================================================
+
+// Dead Letter Queue for failed messages
+const whatsappDlq = new aws.sqs.Queue("whatsapp-events-dlq", {
+  name: `${projectName}-${environment}-whatsapp-events-dlq`,
+  messageRetentionSeconds: 1209600, // 14 days
+  tags: {
+    ...commonTags,
+    Purpose: "WhatsAppWebhookDLQ",
+  },
+});
+
+// SQS Queue for WhatsApp events with DLQ
+const whatsappQueue = new aws.sqs.Queue("whatsapp-events-queue", {
+  name: `${projectName}-${environment}-whatsapp-events`,
+  visibilityTimeoutSeconds: 300,
+  messageRetentionSeconds: 1209600, // 14 days
+  redrivePolicy: pulumi.jsonStringify({
+    deadLetterTargetArn: whatsappDlq.arn,
+    maxReceiveCount: 3,
+  }),
+  tags: {
+    ...commonTags,
+    Purpose: "WhatsAppWebhook",
+  },
+});
+
+// IAM policy for SQS access
+const sqsPolicy = new aws.iam.RolePolicy("lambda-sqs-policy", {
+  role: lambdaRole.id,
+  policy: pulumi
+    .all([whatsappQueue.arn, whatsappDlq.arn])
+    .apply(([queueArn, dlqArn]) =>
+      JSON.stringify({
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Action: [
+              "sqs:SendMessage",
+              "sqs:GetQueueAttributes",
+              "sqs:GetQueueUrl",
+            ],
+            Resource: [queueArn, dlqArn],
+          },
+        ],
+      })
+    ),
+});
+
+// WhatsApp webhook Lambda function
+const whatsappWebhookFunction = new aws.lambda.Function(
+  "whatsapp-webhook",
+  {
+    name: `${projectName}-${environment}-whatsapp-webhook`,
+    role: lambdaRole.arn,
+    handler: "webhook.handler",
+    runtime: aws.lambda.Runtime.NodeJS20dX,
+    timeout: 30,
+    memorySize: 512,
+    code: lambdaCodeArchive,
+    environment: {
+      variables: {
+        SQS_QUEUE_URL: whatsappQueue.id,
+        ENVIRONMENT: environment,
+        WHATSAPP_VERIFY_TOKEN: "wetarseel-webhook-verify-token-2024", // You can change this to any secure token
+      },
+    },
+    tags: {
+      ...commonTags,
+      Purpose: "WhatsAppWebhook",
+    },
+  },
+  {
+    dependsOn: [lambdaCustomPolicy, lambdaBasicExecution, sqsPolicy],
+  }
+);
+
+// HTTP API Gateway for webhook
+const httpApi = new aws.apigatewayv2.Api("whatsapp-webhook-api", {
+  name: `${projectName}-${environment}-whatsapp-webhook`,
+  protocolType: "HTTP",
+  corsConfiguration: {
+    allowCredentials: false,
+    allowHeaders: ["*"],
+    allowMethods: ["GET", "POST"],
+    allowOrigins: ["*"],
+    maxAge: 86400,
+  },
+  tags: {
+    ...commonTags,
+    Purpose: "WhatsAppWebhookAPI",
+  },
+});
+
+// HTTP API integration
+const webhookIntegration = new aws.apigatewayv2.Integration(
+  "webhook-integration",
+  {
+    apiId: httpApi.id,
+    integrationType: "AWS_PROXY",
+    integrationUri: whatsappWebhookFunction.invokeArn,
+    payloadFormatVersion: "2.0",
+  }
+);
+
+// HTTP API routes
+const webhookGetRoute = new aws.apigatewayv2.Route("webhook-get-route", {
+  apiId: httpApi.id,
+  routeKey: "GET /webhook",
+  target: pulumi.interpolate`integrations/${webhookIntegration.id}`,
+});
+
+const webhookPostRoute = new aws.apigatewayv2.Route("webhook-post-route", {
+  apiId: httpApi.id,
+  routeKey: "POST /webhook",
+  target: pulumi.interpolate`integrations/${webhookIntegration.id}`,
+});
+
+// Lambda permission for HTTP API Gateway
+const webhookPermission = new aws.lambda.Permission("webhook-permission", {
+  statementId: "AllowExecutionFromHTTPAPIGateway",
+  action: "lambda:InvokeFunction",
+  function: whatsappWebhookFunction.name,
+  principal: "apigateway.amazonaws.com",
+  sourceArn: pulumi.interpolate`${httpApi.executionArn}/*/*`,
+});
+
+// HTTP API deployment
+const httpApiDeployment = new aws.apigatewayv2.Deployment(
+  "webhook-deployment",
+  {
+    apiId: httpApi.id,
+    description: `WhatsApp webhook deployment for ${environment}`,
+  },
+  {
+    dependsOn: [webhookGetRoute, webhookPostRoute],
+  }
+);
+
+// HTTP API stage
+const httpApiStage = new aws.apigatewayv2.Stage("webhook-stage", {
+  apiId: httpApi.id,
+  deploymentId: httpApiDeployment.id,
+  name: environment,
+  autoDeploy: true,
+  tags: {
+    ...commonTags,
+    Purpose: "WhatsAppWebhookStage",
+  },
+});
+
+// ============================================================================
 // LAMBDA AND WEBSOCKET OUTPUTS
 // ============================================================================
 
@@ -825,3 +983,468 @@ export const webSocketUrl = pulumi.interpolate`wss://${webSocketApi.id}.execute-
 
 // Lambda role outputs for cross-stack references
 export const lambdaRoleArn = lambdaRole.arn;
+
+// WhatsApp webhook outputs
+export const whatsappQueueUrl = whatsappQueue.id;
+export const whatsappQueueArn = whatsappQueue.arn;
+export const whatsappDlqUrl = whatsappDlq.id;
+export const whatsappDlqArn = whatsappDlq.arn;
+export const whatsappWebhookFunctionArn = whatsappWebhookFunction.arn;
+export const whatsappWebhookUrl = pulumi.interpolate`https://${httpApi.id}.execute-api.${region}.amazonaws.com/${httpApiStage.name}/webhook`;
+export const httpApiId = httpApi.id;
+export const httpApiEndpoint = pulumi.interpolate`https://${httpApi.id}.execute-api.${region}.amazonaws.com/${httpApiStage.name}`;
+
+// ============================================================================
+// ECS FARGATE INFRASTRUCTURE
+// ============================================================================
+
+// ECR Repository for API container images
+const ecrRepository = new aws.ecr.Repository("api-ecr-repo", {
+  name: `${projectName}-${environment}-api`,
+  imageTagMutability: "MUTABLE",
+  imageScanningConfiguration: {
+    scanOnPush: true,
+  },
+  tags: {
+    ...commonTags,
+    Purpose: "ContainerRegistry",
+  },
+});
+
+// ECR Lifecycle Policy to manage image retention
+const ecrLifecyclePolicy = new aws.ecr.LifecyclePolicy("api-ecr-lifecycle", {
+  repository: ecrRepository.name,
+  policy: JSON.stringify({
+    rules: [
+      {
+        rulePriority: 1,
+        description: "Keep last 10 images",
+        selection: {
+          tagStatus: "untagged",
+          countType: "imageCountMoreThan",
+          countNumber: 5,
+        },
+        action: {
+          type: "expire",
+        },
+      },
+    ],
+  }),
+});
+
+// ECS Cluster
+const ecsCluster = new aws.ecs.Cluster("api-cluster", {
+  name: `${projectName}-${environment}-cluster`,
+  settings: [
+    {
+      name: "containerInsights",
+      value: "enabled",
+    },
+  ],
+  tags: {
+    ...commonTags,
+    Purpose: "ContainerOrchestration",
+  },
+});
+
+// ECS Task Execution Role
+const ecsTaskExecutionRole = new aws.iam.Role("ecs-task-execution-role", {
+  name: `${projectName}-${environment}-ecs-task-execution-role`,
+  assumeRolePolicy: JSON.stringify({
+    Version: "2012-10-17",
+    Statement: [
+      {
+        Action: "sts:AssumeRole",
+        Effect: "Allow",
+        Principal: {
+          Service: "ecs-tasks.amazonaws.com",
+        },
+      },
+    ],
+  }),
+  tags: {
+    ...commonTags,
+    Purpose: "ECSTaskExecution",
+  },
+});
+
+// Attach the AWS managed policy for ECS task execution
+const ecsTaskExecutionRolePolicy = new aws.iam.RolePolicyAttachment(
+  "ecs-task-execution-role-policy",
+  {
+    role: ecsTaskExecutionRole.name,
+    policyArn:
+      "arn:aws:iam::aws:policy/service-role/AmazonECSTaskExecutionRolePolicy",
+  }
+);
+
+// Additional policy for CloudWatch logs
+const ecsTaskExecutionLogsPolicy = new aws.iam.Policy(
+  "ecs-task-execution-logs-policy",
+  {
+    name: `${projectName}-${environment}-ecs-task-execution-logs-policy`,
+    description:
+      "Policy for ECS task execution to create CloudWatch log groups",
+    policy: JSON.stringify({
+      Version: "2012-10-17",
+      Statement: [
+        {
+          Effect: "Allow",
+          Action: [
+            "logs:CreateLogGroup",
+            "logs:CreateLogStream",
+            "logs:PutLogEvents",
+          ],
+          Resource: "*",
+        },
+      ],
+    }),
+    tags: {
+      ...commonTags,
+      Purpose: "ECSTaskExecutionLogs",
+    },
+  }
+);
+
+const ecsTaskExecutionLogsPolicyAttachment = new aws.iam.RolePolicyAttachment(
+  "ecs-task-execution-logs-policy-attachment",
+  {
+    role: ecsTaskExecutionRole.name,
+    policyArn: ecsTaskExecutionLogsPolicy.arn,
+  }
+);
+
+// ECS Task Role (for application permissions)
+const ecsTaskRole = new aws.iam.Role("ecs-task-role", {
+  name: `${projectName}-${environment}-ecs-task-role`,
+  assumeRolePolicy: JSON.stringify({
+    Version: "2012-10-17",
+    Statement: [
+      {
+        Action: "sts:AssumeRole",
+        Effect: "Allow",
+        Principal: {
+          Service: "ecs-tasks.amazonaws.com",
+        },
+      },
+    ],
+  }),
+  tags: {
+    ...commonTags,
+    Purpose: "ECSTask",
+  },
+});
+
+// Policy for ECS task to access RDS and DynamoDB
+const ecsTaskPolicy = new aws.iam.Policy("ecs-task-policy", {
+  name: `${projectName}-${environment}-ecs-task-policy`,
+  description: "Policy for ECS tasks to access AWS services",
+  policy: pulumi.all([dynamoTable.arn]).apply(([tableArn]) =>
+    JSON.stringify({
+      Version: "2012-10-17",
+      Statement: [
+        {
+          Effect: "Allow",
+          Action: [
+            "dynamodb:GetItem",
+            "dynamodb:PutItem",
+            "dynamodb:UpdateItem",
+            "dynamodb:DeleteItem",
+            "dynamodb:Query",
+            "dynamodb:Scan",
+          ],
+          Resource: [tableArn, `${tableArn}/index/*`],
+        },
+        {
+          Effect: "Allow",
+          Action: ["rds:DescribeDBInstances", "rds:DescribeDBClusters"],
+          Resource: "*",
+        },
+      ],
+    })
+  ),
+  tags: {
+    ...commonTags,
+    Purpose: "ECSTaskPermissions",
+  },
+});
+
+const ecsTaskRolePolicyAttachment = new aws.iam.RolePolicyAttachment(
+  "ecs-task-role-policy-attachment",
+  {
+    role: ecsTaskRole.name,
+    policyArn: ecsTaskPolicy.arn,
+  }
+);
+
+// Security Group for ECS tasks
+const ecsSecurityGroup = new aws.ec2.SecurityGroup("ecs-sg", {
+  name: `${projectName}-${environment}-ecs-sg`,
+  description: "Security group for ECS tasks",
+  vpcId: vpc.then((v) => v.id),
+  tags: {
+    ...commonTags,
+    Name: `${projectName}-${environment}-ecs-sg`,
+    Purpose: "ECS",
+  },
+});
+
+// Allow inbound HTTP traffic on port 4000
+const ecsIngressRule = new aws.ec2.SecurityGroupRule("ecs-ingress", {
+  type: "ingress",
+  fromPort: 4000,
+  toPort: 4000,
+  protocol: "tcp",
+  cidrBlocks: ["0.0.0.0/0"],
+  securityGroupId: ecsSecurityGroup.id,
+  description: "HTTP access to API",
+});
+
+// Allow all outbound traffic
+const ecsEgressRule = new aws.ec2.SecurityGroupRule("ecs-egress", {
+  type: "egress",
+  fromPort: 0,
+  toPort: 0,
+  protocol: "-1",
+  cidrBlocks: ["0.0.0.0/0"],
+  securityGroupId: ecsSecurityGroup.id,
+  description: "All outbound traffic",
+});
+
+// Allow ECS tasks to access the database
+const ecsToDbRule = new aws.ec2.SecurityGroupRule("ecs-to-db", {
+  type: "ingress",
+  fromPort: 5432,
+  toPort: 5432,
+  protocol: "tcp",
+  sourceSecurityGroupId: ecsSecurityGroup.id,
+  securityGroupId: dbSecurityGroup.id,
+  description: "ECS to PostgreSQL access",
+});
+
+// ECS Task Definition
+const ecsTaskDefinition = new aws.ecs.TaskDefinition("api-task", {
+  family: `${projectName}-${environment}-api`,
+  networkMode: "awsvpc",
+  requiresCompatibilities: ["FARGATE"],
+  cpu: "256",
+  memory: "512",
+  executionRoleArn: ecsTaskExecutionRole.arn,
+  taskRoleArn: ecsTaskRole.arn,
+  runtimePlatform: {
+    cpuArchitecture: "ARM64",
+    operatingSystemFamily: "LINUX",
+  },
+  containerDefinitions: JSON.stringify([
+    {
+      name: "api",
+      image:
+        "147997141811.dkr.ecr.me-central-1.amazonaws.com/wetarseel-dev-api:latest",
+      essential: true,
+      portMappings: [
+        {
+          containerPort: 4000,
+          protocol: "tcp",
+        },
+      ],
+      environment: [
+        {
+          name: "NODE_ENV",
+          value: environment,
+        },
+        {
+          name: "ZAPATOS_DB_URL",
+          value:
+            "postgresql://dbadmin:Jojo.3344@wetarseel-dev-postgres-v2.c78288muwwks.me-central-1.rds.amazonaws.com:5432/wetarseel?sslmode=require",
+        },
+        {
+          name: "DYNAMODB_TABLE_NAME",
+          value: "wetarseel-dev-wetable",
+        },
+        {
+          name: "AWS_REGION",
+          value: region,
+        },
+      ],
+      logConfiguration: {
+        logDriver: "awslogs",
+        options: {
+          "awslogs-group": `/ecs/${projectName}-${environment}-api`,
+          "awslogs-region": region,
+          "awslogs-stream-prefix": "ecs",
+          "awslogs-create-group": "true",
+        },
+      },
+      healthCheck: {
+        command: [
+          "CMD-SHELL",
+          "curl -f http://localhost:4000/health || exit 1",
+        ],
+        interval: 30,
+        timeout: 5,
+        retries: 3,
+        startPeriod: 60,
+      },
+    },
+  ]),
+  tags: {
+    ...commonTags,
+    Purpose: "ECSTaskDefinition",
+  },
+});
+
+// Application Load Balancer for ECS service
+const albSecurityGroup = new aws.ec2.SecurityGroup("alb-sg", {
+  name: `${projectName}-${environment}-alb-sg`,
+  description: "Security group for Application Load Balancer",
+  vpcId: vpc.then((v) => v.id),
+  tags: {
+    ...commonTags,
+    Name: `${projectName}-${environment}-alb-sg`,
+    Purpose: "LoadBalancer",
+  },
+});
+
+// ALB ingress rules
+const albHttpIngressRule = new aws.ec2.SecurityGroupRule("alb-http-ingress", {
+  type: "ingress",
+  fromPort: 80,
+  toPort: 80,
+  protocol: "tcp",
+  cidrBlocks: ["0.0.0.0/0"],
+  securityGroupId: albSecurityGroup.id,
+  description: "HTTP access",
+});
+
+const albHttpsIngressRule = new aws.ec2.SecurityGroupRule("alb-https-ingress", {
+  type: "ingress",
+  fromPort: 443,
+  toPort: 443,
+  protocol: "tcp",
+  cidrBlocks: ["0.0.0.0/0"],
+  securityGroupId: albSecurityGroup.id,
+  description: "HTTPS access",
+});
+
+// ALB egress rule
+const albEgressRule = new aws.ec2.SecurityGroupRule("alb-egress", {
+  type: "egress",
+  fromPort: 0,
+  toPort: 0,
+  protocol: "-1",
+  cidrBlocks: ["0.0.0.0/0"],
+  securityGroupId: albSecurityGroup.id,
+  description: "All outbound traffic",
+});
+
+// Update ECS security group to allow traffic from ALB
+const albToEcsRule = new aws.ec2.SecurityGroupRule("alb-to-ecs", {
+  type: "ingress",
+  fromPort: 4000,
+  toPort: 4000,
+  protocol: "tcp",
+  sourceSecurityGroupId: albSecurityGroup.id,
+  securityGroupId: ecsSecurityGroup.id,
+  description: "ALB to ECS access",
+});
+
+// Application Load Balancer
+const applicationLoadBalancer = new aws.lb.LoadBalancer("api-alb", {
+  name: `${projectName}-${environment}-api-alb`,
+  loadBalancerType: "application",
+  securityGroups: [albSecurityGroup.id],
+  subnets: subnets.then((s) => s.ids),
+  enableDeletionProtection: false,
+  tags: {
+    ...commonTags,
+    Purpose: "LoadBalancer",
+  },
+});
+
+// Target Group for ECS service
+const targetGroup = new aws.lb.TargetGroup("api-tg", {
+  name: `${projectName}-${environment}-api-tg`,
+  port: 4000,
+  protocol: "HTTP",
+  vpcId: vpc.then((v) => v.id),
+  targetType: "ip",
+  healthCheck: {
+    enabled: true,
+    healthyThreshold: 2,
+    unhealthyThreshold: 2,
+    timeout: 5,
+    interval: 30,
+    path: "/health",
+    matcher: "200",
+    protocol: "HTTP",
+    port: "traffic-port",
+  },
+  tags: {
+    ...commonTags,
+    Purpose: "TargetGroup",
+  },
+});
+
+// ALB Listener
+const albListener = new aws.lb.Listener("api-listener", {
+  loadBalancerArn: applicationLoadBalancer.arn,
+  port: 80,
+  protocol: "HTTP",
+  defaultActions: [
+    {
+      type: "forward",
+      targetGroupArn: targetGroup.arn,
+    },
+  ],
+  tags: {
+    ...commonTags,
+    Purpose: "LoadBalancerListener",
+  },
+});
+
+// ECS Service
+const ecsService = new aws.ecs.Service(
+  "api-service",
+  {
+    name: `${projectName}-${environment}-api-service`,
+    cluster: ecsCluster.arn,
+    taskDefinition: ecsTaskDefinition.arn,
+    desiredCount: 1,
+    launchType: "FARGATE",
+    networkConfiguration: {
+      subnets: subnets.then((s) => s.ids),
+      securityGroups: [ecsSecurityGroup.id],
+      assignPublicIp: true,
+    },
+    loadBalancers: [
+      {
+        targetGroupArn: targetGroup.arn,
+        containerName: "api",
+        containerPort: 4000,
+      },
+    ],
+    tags: {
+      ...commonTags,
+      Purpose: "ECSService",
+    },
+  },
+  {
+    dependsOn: [albListener],
+  }
+);
+
+// ============================================================================
+// ECS OUTPUTS
+// ============================================================================
+
+export const ecrRepositoryUrl = ecrRepository.repositoryUrl;
+export const ecsClusterName = ecsCluster.name;
+export const ecsClusterArn = ecsCluster.arn;
+export const ecsTaskExecutionRoleArn = ecsTaskExecutionRole.arn;
+export const ecsTaskRoleArn = ecsTaskRole.arn;
+export const ecsServiceName = ecsService.name;
+export const ecsServiceId = ecsService.id;
+export const applicationLoadBalancerDns = applicationLoadBalancer.dnsName;
+export const applicationLoadBalancerArn = applicationLoadBalancer.arn;
+export const apiUrl = pulumi.interpolate`http://${applicationLoadBalancer.dnsName}`;
+export const apiHealthUrl = pulumi.interpolate`http://${applicationLoadBalancer.dnsName}/health`;

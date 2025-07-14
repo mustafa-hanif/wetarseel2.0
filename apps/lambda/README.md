@@ -72,3 +72,10 @@ When you are done developing, don't forget to run `serverless deploy` to deploy 
 cd apps/lambda && pnpm run build
 cp dist/handler.js handler.js && zip lambda-code-fixed.zip handler.js
 aws lambda update-function-code --function-name wetarseel-dev-onmessage --zip-file fileb://lambda-code-fixed.zip && aws lambda update-function-code --function-name wetarseel-dev-ondefault --zip-file fileb://lambda-code-fixed.zip
+
+// to deploy api
+aws ecs update-service --cluster wetarseel-dev-cluster --service wetarseel-dev-api-service --force-new-deployment
+
+aws logs describe-log-streams --log-group-name "/ecs/wetarseel-dev-api" --order-by LastEventTime --descending --max-items 1 --query 'logStreams[0].logStreamName' --output text
+
+aws logs get-log-events --log-group-name "/ecs/wetarseel-dev-api" --log-stream-name "ecs/api/269ab2f3eb574df18e7af3c7bb8b8dda" --query 'events[*].message' --output text

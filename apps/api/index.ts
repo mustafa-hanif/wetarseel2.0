@@ -33,6 +33,9 @@ app.use(
 );
 
 app.use("*", async (c, next) => {
+  if (c.req.path === "/health") {
+    return next();
+  }
   let session;
   if (cache.has(JSON.stringify(c.req.raw.headers.toJSON()))) {
     console.log("session cache hit");
@@ -41,8 +44,8 @@ app.use("*", async (c, next) => {
     );
   } else {
     session = await auth.api.getSession({ headers: c.req.raw.headers });
-    const account = await getAccountFromUser(session?.user.email ?? "");
-    if (session?.user) {
+    if (session?.user?.email) {
+      const account = await getAccountFromUser(session.user.email);
       session.user.accountId = account?.id ?? "";
     }
     cache.set(

@@ -18,11 +18,13 @@
   "dependencies": {
     "@aws-sdk/client-apigatewaymanagementapi": "^3.840.0",
     "@aws-sdk/client-dynamodb": "^3.840.0",
+    "@aws-sdk/client-sqs": "^3.840.0",
     "@aws-sdk/lib-dynamodb": "^3.840.0",
     "buffer": "^6.0.3",
     "dynamodb-toolbox": "^2.6.4"
   },
   "devDependencies": {
+    "@types/aws-lambda": "^8.10.150",
     "@types/node": "^20.0.0",
     "esbuild": "^0.25.6",
     "typescript": "^5.0.0"
