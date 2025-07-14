@@ -1,0 +1,15 @@
+{
+  "requestContext": {
+    "connectionId": "test-connection-123",
+    "routeKey": "$connect",
+    "eventType": "CONNECT",
+    "domainName": "localhost",
+    "stage": "dev"
+  },
+  "queryStringParameters": {
+    "userId": "test-user-456"
+  },
+  "headers": {
+    "Host": "localhost:3001"
+  }
+}

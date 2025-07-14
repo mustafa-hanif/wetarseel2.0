@@ -260,6 +260,101 @@ export const dbInstanceArn = dbInstance.arn;
 export const dbSubnetGroupArn = dbSubnetGroup.arn;
 
 // ============================================================================
+// DYNAMODB INFRASTRUCTURE FOR LAMBDA FUNCTIONS
+// ============================================================================
+
+// DynamoDB Table for WebSocket connections
+const dynamoTable = new aws.dynamodb.Table("wetable", {
+  name: `${projectName}-${environment}-wetable`,
+  billingMode: "PAY_PER_REQUEST",
+
+  attributes: [
+    {
+      name: "pk",
+      type: "S",
+    },
+    {
+      name: "sk",
+      type: "S",
+    },
+  ],
+
+  hashKey: "pk",
+  rangeKey: "sk",
+
+  tags: {
+    ...commonTags,
+    Purpose: "WebSocketConnections",
+  },
+});
+
+// ============================================================================
+// LAMBDA INFRASTRUCTURE
+// ============================================================================
+
+// IAM Role for Lambda functions
+const lambdaRole = new aws.iam.Role("lambda-role", {
+  name: `${projectName}-${environment}-lambda-role`,
+  assumeRolePolicy: JSON.stringify({
+    Version: "2012-10-17",
+    Statement: [
+      {
+        Action: "sts:AssumeRole",
+        Effect: "Allow",
+        Principal: {
+          Service: "lambda.amazonaws.com",
+        },
+      },
+    ],
+  }),
+  tags: commonTags,
+});
+
+// Attach basic Lambda execution policy
+const lambdaBasicExecution = new aws.iam.RolePolicyAttachment(
+  "lambda-basic-execution",
+  {
+    role: lambdaRole.name,
+    policyArn:
+      "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole",
+  }
+);
+
+// Custom policy for DynamoDB and API Gateway Management
+const lambdaCustomPolicy = new aws.iam.RolePolicy("lambda-custom-policy", {
+  role: lambdaRole.id,
+  policy: pulumi.all([dynamoTable.arn]).apply(([tableArn]) =>
+    JSON.stringify({
+      Version: "2012-10-17",
+      Statement: [
+        {
+          Effect: "Allow",
+          Action: [
+            "dynamodb:PutItem",
+            "dynamodb:GetItem",
+            "dynamodb:DeleteItem",
+            "dynamodb:UpdateItem",
+            "dynamodb:Query",
+            "dynamodb:Scan",
+          ],
+          Resource: [tableArn, `${tableArn}/index/*`],
+        },
+        {
+          Effect: "Allow",
+          Action: ["execute-api:ManageConnections"],
+          Resource: "*",
+        },
+      ],
+    })
+  ),
+});
+
+// Build Lambda function
+const buildLambda = new command.local.Command("build-lambda", {
+  create: "cd ../lambda && pnpm install",
+});
+
+// ============================================================================
 // STATIC WEBSITE INFRASTRUCTURE
 // ============================================================================
 
@@ -291,6 +386,324 @@ const websiteBucket = new aws.s3.Bucket(
   },
   { dependsOn: [buildSite] }
 );
+
+// Create deployment package for Lambda
+const lambdaArchive = new aws.s3.BucketObject(
+  "lambda-archive",
+  {
+    bucket: websiteBucket.id,
+    key: `lambda/${environment}/lambda-deployment.zip`,
+    source: new pulumi.asset.FileArchive("../lambda"),
+    tags: commonTags,
+  },
+  { dependsOn: [buildLambda] }
+);
+
+// Imported Lambda functions (previously deployed via Serverless)
+// These functions are now managed by Pulumi after import
+const onConnectFunction = new aws.lambda.Function(
+  "onconnect",
+  {
+    architectures: ["x86_64"],
+    environment: {
+      variables: {
+        DYNAMODB_TABLE_NAME: dynamoTable.name,
+        ENVIRONMENT: environment,
+        SLS_FUNCTION: "onconnect",
+        SLS_IOT_ENDPOINT: "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
+        SLS_SERVICE: "wetarseel",
+        SLS_STAGE: "dev",
+      },
+    },
+    ephemeralStorage: {
+      size: 512,
+    },
+    handler: "index.handler",
+    loggingConfig: {
+      logFormat: "Text",
+      logGroup: "/aws/lambda/wetarseel-dev-onconnect",
+    },
+    memorySize: 1024,
+    name: "wetarseel-dev-onconnect",
+    packageType: "Zip",
+    role: "arn:aws:iam::147997141811:role/wetarseel-dev-me-central-1-lambdaRole",
+    runtime: aws.lambda.Runtime.NodeJS20dX,
+    tags: {
+      ...commonTags,
+      STAGE: "dev",
+      Purpose: "WebSocketOnConnect",
+    },
+    timeout: 6,
+    tracingConfig: {
+      mode: "PassThrough",
+    },
+  },
+  {
+    protect: true,
+  }
+);
+
+const onDisconnectFunction = new aws.lambda.Function(
+  "ondisconnect",
+  {
+    architectures: ["x86_64"],
+    environment: {
+      variables: {
+        DYNAMODB_TABLE_NAME: dynamoTable.name,
+        ENVIRONMENT: environment,
+        SLS_FUNCTION: "ondisconnect",
+        SLS_IOT_ENDPOINT: "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
+        SLS_SERVICE: "wetarseel",
+        SLS_STAGE: "dev",
+      },
+    },
+    ephemeralStorage: {
+      size: 512,
+    },
+    handler: "index.handler",
+    loggingConfig: {
+      logFormat: "Text",
+      logGroup: "/aws/lambda/wetarseel-dev-ondisconnect",
+    },
+    memorySize: 1024,
+    name: "wetarseel-dev-ondisconnect",
+    packageType: "Zip",
+    role: "arn:aws:iam::147997141811:role/wetarseel-dev-me-central-1-lambdaRole",
+    runtime: aws.lambda.Runtime.NodeJS20dX,
+    tags: {
+      ...commonTags,
+      STAGE: "dev",
+      Purpose: "WebSocketOnDisconnect",
+    },
+    timeout: 6,
+    tracingConfig: {
+      mode: "PassThrough",
+    },
+  },
+  {
+    protect: true,
+  }
+);
+
+const onMessageFunction = new aws.lambda.Function(
+  "onmessage",
+  {
+    architectures: ["x86_64"],
+    environment: {
+      variables: {
+        DYNAMODB_TABLE_NAME: dynamoTable.name,
+        ENVIRONMENT: environment,
+        SLS_FUNCTION: "onmessage",
+        SLS_IOT_ENDPOINT: "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
+        SLS_SERVICE: "wetarseel",
+        SLS_STAGE: "dev",
+      },
+    },
+    ephemeralStorage: {
+      size: 512,
+    },
+    handler: "index.handler",
+    loggingConfig: {
+      logFormat: "Text",
+      logGroup: "/aws/lambda/wetarseel-dev-onmessage",
+    },
+    memorySize: 1024,
+    name: "wetarseel-dev-onmessage",
+    packageType: "Zip",
+    role: "arn:aws:iam::147997141811:role/wetarseel-dev-me-central-1-lambdaRole",
+    runtime: aws.lambda.Runtime.NodeJS20dX,
+    tags: {
+      ...commonTags,
+      STAGE: "dev",
+      Purpose: "WebSocketOnMessage",
+    },
+    timeout: 6,
+    tracingConfig: {
+      mode: "PassThrough",
+    },
+  },
+  {
+    protect: true,
+  }
+);
+
+const onDefaultFunction = new aws.lambda.Function(
+  "ondefault",
+  {
+    architectures: ["x86_64"],
+    environment: {
+      variables: {
+        DYNAMODB_TABLE_NAME: dynamoTable.name,
+        ENVIRONMENT: environment,
+        SLS_FUNCTION: "ondefault",
+        SLS_IOT_ENDPOINT: "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
+        SLS_SERVICE: "wetarseel",
+        SLS_STAGE: "dev",
+      },
+    },
+    ephemeralStorage: {
+      size: 512,
+    },
+    handler: "index.handler",
+    loggingConfig: {
+      logFormat: "Text",
+      logGroup: "/aws/lambda/wetarseel-dev-ondefault",
+    },
+    memorySize: 1024,
+    name: "wetarseel-dev-ondefault",
+    packageType: "Zip",
+    role: "arn:aws:iam::147997141811:role/wetarseel-dev-me-central-1-lambdaRole",
+    runtime: aws.lambda.Runtime.NodeJS20dX,
+    tags: {
+      ...commonTags,
+      STAGE: "dev",
+      Purpose: "WebSocketDefault",
+    },
+    timeout: 6,
+    tracingConfig: {
+      mode: "PassThrough",
+    },
+  },
+  {
+    protect: true,
+  }
+);
+
+// ============================================================================
+// API GATEWAY WEBSOCKET API
+// ============================================================================
+
+// WebSocket API
+const webSocketApi = new aws.apigatewayv2.Api("websocket-api", {
+  name: `${projectName}-${environment}-websocket`,
+  protocolType: "WEBSOCKET",
+  routeSelectionExpression: "$request.body.action",
+  tags: {
+    ...commonTags,
+    Purpose: "WebSocketAPI",
+  },
+});
+
+// API Gateway integrations
+const onConnectIntegration = new aws.apigatewayv2.Integration(
+  "connect-integration",
+  {
+    apiId: webSocketApi.id,
+    integrationType: "AWS_PROXY",
+    integrationUri: onConnectFunction.invokeArn,
+  }
+);
+
+const onDisconnectIntegration = new aws.apigatewayv2.Integration(
+  "disconnect-integration",
+  {
+    apiId: webSocketApi.id,
+    integrationType: "AWS_PROXY",
+    integrationUri: onDisconnectFunction.invokeArn,
+  }
+);
+
+const onMessageIntegration = new aws.apigatewayv2.Integration(
+  "message-integration",
+  {
+    apiId: webSocketApi.id,
+    integrationType: "AWS_PROXY",
+    integrationUri: onMessageFunction.invokeArn,
+  }
+);
+
+const onDefaultIntegration = new aws.apigatewayv2.Integration(
+  "default-integration",
+  {
+    apiId: webSocketApi.id,
+    integrationType: "AWS_PROXY",
+    integrationUri: onDefaultFunction.invokeArn,
+  }
+);
+
+// API Gateway routes
+const connectRoute = new aws.apigatewayv2.Route("connect-route", {
+  apiId: webSocketApi.id,
+  routeKey: "$connect",
+  target: pulumi.interpolate`integrations/${onConnectIntegration.id}`,
+});
+
+const disconnectRoute = new aws.apigatewayv2.Route("disconnect-route", {
+  apiId: webSocketApi.id,
+  routeKey: "$disconnect",
+  target: pulumi.interpolate`integrations/${onDisconnectIntegration.id}`,
+});
+
+const messageRoute = new aws.apigatewayv2.Route("message-route", {
+  apiId: webSocketApi.id,
+  routeKey: "message",
+  target: pulumi.interpolate`integrations/${onMessageIntegration.id}`,
+});
+
+const defaultRoute = new aws.apigatewayv2.Route("default-route", {
+  apiId: webSocketApi.id,
+  routeKey: "$default",
+  target: pulumi.interpolate`integrations/${onDefaultIntegration.id}`,
+});
+
+// Lambda permissions for API Gateway
+const onConnectPermission = new aws.lambda.Permission("onconnect-permission", {
+  statementId: "AllowExecutionFromAPIGateway",
+  action: "lambda:InvokeFunction",
+  function: onConnectFunction.name,
+  principal: "apigateway.amazonaws.com",
+  sourceArn: pulumi.interpolate`${webSocketApi.executionArn}/*/*`,
+});
+
+const onDisconnectPermission = new aws.lambda.Permission(
+  "ondisconnect-permission",
+  {
+    statementId: "AllowExecutionFromAPIGateway",
+    action: "lambda:InvokeFunction",
+    function: onDisconnectFunction.name,
+    principal: "apigateway.amazonaws.com",
+    sourceArn: pulumi.interpolate`${webSocketApi.executionArn}/*/*`,
+  }
+);
+
+const onMessagePermission = new aws.lambda.Permission("onmessage-permission", {
+  statementId: "AllowExecutionFromAPIGateway",
+  action: "lambda:InvokeFunction",
+  function: onMessageFunction.name,
+  principal: "apigateway.amazonaws.com",
+  sourceArn: pulumi.interpolate`${webSocketApi.executionArn}/*/*`,
+});
+
+const onDefaultPermission = new aws.lambda.Permission("ondefault-permission", {
+  statementId: "AllowExecutionFromAPIGateway",
+  action: "lambda:InvokeFunction",
+  function: onDefaultFunction.name,
+  principal: "apigateway.amazonaws.com",
+  sourceArn: pulumi.interpolate`${webSocketApi.executionArn}/*/*`,
+});
+
+// API Gateway deployment
+const webSocketDeployment = new aws.apigatewayv2.Deployment(
+  "websocket-deployment",
+  {
+    apiId: webSocketApi.id,
+    description: `Deployment for ${environment} environment`,
+  },
+  {
+    dependsOn: [connectRoute, disconnectRoute, messageRoute, defaultRoute],
+  }
+);
+
+// API Gateway stage
+const webSocketStage = new aws.apigatewayv2.Stage("websocket-stage", {
+  apiId: webSocketApi.id,
+  deploymentId: webSocketDeployment.id,
+  name: environment,
+  tags: {
+    ...commonTags,
+    Purpose: "WebSocketStage",
+  },
+});
 
 const websiteBucketOwnership = new aws.s3.BucketOwnershipControls(
   "website-bucket-ownership",
@@ -432,3 +845,25 @@ const invalidateCloudFront = new command.local.Command(
   },
   { dependsOn: [deploySite] }
 );
+
+// ============================================================================
+// LAMBDA AND WEBSOCKET OUTPUTS
+// ============================================================================
+
+// DynamoDB outputs
+export const dynamoTableName = dynamoTable.name;
+export const dynamoTableArn = dynamoTable.arn;
+
+// Lambda function outputs
+export const onConnectFunctionArn = onConnectFunction.arn;
+export const onDisconnectFunctionArn = onDisconnectFunction.arn;
+export const onMessageFunctionArn = onMessageFunction.arn;
+export const onDefaultFunctionArn = onDefaultFunction.arn;
+
+// WebSocket API outputs
+export const webSocketApiId = webSocketApi.id;
+export const webSocketApiEndpoint = pulumi.interpolate`${webSocketApi.apiEndpoint}/${webSocketStage.name}`;
+export const webSocketUrl = pulumi.interpolate`wss://${webSocketApi.id}.execute-api.${region}.amazonaws.com/${webSocketStage.name}`;
+
+// Lambda role outputs for cross-stack references
+export const lambdaRoleArn = lambdaRole.arn;

@@ -1,0 +1,10 @@
+{
+  "requestContext": {
+    "connectionId": "test-connection-123",
+    "domainName": "localhost",
+    "stage": "dev"
+  },
+  "queryStringParameters": {
+    "userId": "test-user-456"
+  }
+}

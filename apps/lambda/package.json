@@ -1,8 +1,30 @@
 {
-  "type": "commonjs",
   "name": "lambda",
+  "version": "1.0.0",
+  "main": "handler.js",
+  "scripts": {
+    "build": "esbuild handler.ts --bundle --platform=node --target=node18 --outfile=dist/handler.js",
+    "test": "bun test-unit.mjs",
+    "test:unit": "bun test-unit.mjs",
+    "setup:db": "bun setup-local-db.mjs",
+    "test:with-db": "bun setup:db && bun test-local.mjs",
+    "sam:build": "bun run build && sam build",
+    "sam:start": "sam local start-api --port 3001",
+    "sam:start-lambda": "sam local start-lambda",
+    "websocket:dev": "bun run websocket-server.ts",
+    "websocket:test": "bun run test-websocket-client.ts",
+    "dynamodb:local": "docker run -d -p 8000:8000 --name dynamodb-local amazon/dynamodb-local"
+  },
   "dependencies": {
     "@aws-sdk/client-apigatewaymanagementapi": "^3.840.0",
-    "buffer": "^6.0.3"
+    "@aws-sdk/client-dynamodb": "^3.840.0",
+    "@aws-sdk/lib-dynamodb": "^3.840.0",
+    "buffer": "^6.0.3",
+    "dynamodb-toolbox": "^2.6.4"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "esbuild": "^0.25.6",
+    "typescript": "^5.0.0"
   }
 }

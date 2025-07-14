@@ -1,0 +1,90 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Local testing for WebSocket Lambda functions
+
+Globals:
+  Function:
+    Timeout: 30
+    Runtime: nodejs18.x
+    Environment:
+      Variables:
+        ENVIRONMENT: dev
+        AWS_SAM_LOCAL: true
+        DYNAMODB_TABLE_NAME: WeTable
+        DYNAMODB_ENDPOINT: http://host.docker.internal:8000
+
+Resources:
+  # Lambda Functions with HTTP Events for testing
+  OnConnectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/
+      Handler: handler.onconnect
+      Events:
+        ConnectApi:
+          Type: Api
+          Properties:
+            Path: /connect
+            Method: post
+
+  OnDisconnectFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/
+      Handler: handler.ondisconnect
+      Events:
+        DisconnectApi:
+          Type: Api
+          Properties:
+            Path: /disconnect
+            Method: post
+
+  OnMessageFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/
+      Handler: handler.onmessage
+      Events:
+        MessageApi:
+          Type: Api
+          Properties:
+            Path: /message
+            Method: post
+
+  OnDefaultFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: dist/
+      Handler: handler.ondefault
+      Events:
+        DefaultApi:
+          Type: Api
+          Properties:
+            Path: /default
+            Method: post
+
+  # Local DynamoDB Table
+  WeTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: WeTable
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: pk
+          AttributeType: S
+        - AttributeName: sk
+          AttributeType: S
+      KeySchema:
+        - AttributeName: pk
+          KeyType: HASH
+        - AttributeName: sk
+          KeyType: RANGE
+
+Outputs:
+  WebSocketURL:
+    Description: "WebSocket API Gateway URL"
+    Value: !Sub "ws://localhost:3001/${WebSocketStage}"
+
+  WebSocketApiId:
+    Description: "WebSocket API ID"
+    Value: !Ref WebSocketApi
