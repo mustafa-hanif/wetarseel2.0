@@ -399,173 +399,131 @@ const lambdaArchive = new aws.s3.BucketObject(
   { dependsOn: [buildLambda] }
 );
 
-// Imported Lambda functions (previously deployed via Serverless)
-// These functions are now managed by Pulumi after import
+// Lambda code archive - builds from source
+const lambdaCodeArchive = new pulumi.asset.FileArchive("../lambda/dist");
+
+// Lambda functions - now deployed from source code
 const onConnectFunction = new aws.lambda.Function(
   "onconnect",
   {
-    architectures: ["x86_64"],
+    name: `${projectName}-${environment}-onconnect`,
+    role: lambdaRole.arn,
+    handler: "handler.onconnect",
+    runtime: aws.lambda.Runtime.NodeJS20dX,
+    timeout: 30,
+    memorySize: 1024,
+
+    // Use source code from dist directory
+    code: lambdaCodeArchive,
+
     environment: {
       variables: {
         DYNAMODB_TABLE_NAME: dynamoTable.name,
         ENVIRONMENT: environment,
-        SLS_FUNCTION: "onconnect",
-        SLS_IOT_ENDPOINT: "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
-        SLS_SERVICE: "wetarseel",
-        SLS_STAGE: "dev",
       },
     },
-    ephemeralStorage: {
-      size: 512,
-    },
-    handler: "index.handler",
-    loggingConfig: {
-      logFormat: "Text",
-      logGroup: "/aws/lambda/wetarseel-dev-onconnect",
-    },
-    memorySize: 1024,
-    name: "wetarseel-dev-onconnect",
-    packageType: "Zip",
-    role: "arn:aws:iam::147997141811:role/wetarseel-dev-me-central-1-lambdaRole",
-    runtime: aws.lambda.Runtime.NodeJS20dX,
+
     tags: {
       ...commonTags,
-      STAGE: "dev",
       Purpose: "WebSocketOnConnect",
-    },
-    timeout: 6,
-    tracingConfig: {
-      mode: "PassThrough",
     },
   },
   {
-    protect: true,
+    dependsOn: [lambdaCustomPolicy, lambdaBasicExecution],
+    // Remove protect to allow code updates
   }
 );
 
 const onDisconnectFunction = new aws.lambda.Function(
   "ondisconnect",
   {
-    architectures: ["x86_64"],
+    name: `${projectName}-${environment}-ondisconnect`,
+    role: lambdaRole.arn,
+    handler: "handler.ondisconnect",
+    runtime: aws.lambda.Runtime.NodeJS20dX,
+    timeout: 30,
+    memorySize: 1024,
+
+    // Use source code from dist directory
+    code: lambdaCodeArchive,
+
     environment: {
       variables: {
         DYNAMODB_TABLE_NAME: dynamoTable.name,
         ENVIRONMENT: environment,
-        SLS_FUNCTION: "ondisconnect",
-        SLS_IOT_ENDPOINT: "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
-        SLS_SERVICE: "wetarseel",
-        SLS_STAGE: "dev",
       },
     },
-    ephemeralStorage: {
-      size: 512,
-    },
-    handler: "index.handler",
-    loggingConfig: {
-      logFormat: "Text",
-      logGroup: "/aws/lambda/wetarseel-dev-ondisconnect",
-    },
-    memorySize: 1024,
-    name: "wetarseel-dev-ondisconnect",
-    packageType: "Zip",
-    role: "arn:aws:iam::147997141811:role/wetarseel-dev-me-central-1-lambdaRole",
-    runtime: aws.lambda.Runtime.NodeJS20dX,
+
     tags: {
       ...commonTags,
-      STAGE: "dev",
       Purpose: "WebSocketOnDisconnect",
-    },
-    timeout: 6,
-    tracingConfig: {
-      mode: "PassThrough",
     },
   },
   {
-    protect: true,
+    dependsOn: [lambdaCustomPolicy, lambdaBasicExecution],
+    // Remove protect to allow code updates
   }
 );
 
 const onMessageFunction = new aws.lambda.Function(
   "onmessage",
   {
-    architectures: ["x86_64"],
+    name: `${projectName}-${environment}-onmessage`,
+    role: lambdaRole.arn,
+    handler: "handler.onmessage",
+    runtime: aws.lambda.Runtime.NodeJS20dX,
+    timeout: 30,
+    memorySize: 1024,
+
+    // Use source code from dist directory
+    code: lambdaCodeArchive,
+
     environment: {
       variables: {
         DYNAMODB_TABLE_NAME: dynamoTable.name,
         ENVIRONMENT: environment,
-        SLS_FUNCTION: "onmessage",
-        SLS_IOT_ENDPOINT: "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
-        SLS_SERVICE: "wetarseel",
-        SLS_STAGE: "dev",
       },
     },
-    ephemeralStorage: {
-      size: 512,
-    },
-    handler: "index.handler",
-    loggingConfig: {
-      logFormat: "Text",
-      logGroup: "/aws/lambda/wetarseel-dev-onmessage",
-    },
-    memorySize: 1024,
-    name: "wetarseel-dev-onmessage",
-    packageType: "Zip",
-    role: "arn:aws:iam::147997141811:role/wetarseel-dev-me-central-1-lambdaRole",
-    runtime: aws.lambda.Runtime.NodeJS20dX,
+
     tags: {
       ...commonTags,
-      STAGE: "dev",
       Purpose: "WebSocketOnMessage",
-    },
-    timeout: 6,
-    tracingConfig: {
-      mode: "PassThrough",
     },
   },
   {
-    protect: true,
+    dependsOn: [lambdaCustomPolicy, lambdaBasicExecution],
+    // Remove protect to allow code updates
   }
 );
 
 const onDefaultFunction = new aws.lambda.Function(
   "ondefault",
   {
-    architectures: ["x86_64"],
+    name: `${projectName}-${environment}-ondefault`,
+    role: lambdaRole.arn,
+    handler: "handler.ondefault",
+    runtime: aws.lambda.Runtime.NodeJS20dX,
+    timeout: 30,
+    memorySize: 1024,
+
+    // Use source code from dist directory
+    code: lambdaCodeArchive,
+
     environment: {
       variables: {
         DYNAMODB_TABLE_NAME: dynamoTable.name,
         ENVIRONMENT: environment,
-        SLS_FUNCTION: "ondefault",
-        SLS_IOT_ENDPOINT: "a3d8t9avmqnnb7-ats.iot.me-central-1.amazonaws.com",
-        SLS_SERVICE: "wetarseel",
-        SLS_STAGE: "dev",
       },
     },
-    ephemeralStorage: {
-      size: 512,
-    },
-    handler: "index.handler",
-    loggingConfig: {
-      logFormat: "Text",
-      logGroup: "/aws/lambda/wetarseel-dev-ondefault",
-    },
-    memorySize: 1024,
-    name: "wetarseel-dev-ondefault",
-    packageType: "Zip",
-    role: "arn:aws:iam::147997141811:role/wetarseel-dev-me-central-1-lambdaRole",
-    runtime: aws.lambda.Runtime.NodeJS20dX,
+
     tags: {
       ...commonTags,
-      STAGE: "dev",
       Purpose: "WebSocketDefault",
-    },
-    timeout: 6,
-    tracingConfig: {
-      mode: "PassThrough",
     },
   },
   {
-    protect: true,
+    dependsOn: [lambdaCustomPolicy, lambdaBasicExecution],
+    // Remove protect to allow code updates
   }
 );
 
