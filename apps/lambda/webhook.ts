@@ -63,9 +63,41 @@ export const handler = async (
   console.log("Received event:", JSON.stringify(event, null, 2));
 
   try {
-    const method = event.requestContext.http.method;
     const queueUrl = process.env.SQS_QUEUE_URL;
 
+    if (!queueUrl) {
+      console.error("SQS_QUEUE_URL environment variable not set");
+      return {
+        statusCode: 500,
+        body: JSON.stringify({ error: "Internal server error" }),
+      };
+    }
+
+    const main = await mainQueueHandler(event, queueUrl);
+    try {
+      let devQueue = await mainQueueHandler(
+        event,
+        "https://sqs.me-central-1.amazonaws.com/147997141811/wetarseel-dev-whatsapp-local"
+      );
+    } catch (e) {
+      console.log("Failed to send to dev queue", e);
+    }
+    return main;
+  } catch (error) {
+    console.error("Unexpected error:", error);
+    return {
+      statusCode: 500,
+      body: JSON.stringify({ error: "Internal server error" }),
+    };
+  }
+};
+
+const mainQueueHandler = async (
+  event: APIGatewayProxyEventV2,
+  queueUrl: string
+): Promise<APIGatewayProxyResultV2> => {
+  try {
+    const method = event.requestContext.http.method;
     if (!queueUrl) {
       console.error("SQS_QUEUE_URL environment variable not set");
       return {
@@ -154,7 +186,7 @@ export const handler = async (
 
       try {
         const result = await sqs.send(sendMessageCommand);
-        console.log("Message sent to SQS:", result.MessageId);
+        console.log("Message sent to SQS:", result.MessageId, queueUrl);
 
         return {
           statusCode: 200,

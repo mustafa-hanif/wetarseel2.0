@@ -1,12 +1,43 @@
+// Load environment variables first
+import "dotenv/config";
+
 import { getAccountFromUser } from "queries/getAccountFromUser";
 import { auth } from "./auth";
 import { db, type s, pool } from "./db";
 import { migrateUsers } from "./migrate-users";
 import items from "./routes/items";
 import mutations from "./routes/mutations"; // Add this import
+import { whatsappConsumer } from "./src/services/whatsapp-consumer";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { LRUCache } from "lru-cache";
+
+// Enhanced logging utility
+const logger = {
+  info: (message: string, meta?: any) => {
+    console.log(
+      `[INFO] ${new Date().toISOString()} - ${message}`,
+      meta ? JSON.stringify(meta) : ""
+    );
+  },
+  error: (message: string, error?: any) => {
+    console.error(`[ERROR] ${new Date().toISOString()} - ${message}`, error);
+  },
+  warn: (message: string, meta?: any) => {
+    console.warn(
+      `[WARN] ${new Date().toISOString()} - ${message}`,
+      meta ? JSON.stringify(meta) : ""
+    );
+  },
+  debug: (message: string, meta?: any) => {
+    if (process.env.NODE_ENV !== "production") {
+      console.log(
+        `[DEBUG] ${new Date().toISOString()} - ${message}`,
+        meta ? JSON.stringify(meta) : ""
+      );
+    }
+  },
+};
 
 export const cache = new LRUCache({
   max: 1000,
@@ -21,7 +52,7 @@ const app = new Hono<{
 }>();
 
 app.use(
-  "/api/auth/*", // or replace with "*" to enable cors for all routes
+  "/api/*", // Enable CORS for all API routes
   cors({
     origin: "http://localhost:3000", // replace with your origin
     allowHeaders: ["Content-Type", "Authorization"],
@@ -38,7 +69,7 @@ app.use("*", async (c, next) => {
   }
   let session;
   if (cache.has(JSON.stringify(c.req.raw.headers.toJSON()))) {
-    console.log("session cache hit");
+    logger.debug("session cache hit");
     session = JSON.parse(
       cache.get(JSON.stringify(c.req.raw.headers.toJSON())) as string
     );
@@ -53,7 +84,7 @@ app.use("*", async (c, next) => {
       JSON.stringify(session)
     );
   }
-
+  // console.log({ session });
   if (!session) {
     c.set("user", null);
     c.set("session", null);
@@ -73,6 +104,7 @@ app.on(["GET", "POST", "PUT", "DELETE"], "/api/items/**", async (c) => {
   const user = c.get("user");
   // Optional: Check authentication
   if (!user || !user?.accountId) {
+    console.log("here", user);
     return c.json({ error: "Unauthorized" }, 401);
   }
 
@@ -80,7 +112,7 @@ app.on(["GET", "POST", "PUT", "DELETE"], "/api/items/**", async (c) => {
     const response = await items.fetch(c.req.raw, user.accountId);
     return response;
   } catch (error) {
-    console.error("Error handling items request:", error);
+    logger.error("Error handling items request:", error);
     return c.json({ error: "Internal Server Error" }, 500);
   }
 });
@@ -103,7 +135,7 @@ app.on(["POST", "PUT", "DELETE"], "/api/mutations/**", async (c) => {
     );
     return response;
   } catch (error) {
-    console.error("Error handling mutation request:", error);
+    logger.error("Error handling mutation request:", error);
     return c.json({ error: "Internal Server Error" }, 500);
   }
 });
@@ -132,7 +164,7 @@ app.get("/api/accounts/users", async (c) => {
 
     return c.json(usersInAccount);
   } catch (error) {
-    console.error("Error fetching users for account:", error);
+    logger.error("Error fetching users for account:", error);
     return c.json({ error: "Internal Server Error" }, 500);
   }
 });
@@ -142,6 +174,12 @@ app.get("/health", (c) => c.text("API is healthy!"));
 app.get("/hello", (c) => {
   migrateUsers();
   return c.text("Hello World!");
+});
+
+// Monitoring dashboard
+app.get("/monitoring", async (c) => {
+  const html = await Bun.file("./monitoring.html").text();
+  return c.html(html);
 });
 
 // const server = Bun.serve({
@@ -169,7 +207,27 @@ app.get("/hello", (c) => {
 //   },
 // });
 
-console.log(`API running at http://localhost:4000`);
+// Start WhatsApp SQS consumer
+try {
+  whatsappConsumer.start();
+  logger.info("WhatsApp SQS consumer started successfully");
+} catch (error) {
+  logger.error("Failed to start WhatsApp SQS consumer:", error);
+}
+
+// Add WhatsApp consumer status endpoint
+app.get("/api/whatsapp/status", (c) => {
+  const status = whatsappConsumer.getStatus();
+  return c.json({
+    whatsappConsumer: status,
+    timestamp: new Date().toISOString(),
+  });
+});
+
+logger.info("API server started", {
+  port: 4000,
+  environment: process.env.NODE_ENV || "development",
+});
 export default {
   port: 4000,
   fetch: app.fetch,

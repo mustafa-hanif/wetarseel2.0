@@ -1,12 +1,12 @@
 import Tag from "lucide-solid/icons/tag";
 import User from "lucide-solid/icons/user";
-import { createEffect, createSignal, For, Show } from "solid-js";
+import { Accessor, createEffect, createSignal, For, Show } from "solid-js";
 import { Conversation } from "@/types/chat";
 import { formatDate } from "@/utils/chatUtils";
 import { Button } from "../ui/button";
 
 interface ConversationListProps {
-  conversations: Conversation[];
+  conversations: Accessor<Conversation[]>;
   selectedConversation: Conversation | null;
   onConversationSelect: (conversation: Conversation) => void;
 }
@@ -15,8 +15,9 @@ export function ConversationList(props: ConversationListProps) {
   const [loadMore, setLoadMore] = createSignal(10);
   return (
     <div class="flex-1 overflow-y-auto">
-      <For each={props.conversations.slice(0, loadMore())}>
+      <For each={props.conversations().slice(0, loadMore())}>
         {(conversation) => {
+          console.log("Re-render");
           const tags = (conversation?.leads?.tags ?? []) as string[];
           return (
             <div
@@ -80,7 +81,7 @@ export function ConversationList(props: ConversationListProps) {
         }}
       </For>
 
-      <Show when={props.conversations.length > 0}>
+      <Show when={props.conversations().length > 0}>
         <Button
           class="mx-auto mt-4"
           variant={"outline"}
@@ -89,7 +90,7 @@ export function ConversationList(props: ConversationListProps) {
           Load More
         </Button>
       </Show>
-      <Show when={props.conversations.length === 0}>
+      <Show when={props.conversations().length === 0}>
         <div class="p-8 text-center text-gray-500">
           <div class="text-lg mb-2">No conversations found</div>
           <div class="text-sm">Try adjusting your search or filters</div>

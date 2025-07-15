@@ -8,8 +8,13 @@ import {
   useRouter,
   useLocation,
 } from "@tanstack/solid-router";
-import { createEffect, Show, For } from "solid-js";
+import { createEffect, Show, For, Accessor } from "solid-js";
 import { Icon } from "@iconify-icon/solid";
+import { dbquery } from "@/lib/useQueryTable";
+import { useSequentialConversations } from "@/hooks/useSequentialQuery";
+import { UseQueryResult } from "@tanstack/solid-query";
+import { Conversation } from "@/types/chat";
+import { queryClient } from "@/hooks/useQuery";
 
 export const Route = createFileRoute("/(app)")({
   component: RouteComponent,
@@ -98,14 +103,86 @@ const getMenuList = () => {
   ];
 };
 
+let websocket: WebSocket | undefined;
+
 function RouteComponent() {
   const data = useAuth();
   const router = useRouter();
   const location = useLocation();
 
+  const account = dbquery(
+    "accounts",
+    () => ({
+      filter: `id.=.` + data.data?.accountId,
+      limit: 1,
+      skipAccountCheck: true,
+    }),
+    () => [data.data?.accountId ?? "0"], // Dependencies array
+    {
+      enabled: () => !!data.data?.accountId,
+    }
+  );
+
+  const conversationsState = useSequentialConversations();
+
   createEffect(() => {
     if (data.data) {
       console.log("User is authenticated:", data.data.email);
+      if (data.data.accountId && !websocket && account().data) {
+        websocket = new WebSocket(
+          `wss://vxgv2qg8ae.execute-api.me-central-1.amazonaws.com/dev?phoneNumberId=${account().data?.[0]?.phone_id}`
+        );
+        websocket.onmessage = (event) => {
+          // console.log("Received message:", event.data);
+          const data = JSON.parse(event.data) as {
+            from: string;
+            message: {
+              from: string;
+              text: {
+                body: string;
+              };
+            };
+          };
+          const from = data.message.from;
+          // find convoId
+          const convoQuery = conversationsState.query as Accessor<
+            UseQueryResult<Conversation[], Error>
+          >;
+          const convo = convoQuery().data?.find(
+            (convo) => convo.leads.phone_number === from
+          );
+          if (convo) {
+            console.log("Found convo:", convo.id);
+            queryClient.setQueryData(
+              [
+                "conversations",
+                { expand: "from.leads,message.messages", limit: 100000 },
+                [],
+              ],
+              (dataA: Conversation[] | undefined) => {
+                if (!dataA) return dataA;
+
+                return dataA.map((conversation, index) => {
+                  if (conversation.id === convo.id) {
+                    return {
+                      ...conversation, // Create new conversation object
+                      messages: {
+                        ...conversation.messages, // Create new messages object
+                        message: data.message.text.body,
+                        created: new Date().toISOString(),
+                        type: "text",
+                      },
+                    };
+                  }
+                  return conversation; // Keep other conversations as-is
+                });
+              }
+            );
+          } else {
+            console.log("No convo found for:", from);
+          }
+        };
+      }
     }
     if (data.isError) {
       router.history.push("/auth/sign-in");

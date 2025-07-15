@@ -24,19 +24,28 @@ import { item } from "dynamodb-toolbox/schema/item";
 import { string } from "dynamodb-toolbox/schema/string";
 import { account, conversation, message } from "./mySchema";
 
-const dynamoDBClient = new DynamoDBClient({
-  // region: "me-central-1", // Replace with your region
-  region: "localhost",
-  endpoint: "http://localhost:8000", // Default port for DynamoDB Local
-  credentials: {
-    accessKeyId: "ggevny", // Can be anything for local
-    secretAccessKey: "r2q3sh", // Can be anything for local
-  },
+// export const dynamoDBClient = new DynamoDBClient(
+//   process.env.NODE_ENV === "development"
+//     ? {
+//         region: "localhost",
+//         endpoint: process.env.DYNAMODB_ENDPOINT || "http://localhost:8000",
+//         credentials: {
+//           accessKeyId: "ggevny", // Can be anything for local
+//           secretAccessKey: "r2q3sh", // Can be anything for local
+//         },
+//       }
+//     : {
+//         region: process.env.AWS_REGION || "me-central-1",
+//       }
+// );
+
+export const dynamoDBClient = new DynamoDBClient({
+  region: process.env.AWS_REGION || "me-central-1",
 });
 
 export const WeTable = new Table({
   // 👇 DynamoDB config.
-  name: "WeTable",
+  name: "wetarseel-dev-wetable",
   partitionKey: { name: "pk", type: "string" },
   sortKey: { name: "sk", type: "string" },
   // 👇 Inject the client
@@ -67,4 +76,18 @@ export const Message = new Entity({
       sk: skPrefixer.encode([conversationId, time, id].join("#")),
     };
   },
+});
+
+export const userConnection = item({
+  phoneNumberId: string().key().transform(prefix("USER")).savedAs("pk"),
+  phoneNumberIdRaw: string().key().savedAs("sk"),
+  connectionId: string(), // Remove prefix for sk
+  domain: string(),
+  stage: string(),
+});
+
+export const UserConnection = new Entity({
+  name: "USER_CONNECTION",
+  table: WeTable,
+  schema: userConnection,
 });

@@ -23,9 +23,11 @@ export function ChatHeader(props: ChatHeaderProps) {
             <User size={16} class="text-gray-600" />
           </div>
           <div>
-            <h3 class="font-medium text-gray-900">{props.conversation.name}</h3>
+            <h3 class="font-medium text-gray-900">
+              {props.conversation.leads.name}
+            </h3>
             <p class="text-sm text-gray-500">
-              {props.conversation.phone_number}
+              {props.conversation.leads.phone_number}
             </p>
           </div>
         </div>
@@ -53,7 +55,7 @@ export function ChatHeader(props: ChatHeaderProps) {
 
       {/* Tags */}
       <div class="flex gap-2 mt-3">
-        <For each={(props?.conversation?.tags ?? []) as string[]}>
+        <For each={(props?.conversation?.leads.tags ?? []) as string[]}>
           {(tag) => (
             <span class="inline-flex items-center gap-1 px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded">
               <Tag size={10} />

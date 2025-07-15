@@ -34,7 +34,11 @@ export function MessagesArea(props: MessagesAreaProps) {
       }}
     >
       <div class="space-y-4">
-        <For each={props.messages}>
+        <For
+          each={props.messages
+            ?.slice(0, 10)
+            .sort((a, b) => ((a.created ?? "") > (b.created ?? "") ? 1 : -1))}
+        >
           {(message) => (
             <div
               class={`flex ${message.from === "agent" ? "justify-end" : "justify-start"}`}

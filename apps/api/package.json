@@ -4,7 +4,8 @@
   "type": "module",
   "private": true,
   "scripts": {
-    "dev": "bun --watch index.ts"
+    "dev": "bun --watch index.ts",
+    "start": "NODE_ENV=production bun index.ts"
   },
   "devDependencies": {
     "@types/bun": "latest",
@@ -16,6 +17,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.840.0",
+    "@aws-sdk/client-sqs": "^3.844.0",
     "@aws-sdk/lib-dynamodb": "^3.840.0",
     "better-auth": "^1.2.12",
     "dotenv": "^17.2.0",

@@ -8,7 +8,9 @@ export const fetchQuery = <T extends TableName>(
   const tableQueryOptions = queryOptions({
     queryKey,
     queryFn: async (): Promise<s.SelectableForTable<T>[]> => {
-      const res = await fetch(url);
+      const res = await fetch(url, {
+        credentials: "include",
+      });
       if (!res.ok) throw new Error(await res.text());
       return res.json();
     },

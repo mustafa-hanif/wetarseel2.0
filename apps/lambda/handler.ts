@@ -32,22 +32,12 @@ const dynamoDBClient = new DynamoDBClient(
       }
 );
 
-export const connection = item({
-  id: string().key().transform(prefix("CONNECTION")).savedAs("pk"),
-  connectionId: string().key().savedAs("sk"), // Remove prefix for sk
-  userId: string(),
-  connectedAt: string(),
+export const userConnection = item({
+  phoneNumberId: string().key().transform(prefix("USER")).savedAs("pk"),
+  phoneNumberIdRaw: string().key().savedAs("sk"),
+  connectionId: string(), // Remove prefix for sk\
   domain: string(),
   stage: string(),
-});
-
-export const userConnection = item({
-  /**
-   * User id
-   */
-  id: string().key().transform(prefix("USER")).savedAs("pk"),
-  userId: string().key().savedAs("sk"), // Remove prefix for sk
-  connectionId: string(),
 });
 
 export const WeTable = new Table({
@@ -55,12 +45,6 @@ export const WeTable = new Table({
   partitionKey: { name: "pk", type: "string" },
   sortKey: { name: "sk", type: "string" },
   documentClient: DynamoDBDocumentClient.from(dynamoDBClient),
-});
-
-export const Connection = new Entity({
-  name: "CONNECTION",
-  table: WeTable,
-  schema: connection,
 });
 
 export const UserConnection = new Entity({
@@ -76,7 +60,7 @@ interface OnConnectEvent {
     stage: string;
   };
   queryStringParameters: {
-    userId: string;
+    phoneNumberId: string;
   };
 }
 
@@ -91,36 +75,22 @@ const onconnect = async (event: OnConnectEvent): Promise<OnConnectResponse> => {
     const connectionId = event.requestContext.connectionId;
     const domain = event.requestContext.domainName;
     const stage = event.requestContext.stage;
-    const userId = event.queryStringParameters?.userId || "anonymous";
+    const phoneNumberId = event.queryStringParameters?.phoneNumberId || "";
 
-    console.log("Connecting user:", userId, "with connectionId:", connectionId);
+    console.log(
+      "Connecting phone number:",
+      phoneNumberId,
+      "with connectionId:",
+      connectionId
+    );
     console.log("Table name:", process.env.DYNAMODB_TABLE_NAME);
 
-    const connectionItem = {
-      id: connectionId,
-      connectionId: connectionId,
-      connectedAt: new Date().toISOString(),
-      userId: userId,
-      domain: domain,
-      stage: stage,
-    };
-    console.log(
-      "Connection item to store:",
-      JSON.stringify(connectionItem, null, 2)
-    );
-
-    const connectionResult = await Connection.build(PutItemCommand)
-      .item(connectionItem)
-      .send();
-    console.log(
-      "Connection stored result:",
-      JSON.stringify(connectionResult, null, 2)
-    );
-
     const userConnectionItem = {
-      id: userId,
-      userId: userId,
-      connectionId: connectionId,
+      phoneNumberId,
+      phoneNumberIdRaw: phoneNumberId,
+      connectionId,
+      domain,
+      stage,
     };
     console.log(
       "UserConnection item to store:",
@@ -135,75 +105,10 @@ const onconnect = async (event: OnConnectEvent): Promise<OnConnectResponse> => {
       JSON.stringify(userConnectionResult, null, 2)
     );
 
-    console.log("Successfully stored connection for user:", userId);
+    console.log("Successfully stored connection for user:", phoneNumberId);
     return { statusCode: 200 };
   } catch (error) {
     console.error("Error in onconnect:", error);
-    return { statusCode: 500 };
-  }
-};
-
-const ondisconnect = async (event: {
-  requestContext: { connectionId: string };
-}) => {
-  try {
-    console.log("OnDisconnect event:", JSON.stringify(event, null, 2));
-
-    const connectionId = event.requestContext.connectionId;
-    console.log("Disconnecting connectionId:", connectionId);
-
-    // Get the connection record to find the userId
-    console.log("Looking up connection with keys:", {
-      id: connectionId,
-      connectionId: connectionId,
-    });
-    const { Item } = await Connection.build(GetItemCommand)
-      .key({ id: connectionId as string, connectionId: connectionId as string })
-      .send();
-
-    console.log("Found connection item:", JSON.stringify(Item, null, 2));
-
-    // Delete the connection record
-    console.log("Deleting connection with keys:", {
-      id: connectionId,
-      connectionId: connectionId,
-    });
-    const deleteConnectionResult = await Connection.build(DeleteItemCommand)
-      .key({
-        id: connectionId as string,
-        connectionId: connectionId as string,
-      })
-      .send();
-    console.log(
-      "Connection delete result:",
-      JSON.stringify(deleteConnectionResult, null, 2)
-    );
-
-    // Delete the user connection record if we found a userId
-    if (Item?.userId) {
-      console.log("Deleting user connection with keys:", {
-        id: Item.userId,
-        userId: Item.userId,
-      });
-      const deleteUserConnectionResult = await UserConnection.build(
-        DeleteItemCommand
-      )
-        .key({ id: Item.userId, userId: Item.userId })
-        .send();
-      console.log(
-        "UserConnection delete result:",
-        JSON.stringify(deleteUserConnectionResult, null, 2)
-      );
-    } else {
-      console.log(
-        "No userId found in connection item, skipping user connection deletion"
-      );
-    }
-
-    console.log("Successfully disconnected:", connectionId);
-    return { statusCode: 200 };
-  } catch (error) {
-    console.error("Error in ondisconnect:", error);
     return { statusCode: 500 };
   }
 };
@@ -254,18 +159,4 @@ const onmessage = async (event: {
   };
 };
 
-const ondefault = async (event: {
-  requestContext: { connectionId: string };
-}) => {
-  const connectionId = event.requestContext.connectionId;
-  console.log("default", JSON.stringify(event, null, 2));
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: "Default route",
-      connectionId: connectionId,
-    }),
-  };
-};
-
-export { onconnect, ondisconnect, onmessage, ondefault };
+export { onconnect };

@@ -3131,9 +3131,9 @@ or increase socketAcquisitionWarningTimeout=(millis) in the NodeHttpHandler conf
       [Symbol.iterator]() {
         return this.sessions[Symbol.iterator]();
       }
-      destroy(connection2) {
+      destroy(connection) {
         for (const session of this.sessions) {
-          if (session === connection2) {
+          if (session === connection) {
             if (!session.destroyed) {
               session.destroy();
             }
@@ -21677,7 +21677,7 @@ var require_dist_cjs56 = __commonJS({
       CreateGlobalTableCommand: () => CreateGlobalTableCommand,
       CreateTableCommand: () => CreateTableCommand,
       DeleteBackupCommand: () => DeleteBackupCommand,
-      DeleteItemCommand: () => DeleteItemCommand2,
+      DeleteItemCommand: () => DeleteItemCommand3,
       DeleteResourcePolicyCommand: () => DeleteResourcePolicyCommand,
       DeleteTableCommand: () => DeleteTableCommand,
       DescribeBackupCommand: () => DescribeBackupCommand,
@@ -21709,7 +21709,7 @@ var require_dist_cjs56 = __commonJS({
       ExportTableToPointInTimeCommand: () => ExportTableToPointInTimeCommand,
       ExportType: () => ExportType,
       ExportViewType: () => ExportViewType,
-      GetItemCommand: () => GetItemCommand2,
+      GetItemCommand: () => GetItemCommand3,
       GetResourcePolicyCommand: () => GetResourcePolicyCommand,
       GlobalTableAlreadyExistsException: () => GlobalTableAlreadyExistsException,
       GlobalTableNotFoundException: () => GlobalTableNotFoundException,
@@ -25954,7 +25954,7 @@ var require_dist_cjs56 = __commonJS({
         __name(this, "DeleteBackupCommand");
       }
     };
-    var DeleteItemCommand2 = class extends import_smithy_client28.Command.classBuilder().ep({
+    var DeleteItemCommand3 = class extends import_smithy_client28.Command.classBuilder().ep({
       ...commonParams3,
       ResourceArn: { type: "contextParams", name: "TableName" }
     }).m(function(Command, cs, config, o3) {
@@ -26205,7 +26205,7 @@ var require_dist_cjs56 = __commonJS({
         __name(this, "ExportTableToPointInTimeCommand");
       }
     };
-    var GetItemCommand2 = class extends import_smithy_client28.Command.classBuilder().ep({
+    var GetItemCommand3 = class extends import_smithy_client28.Command.classBuilder().ep({
       ...commonParams3,
       ResourceArn: { type: "contextParams", name: "TableName" }
     }).m(function(Command, cs, config, o3) {
@@ -26594,7 +26594,7 @@ var require_dist_cjs56 = __commonJS({
       CreateGlobalTableCommand,
       CreateTableCommand,
       DeleteBackupCommand,
-      DeleteItemCommand: DeleteItemCommand2,
+      DeleteItemCommand: DeleteItemCommand3,
       DeleteResourcePolicyCommand,
       DeleteTableCommand,
       DescribeBackupCommand,
@@ -26615,7 +26615,7 @@ var require_dist_cjs56 = __commonJS({
       ExecuteStatementCommand,
       ExecuteTransactionCommand,
       ExportTableToPointInTimeCommand,
-      GetItemCommand: GetItemCommand2,
+      GetItemCommand: GetItemCommand3,
       GetResourcePolicyCommand,
       ImportTableCommand,
       ListBackupsCommand,
@@ -28008,787 +28008,19 @@ var require_dist_cjs58 = __commonJS({
   }
 });
 
-// node_modules/.pnpm/@aws-sdk+client-apigatewaymanagementapi@3.844.0/node_modules/@aws-sdk/client-apigatewaymanagementapi/dist-cjs/auth/httpAuthSchemeProvider.js
-var require_httpAuthSchemeProvider3 = __commonJS({
-  "node_modules/.pnpm/@aws-sdk+client-apigatewaymanagementapi@3.844.0/node_modules/@aws-sdk/client-apigatewaymanagementapi/dist-cjs/auth/httpAuthSchemeProvider.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.resolveHttpAuthSchemeConfig = exports2.defaultApiGatewayManagementApiHttpAuthSchemeProvider = exports2.defaultApiGatewayManagementApiHttpAuthSchemeParametersProvider = void 0;
-    var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var util_middleware_1 = require_dist_cjs2();
-    var defaultApiGatewayManagementApiHttpAuthSchemeParametersProvider = async (config, context, input) => {
-      return {
-        operation: (0, util_middleware_1.getSmithyContext)(context).operation,
-        region: await (0, util_middleware_1.normalizeProvider)(config.region)() || (() => {
-          throw new Error("expected `region` to be configured for `aws.auth#sigv4`");
-        })()
-      };
-    };
-    exports2.defaultApiGatewayManagementApiHttpAuthSchemeParametersProvider = defaultApiGatewayManagementApiHttpAuthSchemeParametersProvider;
-    function createAwsAuthSigv4HttpAuthOption3(authParameters) {
-      return {
-        schemeId: "aws.auth#sigv4",
-        signingProperties: {
-          name: "execute-api",
-          region: authParameters.region
-        },
-        propertiesExtractor: (config, context) => ({
-          signingProperties: {
-            config,
-            context
-          }
-        })
-      };
-    }
-    var defaultApiGatewayManagementApiHttpAuthSchemeProvider = (authParameters) => {
-      const options = [];
-      switch (authParameters.operation) {
-        default: {
-          options.push(createAwsAuthSigv4HttpAuthOption3(authParameters));
-        }
-      }
-      return options;
-    };
-    exports2.defaultApiGatewayManagementApiHttpAuthSchemeProvider = defaultApiGatewayManagementApiHttpAuthSchemeProvider;
-    var resolveHttpAuthSchemeConfig3 = (config) => {
-      const config_0 = (0, core_1.resolveAwsSdkSigV4Config)(config);
-      return Object.assign(config_0, {
-        authSchemePreference: (0, util_middleware_1.normalizeProvider)(config.authSchemePreference ?? [])
-      });
-    };
-    exports2.resolveHttpAuthSchemeConfig = resolveHttpAuthSchemeConfig3;
-  }
-});
-
-// node_modules/.pnpm/@aws-sdk+client-apigatewaymanagementapi@3.844.0/node_modules/@aws-sdk/client-apigatewaymanagementapi/package.json
-var require_package3 = __commonJS({
-  "node_modules/.pnpm/@aws-sdk+client-apigatewaymanagementapi@3.844.0/node_modules/@aws-sdk/client-apigatewaymanagementapi/package.json"(exports2, module2) {
-    module2.exports = {
-      name: "@aws-sdk/client-apigatewaymanagementapi",
-      description: "AWS SDK for JavaScript Apigatewaymanagementapi Client for Node.js, Browser and React Native",
-      version: "3.844.0",
-      scripts: {
-        build: "concurrently 'yarn:build:cjs' 'yarn:build:es' 'yarn:build:types'",
-        "build:cjs": "node ../../scripts/compilation/inline client-apigatewaymanagementapi",
-        "build:es": "tsc -p tsconfig.es.json",
-        "build:include:deps": "lerna run --scope $npm_package_name --include-dependencies build",
-        "build:types": "tsc -p tsconfig.types.json",
-        "build:types:downlevel": "downlevel-dts dist-types dist-types/ts3.4",
-        clean: "rimraf ./dist-* && rimraf *.tsbuildinfo",
-        "extract:docs": "api-extractor run --local",
-        "generate:client": "node ../../scripts/generate-clients/single-service --solo apigatewaymanagementapi"
-      },
-      main: "./dist-cjs/index.js",
-      types: "./dist-types/index.d.ts",
-      module: "./dist-es/index.js",
-      sideEffects: false,
-      dependencies: {
-        "@aws-crypto/sha256-browser": "5.2.0",
-        "@aws-crypto/sha256-js": "5.2.0",
-        "@aws-sdk/core": "3.844.0",
-        "@aws-sdk/credential-provider-node": "3.844.0",
-        "@aws-sdk/middleware-host-header": "3.840.0",
-        "@aws-sdk/middleware-logger": "3.840.0",
-        "@aws-sdk/middleware-recursion-detection": "3.840.0",
-        "@aws-sdk/middleware-user-agent": "3.844.0",
-        "@aws-sdk/region-config-resolver": "3.840.0",
-        "@aws-sdk/types": "3.840.0",
-        "@aws-sdk/util-endpoints": "3.844.0",
-        "@aws-sdk/util-user-agent-browser": "3.840.0",
-        "@aws-sdk/util-user-agent-node": "3.844.0",
-        "@smithy/config-resolver": "^4.1.4",
-        "@smithy/core": "^3.7.0",
-        "@smithy/fetch-http-handler": "^5.1.0",
-        "@smithy/hash-node": "^4.0.4",
-        "@smithy/invalid-dependency": "^4.0.4",
-        "@smithy/middleware-content-length": "^4.0.4",
-        "@smithy/middleware-endpoint": "^4.1.14",
-        "@smithy/middleware-retry": "^4.1.15",
-        "@smithy/middleware-serde": "^4.0.8",
-        "@smithy/middleware-stack": "^4.0.4",
-        "@smithy/node-config-provider": "^4.1.3",
-        "@smithy/node-http-handler": "^4.1.0",
-        "@smithy/protocol-http": "^5.1.2",
-        "@smithy/smithy-client": "^4.4.6",
-        "@smithy/types": "^4.3.1",
-        "@smithy/url-parser": "^4.0.4",
-        "@smithy/util-base64": "^4.0.0",
-        "@smithy/util-body-length-browser": "^4.0.0",
-        "@smithy/util-body-length-node": "^4.0.0",
-        "@smithy/util-defaults-mode-browser": "^4.0.22",
-        "@smithy/util-defaults-mode-node": "^4.0.22",
-        "@smithy/util-endpoints": "^3.0.6",
-        "@smithy/util-middleware": "^4.0.4",
-        "@smithy/util-retry": "^4.0.6",
-        "@smithy/util-utf8": "^4.0.0",
-        tslib: "^2.6.2"
-      },
-      devDependencies: {
-        "@tsconfig/node18": "18.2.4",
-        "@types/node": "^18.19.69",
-        concurrently: "7.0.0",
-        "downlevel-dts": "0.10.1",
-        rimraf: "3.0.2",
-        typescript: "~5.8.3"
-      },
-      engines: {
-        node: ">=18.0.0"
-      },
-      typesVersions: {
-        "<4.0": {
-          "dist-types/*": [
-            "dist-types/ts3.4/*"
-          ]
-        }
-      },
-      files: [
-        "dist-*/**"
-      ],
-      author: {
-        name: "AWS SDK for JavaScript Team",
-        url: "https://aws.amazon.com/javascript/"
-      },
-      license: "Apache-2.0",
-      browser: {
-        "./dist-es/runtimeConfig": "./dist-es/runtimeConfig.browser"
-      },
-      "react-native": {
-        "./dist-es/runtimeConfig": "./dist-es/runtimeConfig.native"
-      },
-      homepage: "https://github.com/aws/aws-sdk-js-v3/tree/main/clients/client-apigatewaymanagementapi",
-      repository: {
-        type: "git",
-        url: "https://github.com/aws/aws-sdk-js-v3.git",
-        directory: "clients/client-apigatewaymanagementapi"
-      }
-    };
-  }
-});
-
-// node_modules/.pnpm/@aws-sdk+client-apigatewaymanagementapi@3.844.0/node_modules/@aws-sdk/client-apigatewaymanagementapi/dist-cjs/endpoint/ruleset.js
-var require_ruleset3 = __commonJS({
-  "node_modules/.pnpm/@aws-sdk+client-apigatewaymanagementapi@3.844.0/node_modules/@aws-sdk/client-apigatewaymanagementapi/dist-cjs/endpoint/ruleset.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.ruleSet = void 0;
-    var s3 = "required";
-    var t3 = "fn";
-    var u3 = "argv";
-    var v6 = "ref";
-    var a3 = true;
-    var b3 = "isSet";
-    var c3 = "booleanEquals";
-    var d3 = "error";
-    var e3 = "endpoint";
-    var f3 = "tree";
-    var g3 = "PartitionResult";
-    var h3 = { [s3]: false, "type": "String" };
-    var i3 = { [s3]: true, "default": false, "type": "Boolean" };
-    var j3 = { [v6]: "Endpoint" };
-    var k3 = { [t3]: c3, [u3]: [{ [v6]: "UseFIPS" }, true] };
-    var l3 = { [t3]: c3, [u3]: [{ [v6]: "UseDualStack" }, true] };
-    var m3 = {};
-    var n3 = { [t3]: "getAttr", [u3]: [{ [v6]: g3 }, "supportsFIPS"] };
-    var o3 = { [t3]: c3, [u3]: [true, { [t3]: "getAttr", [u3]: [{ [v6]: g3 }, "supportsDualStack"] }] };
-    var p3 = [k3];
-    var q3 = [l3];
-    var r3 = [{ [v6]: "Region" }];
-    var _data3 = { version: "1.0", parameters: { Region: h3, UseDualStack: i3, UseFIPS: i3, Endpoint: h3 }, rules: [{ conditions: [{ [t3]: b3, [u3]: [j3] }], rules: [{ conditions: p3, error: "Invalid Configuration: FIPS and custom endpoint are not supported", type: d3 }, { conditions: q3, error: "Invalid Configuration: Dualstack and custom endpoint are not supported", type: d3 }, { endpoint: { url: j3, properties: m3, headers: m3 }, type: e3 }], type: f3 }, { conditions: [{ [t3]: b3, [u3]: r3 }], rules: [{ conditions: [{ [t3]: "aws.partition", [u3]: r3, assign: g3 }], rules: [{ conditions: [k3, l3], rules: [{ conditions: [{ [t3]: c3, [u3]: [a3, n3] }, o3], rules: [{ endpoint: { url: "https://execute-api-fips.{Region}.{PartitionResult#dualStackDnsSuffix}", properties: m3, headers: m3 }, type: e3 }], type: f3 }, { error: "FIPS and DualStack are enabled, but this partition does not support one or both", type: d3 }], type: f3 }, { conditions: p3, rules: [{ conditions: [{ [t3]: c3, [u3]: [n3, a3] }], rules: [{ endpoint: { url: "https://execute-api-fips.{Region}.{PartitionResult#dnsSuffix}", properties: m3, headers: m3 }, type: e3 }], type: f3 }, { error: "FIPS is enabled but this partition does not support FIPS", type: d3 }], type: f3 }, { conditions: q3, rules: [{ conditions: [o3], rules: [{ endpoint: { url: "https://execute-api.{Region}.{PartitionResult#dualStackDnsSuffix}", properties: m3, headers: m3 }, type: e3 }], type: f3 }, { error: "DualStack is enabled but this partition does not support DualStack", type: d3 }], type: f3 }, { endpoint: { url: "https://execute-api.{Region}.{PartitionResult#dnsSuffix}", properties: m3, headers: m3 }, type: e3 }], type: f3 }], type: f3 }, { error: "Invalid Configuration: Missing Region", type: d3 }] };
-    exports2.ruleSet = _data3;
-  }
-});
-
-// node_modules/.pnpm/@aws-sdk+client-apigatewaymanagementapi@3.844.0/node_modules/@aws-sdk/client-apigatewaymanagementapi/dist-cjs/endpoint/endpointResolver.js
-var require_endpointResolver3 = __commonJS({
-  "node_modules/.pnpm/@aws-sdk+client-apigatewaymanagementapi@3.844.0/node_modules/@aws-sdk/client-apigatewaymanagementapi/dist-cjs/endpoint/endpointResolver.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.defaultEndpointResolver = void 0;
-    var util_endpoints_1 = require_dist_cjs23();
-    var util_endpoints_2 = require_dist_cjs20();
-    var ruleset_1 = require_ruleset3();
-    var cache3 = new util_endpoints_2.EndpointCache({
-      size: 50,
-      params: ["Endpoint", "Region", "UseDualStack", "UseFIPS"]
-    });
-    var defaultEndpointResolver3 = (endpointParams, context = {}) => {
-      return cache3.get(endpointParams, () => (0, util_endpoints_2.resolveEndpoint)(ruleset_1.ruleSet, {
-        endpointParams,
-        logger: context.logger
-      }));
-    };
-    exports2.defaultEndpointResolver = defaultEndpointResolver3;
-    util_endpoints_2.customEndpointFunctions.aws = util_endpoints_1.awsEndpointFunctions;
-  }
-});
-
-// node_modules/.pnpm/@aws-sdk+client-apigatewaymanagementapi@3.844.0/node_modules/@aws-sdk/client-apigatewaymanagementapi/dist-cjs/runtimeConfig.shared.js
-var require_runtimeConfig_shared3 = __commonJS({
-  "node_modules/.pnpm/@aws-sdk+client-apigatewaymanagementapi@3.844.0/node_modules/@aws-sdk/client-apigatewaymanagementapi/dist-cjs/runtimeConfig.shared.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getRuntimeConfig = void 0;
-    var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var smithy_client_1 = require_dist_cjs28();
-    var url_parser_1 = require_dist_cjs22();
-    var util_base64_1 = require_dist_cjs13();
-    var util_utf8_1 = require_dist_cjs12();
-    var httpAuthSchemeProvider_1 = require_httpAuthSchemeProvider3();
-    var endpointResolver_1 = require_endpointResolver3();
-    var getRuntimeConfig5 = (config) => {
-      return {
-        apiVersion: "2018-11-29",
-        base64Decoder: config?.base64Decoder ?? util_base64_1.fromBase64,
-        base64Encoder: config?.base64Encoder ?? util_base64_1.toBase64,
-        disableHostPrefix: config?.disableHostPrefix ?? false,
-        endpointProvider: config?.endpointProvider ?? endpointResolver_1.defaultEndpointResolver,
-        extensions: config?.extensions ?? [],
-        httpAuthSchemeProvider: config?.httpAuthSchemeProvider ?? httpAuthSchemeProvider_1.defaultApiGatewayManagementApiHttpAuthSchemeProvider,
-        httpAuthSchemes: config?.httpAuthSchemes ?? [
-          {
-            schemeId: "aws.auth#sigv4",
-            identityProvider: (ipc) => ipc.getIdentityProvider("aws.auth#sigv4"),
-            signer: new core_1.AwsSdkSigV4Signer()
-          }
-        ],
-        logger: config?.logger ?? new smithy_client_1.NoOpLogger(),
-        serviceId: config?.serviceId ?? "ApiGatewayManagementApi",
-        urlParser: config?.urlParser ?? url_parser_1.parseUrl,
-        utf8Decoder: config?.utf8Decoder ?? util_utf8_1.fromUtf8,
-        utf8Encoder: config?.utf8Encoder ?? util_utf8_1.toUtf8
-      };
-    };
-    exports2.getRuntimeConfig = getRuntimeConfig5;
-  }
-});
-
-// node_modules/.pnpm/@aws-sdk+client-apigatewaymanagementapi@3.844.0/node_modules/@aws-sdk/client-apigatewaymanagementapi/dist-cjs/runtimeConfig.js
-var require_runtimeConfig3 = __commonJS({
-  "node_modules/.pnpm/@aws-sdk+client-apigatewaymanagementapi@3.844.0/node_modules/@aws-sdk/client-apigatewaymanagementapi/dist-cjs/runtimeConfig.js"(exports2) {
-    "use strict";
-    Object.defineProperty(exports2, "__esModule", { value: true });
-    exports2.getRuntimeConfig = void 0;
-    var tslib_1 = (init_tslib_es6(), __toCommonJS(tslib_es6_exports));
-    var package_json_1 = tslib_1.__importDefault(require_package3());
-    var core_1 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var credential_provider_node_1 = require_dist_cjs54();
-    var util_user_agent_node_1 = require_dist_cjs43();
-    var config_resolver_1 = require_dist_cjs32();
-    var hash_node_1 = require_dist_cjs44();
-    var middleware_retry_1 = require_dist_cjs36();
-    var node_config_provider_1 = require_dist_cjs38();
-    var node_http_handler_1 = require_dist_cjs16();
-    var util_body_length_node_1 = require_dist_cjs45();
-    var util_retry_1 = require_dist_cjs35();
-    var runtimeConfig_shared_1 = require_runtimeConfig_shared3();
-    var smithy_client_1 = require_dist_cjs28();
-    var util_defaults_mode_node_1 = require_dist_cjs46();
-    var smithy_client_2 = require_dist_cjs28();
-    var getRuntimeConfig5 = (config) => {
-      (0, smithy_client_2.emitWarningIfUnsupportedVersion)(process.version);
-      const defaultsMode = (0, util_defaults_mode_node_1.resolveDefaultsModeConfig)(config);
-      const defaultConfigProvider = () => defaultsMode().then(smithy_client_1.loadConfigsForDefaultMode);
-      const clientSharedValues = (0, runtimeConfig_shared_1.getRuntimeConfig)(config);
-      (0, core_1.emitWarningIfUnsupportedVersion)(process.version);
-      const loaderConfig = {
-        profile: config?.profile,
-        logger: clientSharedValues.logger
-      };
-      return {
-        ...clientSharedValues,
-        ...config,
-        runtime: "node",
-        defaultsMode,
-        authSchemePreference: config?.authSchemePreference ?? (0, node_config_provider_1.loadConfig)(core_1.NODE_AUTH_SCHEME_PREFERENCE_OPTIONS, loaderConfig),
-        bodyLengthChecker: config?.bodyLengthChecker ?? util_body_length_node_1.calculateBodyLength,
-        credentialDefaultProvider: config?.credentialDefaultProvider ?? credential_provider_node_1.defaultProvider,
-        defaultUserAgentProvider: config?.defaultUserAgentProvider ?? (0, util_user_agent_node_1.createDefaultUserAgentProvider)({ serviceId: clientSharedValues.serviceId, clientVersion: package_json_1.default.version }),
-        maxAttempts: config?.maxAttempts ?? (0, node_config_provider_1.loadConfig)(middleware_retry_1.NODE_MAX_ATTEMPT_CONFIG_OPTIONS, config),
-        region: config?.region ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_REGION_CONFIG_OPTIONS, { ...config_resolver_1.NODE_REGION_CONFIG_FILE_OPTIONS, ...loaderConfig }),
-        requestHandler: node_http_handler_1.NodeHttpHandler.create(config?.requestHandler ?? defaultConfigProvider),
-        retryMode: config?.retryMode ?? (0, node_config_provider_1.loadConfig)({
-          ...middleware_retry_1.NODE_RETRY_MODE_CONFIG_OPTIONS,
-          default: async () => (await defaultConfigProvider()).retryMode || util_retry_1.DEFAULT_RETRY_MODE
-        }, config),
-        sha256: config?.sha256 ?? hash_node_1.Hash.bind(null, "sha256"),
-        streamCollector: config?.streamCollector ?? node_http_handler_1.streamCollector,
-        useDualstackEndpoint: config?.useDualstackEndpoint ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_DUALSTACK_ENDPOINT_CONFIG_OPTIONS, loaderConfig),
-        useFipsEndpoint: config?.useFipsEndpoint ?? (0, node_config_provider_1.loadConfig)(config_resolver_1.NODE_USE_FIPS_ENDPOINT_CONFIG_OPTIONS, loaderConfig),
-        userAgentAppId: config?.userAgentAppId ?? (0, node_config_provider_1.loadConfig)(util_user_agent_node_1.NODE_APP_ID_CONFIG_OPTIONS, loaderConfig)
-      };
-    };
-    exports2.getRuntimeConfig = getRuntimeConfig5;
-  }
-});
-
-// node_modules/.pnpm/@aws-sdk+client-apigatewaymanagementapi@3.844.0/node_modules/@aws-sdk/client-apigatewaymanagementapi/dist-cjs/index.js
-var require_dist_cjs59 = __commonJS({
-  "node_modules/.pnpm/@aws-sdk+client-apigatewaymanagementapi@3.844.0/node_modules/@aws-sdk/client-apigatewaymanagementapi/dist-cjs/index.js"(exports2, module2) {
-    "use strict";
-    var __defProp2 = Object.defineProperty;
-    var __getOwnPropDesc2 = Object.getOwnPropertyDescriptor;
-    var __getOwnPropNames2 = Object.getOwnPropertyNames;
-    var __hasOwnProp2 = Object.prototype.hasOwnProperty;
-    var __name = (target, value) => __defProp2(target, "name", { value, configurable: true });
-    var __export2 = (target, all) => {
-      for (var name in all)
-        __defProp2(target, name, { get: all[name], enumerable: true });
-    };
-    var __copyProps2 = (to, from, except, desc) => {
-      if (from && typeof from === "object" || typeof from === "function") {
-        for (let key of __getOwnPropNames2(from))
-          if (!__hasOwnProp2.call(to, key) && key !== except)
-            __defProp2(to, key, { get: () => from[key], enumerable: !(desc = __getOwnPropDesc2(from, key)) || desc.enumerable });
-      }
-      return to;
-    };
-    var __toCommonJS2 = (mod) => __copyProps2(__defProp2({}, "__esModule", { value: true }), mod);
-    var index_exports = {};
-    __export2(index_exports, {
-      ApiGatewayManagementApi: () => ApiGatewayManagementApi,
-      ApiGatewayManagementApiClient: () => ApiGatewayManagementApiClient2,
-      ApiGatewayManagementApiServiceException: () => ApiGatewayManagementApiServiceException,
-      DeleteConnectionCommand: () => DeleteConnectionCommand,
-      ForbiddenException: () => ForbiddenException,
-      GetConnectionCommand: () => GetConnectionCommand,
-      GoneException: () => GoneException,
-      LimitExceededException: () => LimitExceededException,
-      PayloadTooLargeException: () => PayloadTooLargeException,
-      PostToConnectionCommand: () => PostToConnectionCommand2,
-      __Client: () => import_smithy_client28.Client
-    });
-    module2.exports = __toCommonJS2(index_exports);
-    var import_middleware_host_header3 = require_dist_cjs6();
-    var import_middleware_logger3 = require_dist_cjs7();
-    var import_middleware_recursion_detection3 = require_dist_cjs8();
-    var import_middleware_user_agent3 = require_dist_cjs30();
-    var import_config_resolver5 = require_dist_cjs32();
-    var import_core17 = (init_dist_es(), __toCommonJS(dist_es_exports));
-    var import_middleware_content_length3 = require_dist_cjs33();
-    var import_middleware_endpoint6 = require_dist_cjs39();
-    var import_middleware_retry5 = require_dist_cjs36();
-    var import_httpAuthSchemeProvider5 = require_httpAuthSchemeProvider3();
-    var resolveClientEndpointParameters3 = /* @__PURE__ */ __name((options) => {
-      return Object.assign(options, {
-        useDualstackEndpoint: options.useDualstackEndpoint ?? false,
-        useFipsEndpoint: options.useFipsEndpoint ?? false,
-        defaultSigningName: "execute-api"
-      });
-    }, "resolveClientEndpointParameters");
-    var commonParams3 = {
-      UseFIPS: { type: "builtInParams", name: "useFipsEndpoint" },
-      Endpoint: { type: "builtInParams", name: "endpoint" },
-      Region: { type: "builtInParams", name: "region" },
-      UseDualStack: { type: "builtInParams", name: "useDualstackEndpoint" }
-    };
-    var import_runtimeConfig5 = require_runtimeConfig3();
-    var import_region_config_resolver3 = require_dist_cjs47();
-    var import_protocol_http15 = require_dist_cjs3();
-    var import_smithy_client28 = require_dist_cjs28();
-    var getHttpAuthExtensionConfiguration3 = /* @__PURE__ */ __name((runtimeConfig) => {
-      const _httpAuthSchemes = runtimeConfig.httpAuthSchemes;
-      let _httpAuthSchemeProvider = runtimeConfig.httpAuthSchemeProvider;
-      let _credentials = runtimeConfig.credentials;
-      return {
-        setHttpAuthScheme(httpAuthScheme) {
-          const index = _httpAuthSchemes.findIndex((scheme) => scheme.schemeId === httpAuthScheme.schemeId);
-          if (index === -1) {
-            _httpAuthSchemes.push(httpAuthScheme);
-          } else {
-            _httpAuthSchemes.splice(index, 1, httpAuthScheme);
-          }
-        },
-        httpAuthSchemes() {
-          return _httpAuthSchemes;
-        },
-        setHttpAuthSchemeProvider(httpAuthSchemeProvider) {
-          _httpAuthSchemeProvider = httpAuthSchemeProvider;
-        },
-        httpAuthSchemeProvider() {
-          return _httpAuthSchemeProvider;
-        },
-        setCredentials(credentials) {
-          _credentials = credentials;
-        },
-        credentials() {
-          return _credentials;
-        }
-      };
-    }, "getHttpAuthExtensionConfiguration");
-    var resolveHttpAuthRuntimeConfig3 = /* @__PURE__ */ __name((config) => {
-      return {
-        httpAuthSchemes: config.httpAuthSchemes(),
-        httpAuthSchemeProvider: config.httpAuthSchemeProvider(),
-        credentials: config.credentials()
-      };
-    }, "resolveHttpAuthRuntimeConfig");
-    var resolveRuntimeExtensions3 = /* @__PURE__ */ __name((runtimeConfig, extensions) => {
-      const extensionConfiguration = Object.assign(
-        (0, import_region_config_resolver3.getAwsRegionExtensionConfiguration)(runtimeConfig),
-        (0, import_smithy_client28.getDefaultExtensionConfiguration)(runtimeConfig),
-        (0, import_protocol_http15.getHttpHandlerExtensionConfiguration)(runtimeConfig),
-        getHttpAuthExtensionConfiguration3(runtimeConfig)
-      );
-      extensions.forEach((extension) => extension.configure(extensionConfiguration));
-      return Object.assign(
-        runtimeConfig,
-        (0, import_region_config_resolver3.resolveAwsRegionExtensionConfiguration)(extensionConfiguration),
-        (0, import_smithy_client28.resolveDefaultRuntimeConfig)(extensionConfiguration),
-        (0, import_protocol_http15.resolveHttpHandlerRuntimeConfig)(extensionConfiguration),
-        resolveHttpAuthRuntimeConfig3(extensionConfiguration)
-      );
-    }, "resolveRuntimeExtensions");
-    var ApiGatewayManagementApiClient2 = class extends import_smithy_client28.Client {
-      static {
-        __name(this, "ApiGatewayManagementApiClient");
-      }
-      /**
-       * The resolved configuration of ApiGatewayManagementApiClient class. This is resolved and normalized from the {@link ApiGatewayManagementApiClientConfig | constructor configuration interface}.
-       */
-      config;
-      constructor(...[configuration]) {
-        const _config_0 = (0, import_runtimeConfig5.getRuntimeConfig)(configuration || {});
-        super(_config_0);
-        this.initConfig = _config_0;
-        const _config_1 = resolveClientEndpointParameters3(_config_0);
-        const _config_2 = (0, import_middleware_user_agent3.resolveUserAgentConfig)(_config_1);
-        const _config_3 = (0, import_middleware_retry5.resolveRetryConfig)(_config_2);
-        const _config_4 = (0, import_config_resolver5.resolveRegionConfig)(_config_3);
-        const _config_5 = (0, import_middleware_host_header3.resolveHostHeaderConfig)(_config_4);
-        const _config_6 = (0, import_middleware_endpoint6.resolveEndpointConfig)(_config_5);
-        const _config_7 = (0, import_httpAuthSchemeProvider5.resolveHttpAuthSchemeConfig)(_config_6);
-        const _config_8 = resolveRuntimeExtensions3(_config_7, configuration?.extensions || []);
-        this.config = _config_8;
-        this.middlewareStack.use((0, import_middleware_user_agent3.getUserAgentPlugin)(this.config));
-        this.middlewareStack.use((0, import_middleware_retry5.getRetryPlugin)(this.config));
-        this.middlewareStack.use((0, import_middleware_content_length3.getContentLengthPlugin)(this.config));
-        this.middlewareStack.use((0, import_middleware_host_header3.getHostHeaderPlugin)(this.config));
-        this.middlewareStack.use((0, import_middleware_logger3.getLoggerPlugin)(this.config));
-        this.middlewareStack.use((0, import_middleware_recursion_detection3.getRecursionDetectionPlugin)(this.config));
-        this.middlewareStack.use(
-          (0, import_core17.getHttpAuthSchemeEndpointRuleSetPlugin)(this.config, {
-            httpAuthSchemeParametersProvider: import_httpAuthSchemeProvider5.defaultApiGatewayManagementApiHttpAuthSchemeParametersProvider,
-            identityProviderConfigProvider: /* @__PURE__ */ __name(async (config) => new import_core17.DefaultIdentityProviderConfig({
-              "aws.auth#sigv4": config.credentials
-            }), "identityProviderConfigProvider")
-          })
-        );
-        this.middlewareStack.use((0, import_core17.getHttpSigningPlugin)(this.config));
-      }
-      /**
-       * Destroy underlying resources, like sockets. It's usually not necessary to do this.
-       * However in Node.js, it's best to explicitly shut down the client's agent when it is no longer needed.
-       * Otherwise, sockets might stay open for quite a long time before the server terminates them.
-       */
-      destroy() {
-        super.destroy();
-      }
-    };
-    var import_middleware_serde5 = require_dist_cjs9();
-    var import_core22 = (init_dist_es2(), __toCommonJS(dist_es_exports2));
-    var ApiGatewayManagementApiServiceException = class _ApiGatewayManagementApiServiceException extends import_smithy_client28.ServiceException {
-      static {
-        __name(this, "ApiGatewayManagementApiServiceException");
-      }
-      /**
-       * @internal
-       */
-      constructor(options) {
-        super(options);
-        Object.setPrototypeOf(this, _ApiGatewayManagementApiServiceException.prototype);
-      }
-    };
-    var ForbiddenException = class _ForbiddenException extends ApiGatewayManagementApiServiceException {
-      static {
-        __name(this, "ForbiddenException");
-      }
-      name = "ForbiddenException";
-      $fault = "client";
-      /**
-       * @internal
-       */
-      constructor(opts) {
-        super({
-          name: "ForbiddenException",
-          $fault: "client",
-          ...opts
-        });
-        Object.setPrototypeOf(this, _ForbiddenException.prototype);
-      }
-    };
-    var GoneException = class _GoneException extends ApiGatewayManagementApiServiceException {
-      static {
-        __name(this, "GoneException");
-      }
-      name = "GoneException";
-      $fault = "client";
-      /**
-       * @internal
-       */
-      constructor(opts) {
-        super({
-          name: "GoneException",
-          $fault: "client",
-          ...opts
-        });
-        Object.setPrototypeOf(this, _GoneException.prototype);
-      }
-    };
-    var LimitExceededException = class _LimitExceededException extends ApiGatewayManagementApiServiceException {
-      static {
-        __name(this, "LimitExceededException");
-      }
-      name = "LimitExceededException";
-      $fault = "client";
-      /**
-       * @internal
-       */
-      constructor(opts) {
-        super({
-          name: "LimitExceededException",
-          $fault: "client",
-          ...opts
-        });
-        Object.setPrototypeOf(this, _LimitExceededException.prototype);
-      }
-    };
-    var PayloadTooLargeException = class _PayloadTooLargeException extends ApiGatewayManagementApiServiceException {
-      static {
-        __name(this, "PayloadTooLargeException");
-      }
-      name = "PayloadTooLargeException";
-      $fault = "client";
-      Message;
-      /**
-       * @internal
-       */
-      constructor(opts) {
-        super({
-          name: "PayloadTooLargeException",
-          $fault: "client",
-          ...opts
-        });
-        Object.setPrototypeOf(this, _PayloadTooLargeException.prototype);
-        this.Message = opts.Message;
-      }
-    };
-    var se_DeleteConnectionCommand = /* @__PURE__ */ __name(async (input, context) => {
-      const b3 = (0, import_core17.requestBuilder)(input, context);
-      const headers = {};
-      b3.bp("/@connections/{ConnectionId}");
-      b3.p("ConnectionId", () => input.ConnectionId, "{ConnectionId}", false);
-      let body;
-      b3.m("DELETE").h(headers).b(body);
-      return b3.build();
-    }, "se_DeleteConnectionCommand");
-    var se_GetConnectionCommand = /* @__PURE__ */ __name(async (input, context) => {
-      const b3 = (0, import_core17.requestBuilder)(input, context);
-      const headers = {};
-      b3.bp("/@connections/{ConnectionId}");
-      b3.p("ConnectionId", () => input.ConnectionId, "{ConnectionId}", false);
-      let body;
-      b3.m("GET").h(headers).b(body);
-      return b3.build();
-    }, "se_GetConnectionCommand");
-    var se_PostToConnectionCommand = /* @__PURE__ */ __name(async (input, context) => {
-      const b3 = (0, import_core17.requestBuilder)(input, context);
-      const headers = {
-        "content-type": "application/octet-stream"
-      };
-      b3.bp("/@connections/{ConnectionId}");
-      b3.p("ConnectionId", () => input.ConnectionId, "{ConnectionId}", false);
-      let body;
-      if (input.Data !== void 0) {
-        body = input.Data;
-      }
-      b3.m("POST").h(headers).b(body);
-      return b3.build();
-    }, "se_PostToConnectionCommand");
-    var de_DeleteConnectionCommand = /* @__PURE__ */ __name(async (output, context) => {
-      if (output.statusCode !== 204 && output.statusCode >= 300) {
-        return de_CommandError3(output, context);
-      }
-      const contents = (0, import_smithy_client28.map)({
-        $metadata: deserializeMetadata3(output)
-      });
-      await (0, import_smithy_client28.collectBody)(output.body, context);
-      return contents;
-    }, "de_DeleteConnectionCommand");
-    var de_GetConnectionCommand = /* @__PURE__ */ __name(async (output, context) => {
-      if (output.statusCode !== 200 && output.statusCode >= 300) {
-        return de_CommandError3(output, context);
-      }
-      const contents = (0, import_smithy_client28.map)({
-        $metadata: deserializeMetadata3(output)
-      });
-      const data = (0, import_smithy_client28.expectNonNull)((0, import_smithy_client28.expectObject)(await (0, import_core22.parseJsonBody)(output.body, context)), "body");
-      const doc = (0, import_smithy_client28.take)(data, {
-        ConnectedAt: [, (_2) => (0, import_smithy_client28.expectNonNull)((0, import_smithy_client28.parseRfc3339DateTimeWithOffset)(_2)), `connectedAt`],
-        Identity: [, (_2) => de_Identity(_2, context), `identity`],
-        LastActiveAt: [, (_2) => (0, import_smithy_client28.expectNonNull)((0, import_smithy_client28.parseRfc3339DateTimeWithOffset)(_2)), `lastActiveAt`]
-      });
-      Object.assign(contents, doc);
-      return contents;
-    }, "de_GetConnectionCommand");
-    var de_PostToConnectionCommand = /* @__PURE__ */ __name(async (output, context) => {
-      if (output.statusCode !== 200 && output.statusCode >= 300) {
-        return de_CommandError3(output, context);
-      }
-      const contents = (0, import_smithy_client28.map)({
-        $metadata: deserializeMetadata3(output)
-      });
-      await (0, import_smithy_client28.collectBody)(output.body, context);
-      return contents;
-    }, "de_PostToConnectionCommand");
-    var de_CommandError3 = /* @__PURE__ */ __name(async (output, context) => {
-      const parsedOutput = {
-        ...output,
-        body: await (0, import_core22.parseJsonErrorBody)(output.body, context)
-      };
-      const errorCode = (0, import_core22.loadRestJsonErrorCode)(output, parsedOutput.body);
-      switch (errorCode) {
-        case "ForbiddenException":
-        case "com.amazonaws.apigatewaymanagementapi#ForbiddenException":
-          throw await de_ForbiddenExceptionRes(parsedOutput, context);
-        case "GoneException":
-        case "com.amazonaws.apigatewaymanagementapi#GoneException":
-          throw await de_GoneExceptionRes(parsedOutput, context);
-        case "LimitExceededException":
-        case "com.amazonaws.apigatewaymanagementapi#LimitExceededException":
-          throw await de_LimitExceededExceptionRes(parsedOutput, context);
-        case "PayloadTooLargeException":
-        case "com.amazonaws.apigatewaymanagementapi#PayloadTooLargeException":
-          throw await de_PayloadTooLargeExceptionRes(parsedOutput, context);
-        default:
-          const parsedBody = parsedOutput.body;
-          return throwDefaultError3({
-            output,
-            parsedBody,
-            errorCode
-          });
-      }
-    }, "de_CommandError");
-    var throwDefaultError3 = (0, import_smithy_client28.withBaseException)(ApiGatewayManagementApiServiceException);
-    var de_ForbiddenExceptionRes = /* @__PURE__ */ __name(async (parsedOutput, context) => {
-      const contents = (0, import_smithy_client28.map)({});
-      const data = parsedOutput.body;
-      const doc = (0, import_smithy_client28.take)(data, {});
-      Object.assign(contents, doc);
-      const exception = new ForbiddenException({
-        $metadata: deserializeMetadata3(parsedOutput),
-        ...contents
-      });
-      return (0, import_smithy_client28.decorateServiceException)(exception, parsedOutput.body);
-    }, "de_ForbiddenExceptionRes");
-    var de_GoneExceptionRes = /* @__PURE__ */ __name(async (parsedOutput, context) => {
-      const contents = (0, import_smithy_client28.map)({});
-      const data = parsedOutput.body;
-      const doc = (0, import_smithy_client28.take)(data, {});
-      Object.assign(contents, doc);
-      const exception = new GoneException({
-        $metadata: deserializeMetadata3(parsedOutput),
-        ...contents
-      });
-      return (0, import_smithy_client28.decorateServiceException)(exception, parsedOutput.body);
-    }, "de_GoneExceptionRes");
-    var de_LimitExceededExceptionRes = /* @__PURE__ */ __name(async (parsedOutput, context) => {
-      const contents = (0, import_smithy_client28.map)({});
-      const data = parsedOutput.body;
-      const doc = (0, import_smithy_client28.take)(data, {});
-      Object.assign(contents, doc);
-      const exception = new LimitExceededException({
-        $metadata: deserializeMetadata3(parsedOutput),
-        ...contents
-      });
-      return (0, import_smithy_client28.decorateServiceException)(exception, parsedOutput.body);
-    }, "de_LimitExceededExceptionRes");
-    var de_PayloadTooLargeExceptionRes = /* @__PURE__ */ __name(async (parsedOutput, context) => {
-      const contents = (0, import_smithy_client28.map)({});
-      const data = parsedOutput.body;
-      const doc = (0, import_smithy_client28.take)(data, {
-        Message: [, import_smithy_client28.expectString, `message`]
-      });
-      Object.assign(contents, doc);
-      const exception = new PayloadTooLargeException({
-        $metadata: deserializeMetadata3(parsedOutput),
-        ...contents
-      });
-      return (0, import_smithy_client28.decorateServiceException)(exception, parsedOutput.body);
-    }, "de_PayloadTooLargeExceptionRes");
-    var de_Identity = /* @__PURE__ */ __name((output, context) => {
-      return (0, import_smithy_client28.take)(output, {
-        SourceIp: [, import_smithy_client28.expectString, `sourceIp`],
-        UserAgent: [, import_smithy_client28.expectString, `userAgent`]
-      });
-    }, "de_Identity");
-    var deserializeMetadata3 = /* @__PURE__ */ __name((output) => ({
-      httpStatusCode: output.statusCode,
-      requestId: output.headers["x-amzn-requestid"] ?? output.headers["x-amzn-request-id"] ?? output.headers["x-amz-request-id"],
-      extendedRequestId: output.headers["x-amz-id-2"],
-      cfId: output.headers["x-amz-cf-id"]
-    }), "deserializeMetadata");
-    var DeleteConnectionCommand = class extends import_smithy_client28.Command.classBuilder().ep(commonParams3).m(function(Command, cs, config, o3) {
-      return [
-        (0, import_middleware_serde5.getSerdePlugin)(config, this.serialize, this.deserialize),
-        (0, import_middleware_endpoint6.getEndpointPlugin)(config, Command.getEndpointParameterInstructions())
-      ];
-    }).s("ApiGatewayManagementApi", "DeleteConnection", {}).n("ApiGatewayManagementApiClient", "DeleteConnectionCommand").f(void 0, void 0).ser(se_DeleteConnectionCommand).de(de_DeleteConnectionCommand).build() {
-      static {
-        __name(this, "DeleteConnectionCommand");
-      }
-    };
-    var GetConnectionCommand = class extends import_smithy_client28.Command.classBuilder().ep(commonParams3).m(function(Command, cs, config, o3) {
-      return [
-        (0, import_middleware_serde5.getSerdePlugin)(config, this.serialize, this.deserialize),
-        (0, import_middleware_endpoint6.getEndpointPlugin)(config, Command.getEndpointParameterInstructions())
-      ];
-    }).s("ApiGatewayManagementApi", "GetConnection", {}).n("ApiGatewayManagementApiClient", "GetConnectionCommand").f(void 0, void 0).ser(se_GetConnectionCommand).de(de_GetConnectionCommand).build() {
-      static {
-        __name(this, "GetConnectionCommand");
-      }
-    };
-    var PostToConnectionCommand2 = class extends import_smithy_client28.Command.classBuilder().ep(commonParams3).m(function(Command, cs, config, o3) {
-      return [
-        (0, import_middleware_serde5.getSerdePlugin)(config, this.serialize, this.deserialize),
-        (0, import_middleware_endpoint6.getEndpointPlugin)(config, Command.getEndpointParameterInstructions())
-      ];
-    }).s("ApiGatewayManagementApi", "PostToConnection", {}).n("ApiGatewayManagementApiClient", "PostToConnectionCommand").f(void 0, void 0).ser(se_PostToConnectionCommand).de(de_PostToConnectionCommand).build() {
-      static {
-        __name(this, "PostToConnectionCommand");
-      }
-    };
-    var commands3 = {
-      DeleteConnectionCommand,
-      GetConnectionCommand,
-      PostToConnectionCommand: PostToConnectionCommand2
-    };
-    var ApiGatewayManagementApi = class extends ApiGatewayManagementApiClient2 {
-      static {
-        __name(this, "ApiGatewayManagementApi");
-      }
-    };
-    (0, import_smithy_client28.createAggregatedClient)(commands3, ApiGatewayManagementApi);
-  }
-});
-
 // handler.ts
 var handler_exports = {};
 __export(handler_exports, {
-  Connection: () => Connection,
   UserConnection: () => UserConnection,
   WeTable: () => WeTable,
-  connection: () => connection,
   onconnect: () => onconnect,
-  ondefault: () => ondefault,
-  ondisconnect: () => ondisconnect,
-  onmessage: () => onmessage,
   userConnection: () => userConnection
 });
 module.exports = __toCommonJS(handler_exports);
 var import_client_dynamodb = __toESM(require_dist_cjs56());
 var import_lib_dynamodb4 = __toESM(require_dist_cjs58());
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/errors/dynamoDBToolboxError.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/errors/dynamoDBToolboxError.js
 var DynamoDBToolboxError = class extends Error {
   constructor(code, { message, path, payload }) {
     super(message);
@@ -28799,15 +28031,15 @@ var DynamoDBToolboxError = class extends Error {
 };
 DynamoDBToolboxError.match = (error, prefix2 = "") => error instanceof DynamoDBToolboxError && error.code.startsWith(prefix2);
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isString.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isString.js
 var isString = (candidate) => typeof candidate === "string";
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/table/constants.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/table/constants.js
 var $entities = Symbol("$entities");
 var $interceptor = Symbol("$interceptor");
 var $sentArgs = Symbol("$sentArgs");
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/table/table.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/table/table.js
 var Table = class {
   constructor({
     documentClient,
@@ -28863,36 +28095,36 @@ var TableAction = class {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/constants.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/constants.js
 var $interceptor2 = Symbol("$interceptor");
 var $sentArgs2 = Symbol("$sentArgs");
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isArray.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isArray.js
 var isArray = (input) => Array.isArray(input);
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isBinary.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isBinary.js
 var isBinary = (input) => input instanceof Uint8Array;
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isSet.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isSet.js
 var isSet = (candidate) => candidate instanceof Set;
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isObject.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isObject.js
 var isObject = (candidate) => typeof candidate === "object" && candidate !== null && !isArray(candidate) && !isSet(candidate) && !isBinary(candidate);
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/update/symbols/isExtension.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/update/symbols/isExtension.js
 var $IS_EXTENSION = Symbol("$IS_EXTENSION");
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/update/symbols/get.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/update/symbols/get.js
 var $GET = Symbol("$GET");
 var $get = (reference, fallback) => ({
   [$IS_EXTENSION]: true,
   [$GET]: fallback === void 0 ? [reference] : [reference, fallback]
 });
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isBoolean.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isBoolean.js
 var isBoolean = (candidate) => typeof candidate === "boolean";
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/utils/checkSchemaProps.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/utils/checkSchemaProps.js
 var schemaRequiredPropSet = /* @__PURE__ */ new Set(["never", "atLeastOnce", "always"]);
 var checkSchemaProps = (props, path) => {
   const { required, hidden, key, savedAs } = props;
@@ -28939,7 +28171,7 @@ var checkSchemaProps = (props, path) => {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/item/schema.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/item/schema.js
 var ItemSchema = class {
   constructor(attributes) {
     this.type = "item";
@@ -29002,25 +28234,25 @@ var ItemSchema = class {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isFunction.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isFunction.js
 var isFunction = (candidate) => typeof candidate === "function";
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/utils/isDynamicDefault.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/utils/isDynamicDefault.js
 var isDynamicDefault = (defaultValue) => isFunction(defaultValue);
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/utils/isStaticDefault.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/utils/isStaticDefault.js
 var isStaticDefault = (defaultValue) => !isDynamicDefault(defaultValue);
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isBigInt.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isBigInt.js
 var isBigInt = (input) => typeof input === "bigint";
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isNull.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isNull.js
 var isNull = (candidate) => candidate === null;
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isNumber.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isNumber.js
 var isNumber = (candidate) => typeof candidate === "number" && !Number.isNaN(candidate);
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isValidPrimitive.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isValidPrimitive.js
 var isValidPrimitive = (schema, candidate) => {
   switch (schema.type) {
     case "null":
@@ -29036,7 +28268,7 @@ var isValidPrimitive = (schema, candidate) => {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/primitive/check.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/primitive/check.js
 var checkPrimitiveSchema = (schema, path) => {
   checkSchemaProps(schema.props, path);
   const { type, props } = schema;
@@ -29073,7 +28305,7 @@ var checkPrimitiveSchema = (schema, path) => {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/string/schema.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/string/schema.js
 var StringSchema = class {
   constructor(props) {
     this.type = "string";
@@ -29091,7 +28323,7 @@ var StringSchema = class {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/utils/buildEntitySchema/utils.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/utils/buildEntitySchema/utils.js
 var isTimestampEnabled = (timestampOptions, timestampKey) => {
   if (timestampOptions === true) {
     return true;
@@ -29128,7 +28360,7 @@ var getEntityAttrOptionValue = (entityAttrOptions, optionKey) => {
   return isObject(entityAttrOptions) ? (_a2 = entityAttrOptions[optionKey]) !== null && _a2 !== void 0 ? _a2 : defaultOptions3 : defaultOptions3;
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/utils/buildEntitySchema/buildEntitySchema.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/utils/buildEntitySchema/buildEntitySchema.js
 var buildEntitySchema = ({ schema, table, entityName, entityAttribute, timestamps }) => {
   const internalAttributes = {};
   if (isEntityAttrEnabled(entityAttribute)) {
@@ -29180,7 +28412,7 @@ var buildEntitySchema = ({ schema, table, entityName, entityAttribute, timestamp
   return new ItemSchema({ ...schema.attributes, ...internalAttributes });
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/utils/doesSchemaValidateTableSchema.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/utils/doesSchemaValidateTableSchema.js
 var doesSchemaValidateTableSchemaKey = (schema, key) => {
   if (key === void 0)
     return true;
@@ -29196,7 +28428,7 @@ var doesSchemaValidateTableSchema = (schema, table) => {
   return doesSchemaValidateTableSchemaKey(schema, partitionKey) && doesSchemaValidateTableSchemaKey(schema, sortKey);
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/entity.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/entity.js
 var Entity = class {
   constructor({ name, table, schema, computeKey, entityAttribute = true, timestamps = true, meta = {} }) {
     this.type = "entity";
@@ -29225,10 +28457,10 @@ var EntityAction = class {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/put/putItemCommand.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/put/putItemCommand.js
 var import_lib_dynamodb = __toESM(require_dist_cjs58(), 1);
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/any/schema.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/any/schema.js
 var AnySchema = class {
   constructor(props) {
     this.type = "any";
@@ -29246,21 +28478,21 @@ var AnySchema = class {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/utils/ifThenElse.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/utils/ifThenElse.js
 var ifThenElse = (condition, then, els) => condition ? then : els;
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/utils/overwrite.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/utils/overwrite.js
 var overwrite = (objectA, objectB) => ({ ...objectA, ...objectB });
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/utils/hasDefinedDefault.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/utils/hasDefinedDefault.js
 var hasDefinedDefault = (schema) => ["keyDefault", "putDefault", "updateDefault", "keyLink", "putLink", "updateLink"].some((prop) => schema.props[prop] !== void 0);
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/anyOf/constants.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/anyOf/constants.js
 var $discriminators_ = Symbol("$discriminators_");
 var $discriminators = Symbol("$discriminators");
 var $discriminations_ = Symbol("$discriminations_");
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/anyOf/schema.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/anyOf/schema.js
 var AnyOfSchema = class {
   constructor(elements, props) {
     this.type = "anyOf";
@@ -29416,10 +28648,10 @@ var getDiscriminations = (schema, discriminator) => {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/utils/light.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/utils/light.js
 var lightObj = (schemas) => schemas;
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/binary/schema.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/binary/schema.js
 var BinarySchema = class {
   constructor(props) {
     this.type = "binary";
@@ -29437,13 +28669,13 @@ var BinarySchema = class {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/utils/writable.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/utils/writable.js
 var writable = (obj) => obj;
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/utils/resetLinks.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/utils/resetLinks.js
 var resetLinks = (schema) => schema.clone({ keyLink: void 0, putLink: void 0, updateLink: void 0 });
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/item/schema_.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/item/schema_.js
 var item = (attributes) => new ItemSchema_(lightObj(attributes));
 var ItemSchema_ = class _ItemSchema_ extends ItemSchema {
   pick(...attributeNames) {
@@ -29481,7 +28713,7 @@ var ItemSchema_ = class _ItemSchema_ extends ItemSchema {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/number/schema.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/number/schema.js
 var NumberSchema = class {
   constructor(props) {
     this.type = "number";
@@ -29507,7 +28739,7 @@ var NumberSchema = class {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/string/schema_.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/string/schema_.js
 var string = (props = {}) => new StringSchema_(props);
 var StringSchema_ = class _StringSchema_ extends StringSchema {
   /**
@@ -29676,14 +28908,14 @@ var StringSchema_ = class _StringSchema_ extends StringSchema {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/schema.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/schema.js
 var SchemaAction = class {
   constructor(schema) {
     this.schema = schema;
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/utils/formatArrayPath.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/utils/formatArrayPath.js
 var charsToEscape = ["[", "]", "."];
 var formatArrayPath = (arrayPath) => {
   let path = "";
@@ -29705,7 +28937,7 @@ var formatArrayPath = (arrayPath) => {
   return path;
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/utils/cloneDeep.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/utils/cloneDeep.js
 var cloneDeep = (obj) => {
   if (typeof obj !== "object" || obj === null) {
     return obj;
@@ -29734,7 +28966,7 @@ var cloneDeep = (obj) => {
   throw new Error("Unable to clone object");
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/any.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/any.js
 function* anySchemaFormatter(schema, rawValue, options = {}) {
   const { format = true, transform = true } = options;
   let transformedValue = void 0;
@@ -29751,7 +28983,7 @@ function* anySchemaFormatter(schema, rawValue, options = {}) {
   return formattedValue;
 }
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/anyOf.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/anyOf.js
 function* anyOfSchemaFormatter(schema, rawValue, options = {}) {
   const { discriminator } = schema.props;
   const { format = true, transform = true, valuePath } = options;
@@ -29808,7 +29040,7 @@ function* anyOfSchemaFormatter(schema, rawValue, options = {}) {
   return formattedValue;
 }
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/utils.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/utils.js
 var sanitize = (str) => str.replace(/\\/g, "\\\\").replace(/[-[\]/{}()*+?.^$|]/g, "\\$&");
 var matchProjection = (attributeNameRegex, projectedAttributes) => {
   if (projectedAttributes === void 0) {
@@ -29831,7 +29063,7 @@ var matchProjection = (attributeNameRegex, projectedAttributes) => {
   return { isProjected: true, childrenAttributes };
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/list.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/list.js
 function* listSchemaFormatter(schema, rawValue, { attributes, valuePath, ...restOptions } = {}) {
   const { format = true, transform = true } = restOptions;
   if (!isArray(rawValue)) {
@@ -29861,7 +29093,7 @@ function* listSchemaFormatter(schema, rawValue, { attributes, valuePath, ...rest
   return formattedValue;
 }
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/map.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/map.js
 function* mapSchemaFormatter(schema, rawValue, { attributes, valuePath, ...restOptions } = {}) {
   const { format = true, transform = true } = restOptions;
   if (!isObject(rawValue)) {
@@ -29904,7 +29136,7 @@ function* mapSchemaFormatter(schema, rawValue, { attributes, valuePath, ...restO
   return formattedValue;
 }
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/primitive.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/primitive.js
 function* primitiveSchemaFormatter(schema, rawValue, { format = true, transform = true, valuePath } = {}) {
   const { props } = schema;
   if (!isValidPrimitive(schema, rawValue)) {
@@ -29942,7 +29174,7 @@ function* primitiveSchemaFormatter(schema, rawValue, { format = true, transform 
   return formattedValue;
 }
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/record.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/record.js
 function* recordSchemaFormatter(schema, rawValue, { attributes, valuePath, ...restOptions } = {}) {
   const { format = true, transform = true, partial = false } = restOptions;
   if (!isObject(rawValue)) {
@@ -30013,7 +29245,7 @@ function* recordSchemaFormatter(schema, rawValue, { attributes, valuePath, ...re
   return formattedValue;
 }
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/set.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/set.js
 function* setSchemaFormatter(schema, rawValue, { valuePath, ...options } = {}) {
   const { format = true, transform = true } = options;
   if (!isSet(rawValue)) {
@@ -30042,7 +29274,7 @@ function* setSchemaFormatter(schema, rawValue, { valuePath, ...options } = {}) {
   return formattedValue;
 }
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/schema.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/schema.js
 var requiringOptions = /* @__PURE__ */ new Set(["always", "atLeastOnce"]);
 var isRequired = ({ props }) => {
   var _a2;
@@ -30093,7 +29325,7 @@ function* schemaFormatter(schema, rawValue, options = {}) {
   }
 }
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/item.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/item.js
 function* itemFormatter(schema, rawValue, { attributes, ...restOptions } = {}) {
   const { format = true, transform = true } = restOptions;
   if (!isObject(rawValue)) {
@@ -30132,7 +29364,7 @@ function* itemFormatter(schema, rawValue, { attributes, ...restOptions } = {}) {
   return formattedValue;
 }
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/formatter.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/format/formatter.js
 var Formatter = class extends SchemaAction {
   start(inputValue, options = {}) {
     if (this.schema.type === "item") {
@@ -30166,10 +29398,10 @@ var Formatter = class extends SchemaAction {
 };
 Formatter.actionName = "format";
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/format/constants.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/format/constants.js
 var $formatter = Symbol("$formatter");
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/format/entityFormatter.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/format/entityFormatter.js
 var EntityFormatter = class extends EntityAction {
   constructor(entity) {
     super(entity);
@@ -30208,7 +29440,7 @@ var EntityFormatter = class extends EntityAction {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/decorator.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/decorator.js
 var interceptable = () => {
   return (_2, __, descriptor) => {
     const originalValue = descriptor.value;
@@ -30226,11 +29458,11 @@ var interceptable = () => {
   };
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/put/constants.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/put/constants.js
 var $item = Symbol("$item");
 var $options = Symbol("$options");
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/utils.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/utils.js
 var defaultParseExtension = (_2, input) => ({
   isExtension: false,
   unextendedInput: input
@@ -30274,7 +29506,7 @@ var applyCustomValidation = (schema, inputValue, options = {}) => {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/any.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/any.js
 function* anySchemaParser(schema, inputValue, options = {}) {
   const { fill = true, transform = true } = options;
   let linkedValue = void 0;
@@ -30297,7 +29529,7 @@ function* anySchemaParser(schema, inputValue, options = {}) {
   return transformedValue;
 }
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/anyOf.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/anyOf.js
 function* anyOfSchemaParser(schema, inputValue, options = {}) {
   const { discriminator } = schema.props;
   const { fill = true, transform = true, valuePath } = options;
@@ -30363,7 +29595,7 @@ function* anyOfSchemaParser(schema, inputValue, options = {}) {
   return transformedValue;
 }
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/list.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/list.js
 function* listSchemaParser(schema, inputValue, options = {}) {
   const { valuePath, ...restOptions } = options;
   const { fill = true, transform = true } = restOptions;
@@ -30411,7 +29643,7 @@ function* listSchemaParser(schema, inputValue, options = {}) {
   return transformedValue;
 }
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/map.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/map.js
 function* mapSchemaParser(schema, inputValue, options = {}) {
   const { valuePath, ...restOptions } = options;
   const { mode = "put", fill = true, transform = true } = restOptions;
@@ -30481,7 +29713,7 @@ function* mapSchemaParser(schema, inputValue, options = {}) {
   return transformedValue;
 }
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/primitive.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/primitive.js
 function* primitiveSchemaParser(schema, inputValue, options = {}) {
   const { fill = true, transform = true, valuePath } = options;
   const linkedValue = inputValue;
@@ -30520,7 +29752,7 @@ function* primitiveSchemaParser(schema, inputValue, options = {}) {
   return transformedValue;
 }
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/record.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/record.js
 function* recordSchemaParser(schema, inputValue, options = {}) {
   const { valuePath, ...restOptions } = options;
   const { fill = true, transform = true } = restOptions;
@@ -30603,7 +29835,7 @@ function* recordSchemaParser(schema, inputValue, options = {}) {
   return transformedValue;
 }
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/set.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/set.js
 function* setSchemaParser(schema, inputValue, options = {}) {
   const { valuePath, ...restOptions } = options;
   const { fill = true, transform = true } = restOptions;
@@ -30651,7 +29883,7 @@ function* setSchemaParser(schema, inputValue, options = {}) {
   return transformedValue;
 }
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/schema.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/schema.js
 function* schemaParser(schema, inputValue, options = {}) {
   const {
     mode = "put",
@@ -30761,7 +29993,7 @@ var getModeLink = (schema, mode) => {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/item.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/item.js
 function* itemParser(schema, inputValue, options = {}) {
   const { mode = "put", fill = true, transform = true } = options;
   const parsers = {};
@@ -30827,7 +30059,7 @@ function* itemParser(schema, inputValue, options = {}) {
   return transformedValue;
 }
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/parser.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parse/parser.js
 var Parser = class extends SchemaAction {
   start(inputValue, options = {}) {
     if (this.schema.type === "item") {
@@ -30864,7 +30096,7 @@ var Parser = class extends SchemaAction {
 };
 Parser.actionName = "parse";
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/table/actions/parsePrimaryKey/primaryKeyParser.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/table/actions/parsePrimaryKey/primaryKeyParser.js
 var PrimaryKeyParser = class extends TableAction {
   constructor(table) {
     super(table);
@@ -30917,10 +30149,10 @@ var getKeySchema = (key) => {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/parse/constants.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/parse/constants.js
 var $parser = Symbol("$parser");
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/parse/entityParser.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/parse/entityParser.js
 var EntityParser = class extends EntityAction {
   constructor(entity) {
     super(entity);
@@ -30948,14 +30180,14 @@ var EntityParser = class extends EntityAction {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/utils/combineRegExp.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/utils/combineRegExp.js
 var combineRegExp = (...patterns) => {
   const combinedPatterns = patterns.map((pattern) => pattern.source).join("|");
   const flags = new Set(patterns.flatMap((pattern) => [...pattern.flags]));
   return new RegExp(combinedPatterns, [...flags].join(""));
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/utils/parseStringPath.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/utils/parseStringPath.js
 var listIndexRegex = /\[(\d+)\]/g;
 var escapedStrRegex = /\['(.+?)'\]/g;
 var regularStrRegex = /[\w#@-]+(?=(\.|\[|$))/g;
@@ -30989,7 +30221,7 @@ var parseStringPath = (strPath) => {
   return arrayPath;
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/utils/path.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/utils/path.js
 var Path = class _Path {
   static fromArray(arrayPath) {
     return new _Path(formatArrayPath(arrayPath), arrayPath);
@@ -31012,7 +30244,7 @@ var Path = class _Path {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/conditions/utils.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/conditions/utils.js
 var pathTokens = (attr, prefix2 = "", state2, size = false) => {
   let tokens = "";
   new Path(attr).arrayPath.forEach((pathPart, index) => {
@@ -31052,7 +30284,7 @@ var attrOrValueTokens = (attrOrValue, prefix2 = "", state2) => {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/conditions/beginsWith.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/conditions/beginsWith.js
 var expressBeginsWithCondition = (condition, prefix2 = "", state2) => {
   let ConditionExpression = "";
   const { attr, beginsWith } = condition;
@@ -31068,7 +30300,7 @@ var expressBeginsWithCondition = (condition, prefix2 = "", state2) => {
   };
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/conditions/between.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/conditions/between.js
 var expressBetweenCondition = (condition, prefix2 = "", state2) => {
   let ConditionExpression = "";
   const { between } = condition;
@@ -31087,7 +30319,7 @@ var expressBetweenCondition = (condition, prefix2 = "", state2) => {
   };
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/conditions/contains.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/conditions/contains.js
 var expressContainsCondition = (condition, prefix2 = "", state2) => {
   let ConditionExpression = "";
   const { attr, contains } = condition;
@@ -31103,7 +30335,7 @@ var expressContainsCondition = (condition, prefix2 = "", state2) => {
   };
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/conditions/eq.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/conditions/eq.js
 var expressEqCondition = (condition, prefix2 = "", state2) => {
   let ConditionExpression = "";
   const { eq } = condition;
@@ -31133,7 +30365,7 @@ var expressNeCondition = (condition, prefix2 = "", state2) => {
   };
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/conditions/exists.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/conditions/exists.js
 var expressExistsCondition = (condition, prefix2 = "", state2) => {
   let ConditionExpression = "";
   const { attr, exists } = condition;
@@ -31147,7 +30379,7 @@ var expressExistsCondition = (condition, prefix2 = "", state2) => {
   };
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/conditions/in.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/conditions/in.js
 var expressInCondition = (condition, prefix2 = "", state2) => {
   let ConditionExpression = "";
   const { in: range } = condition;
@@ -31164,7 +30396,7 @@ var expressInCondition = (condition, prefix2 = "", state2) => {
   };
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/conditions/logical.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/conditions/logical.js
 var expressOrCondition = (condition, prefix2 = "", state2) => {
   let ConditionExpression = "";
   const { or } = condition;
@@ -31210,7 +30442,7 @@ var expressNotCondition = (condition, prefix2 = "", state2) => {
   };
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/conditions/range.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/conditions/range.js
 var expressGteCondition = (condition, prefix2 = "", state2) => {
   let ConditionExpression = "";
   const { gte } = condition;
@@ -31268,7 +30500,7 @@ var expressLtCondition = (condition, prefix2 = "", state2) => {
   };
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/conditions/type.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/conditions/type.js
 var expressTypeCondition = (condition, prefix2 = "", state2) => {
   let ConditionExpression = "";
   const { attr, type } = condition;
@@ -31284,7 +30516,7 @@ var expressTypeCondition = (condition, prefix2 = "", state2) => {
   };
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/expressCondition.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/expressCondition/expressCondition.js
 var expressCondition = (condition, prefix2 = "", state2 = {
   namesCursor: 1,
   valuesCursor: 1,
@@ -31342,10 +30574,10 @@ var expressCondition = (condition, prefix2 = "", state2 = {
   });
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isInteger.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/utils/validation/isInteger.js
 var isInteger = (candidate) => isNumber(candidate) && Number.isInteger(candidate);
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/finder/subSchema.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/finder/subSchema.js
 var SubSchema = class extends SchemaAction {
   constructor({ schema, formattedPath, transformedPath }) {
     super(schema);
@@ -31354,7 +30586,7 @@ var SubSchema = class extends SchemaAction {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/finder/finder.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/finder/finder.js
 var Finder = class extends SchemaAction {
   search(path) {
     return findSubSchemas(this.schema, parseStringPath(path));
@@ -31427,7 +30659,7 @@ var findSubSchemas = (schema, path) => {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/utils/deduper.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/utils/deduper.js
 var Deduper = class {
   constructor({ serializer = JSON.stringify } = {}) {
     this.values = [];
@@ -31445,7 +30677,7 @@ var Deduper = class {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/conditions/utils.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/conditions/utils.js
 var getComparedSubSchemas = (schemaFinder, comparedValue, transform) => isObject(comparedValue) && "attr" in comparedValue && isString(comparedValue.attr) && /**
  * @debt bug "Adding this check as syntax can conflict with `any` attribute w. object values. Use symbol instead"
  */
@@ -31461,7 +30693,7 @@ var joinDedupedConditions = (dedupedConditions, attributePath) => {
   return conditionsTail.length > 0 ? { or: [conditionsHead, ...conditionsTail] } : conditionsHead;
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/conditions/beginsWith.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/conditions/beginsWith.js
 var transformBeginsWithCondition = (schema, condition) => {
   const conditions = new Deduper();
   const schemaFinder = new Finder(schema);
@@ -31489,7 +30721,7 @@ var transformBeginsWithCondition = (schema, condition) => {
   return joinDedupedConditions(conditions, attributePath);
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/conditions/between.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/conditions/between.js
 var transformBetweenCondition = (schema, condition) => {
   const conditions = new Deduper();
   const schemaFinder = new Finder(schema);
@@ -31552,7 +30784,7 @@ var transformBetweenCondition = (schema, condition) => {
   return joinDedupedConditions(conditions, attributePath);
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/conditions/contains.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/conditions/contains.js
 var transformContainsCondition = (schema, condition) => {
   const conditions = new Deduper();
   const schemaFinder = new Finder(schema);
@@ -31590,7 +30822,7 @@ var transformContainsCondition = (schema, condition) => {
   return joinDedupedConditions(conditions, attributePath);
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/conditions/eq.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/conditions/eq.js
 var transformEqCondition = (schema, condition) => {
   const conditions = new Deduper();
   const schemaFinder = new Finder(schema);
@@ -31648,7 +30880,7 @@ var transformNeCondition = (schema, condition) => {
   return joinDedupedConditions(conditions, attributePath);
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/conditions/exists.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/conditions/exists.js
 var transformExistsCondition = (schema, condition) => {
   const conditions = new Deduper();
   const schemaFinder = new Finder(schema);
@@ -31662,7 +30894,7 @@ var transformExistsCondition = (schema, condition) => {
   return joinDedupedConditions(conditions, attributePath);
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/conditions/in.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/conditions/in.js
 var transformInCondition = (schema, condition) => {
   const conditions = new Deduper();
   const schemaFinder = new Finder(schema);
@@ -31698,7 +30930,7 @@ var transformInCondition = (schema, condition) => {
   return joinDedupedConditions(conditions, attributePath);
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/conditions/logical.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/conditions/logical.js
 var transformOrCondition = (schema, condition) => {
   return { or: condition.or.map((cond) => transformCondition(schema, cond)) };
 };
@@ -31709,7 +30941,7 @@ var transformNotCondition = (schema, condition) => {
   return { not: transformCondition(schema, condition.not) };
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/conditions/range.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/conditions/range.js
 var transformGteCondition = (schema, condition) => {
   const conditions = new Deduper();
   const schemaFinder = new Finder(schema);
@@ -31823,7 +31055,7 @@ var transformLtCondition = (schema, condition) => {
   return joinDedupedConditions(conditions, attributePath);
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/conditions/type.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/conditions/type.js
 var typeSchema = new StringSchema({
   enum: ["S", "SS", "N", "NS", "B", "BS", "BOOL", "NULL", "L", "M"]
 });
@@ -31842,7 +31074,7 @@ var transformTypeCondition = (schema, condition) => {
   return joinDedupedConditions(conditions, attributePath);
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/transformCondition.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/transformCondition/transformCondition.js
 var transformCondition = (schema, condition) => {
   if ("or" in condition) {
     return transformOrCondition(schema, condition);
@@ -31894,7 +31126,7 @@ var transformCondition = (schema, condition) => {
   });
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/conditionParser.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parseCondition/conditionParser.js
 var ConditionParser = class _ConditionParser extends SchemaAction {
   static express(condition, expressionId = "") {
     return expressCondition(condition, expressionId);
@@ -31908,10 +31140,10 @@ var ConditionParser = class _ConditionParser extends SchemaAction {
 };
 ConditionParser.actionName = "parseCondition";
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/parseCondition/constants.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/parseCondition/constants.js
 var $conditionParser = Symbol("$conditionParser");
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/parseCondition/entityConditionParser.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/parseCondition/entityConditionParser.js
 var EntityConditionParser = class extends EntityAction {
   static express(condition, expressionId = "") {
     return ConditionParser.express(condition, expressionId);
@@ -31928,7 +31160,7 @@ var EntityConditionParser = class extends EntityAction {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/options/capacity.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/options/capacity.js
 var capacityOptions = [
   "NONE",
   "TOTAL",
@@ -31947,7 +31179,7 @@ var parseCapacityOption = (capacity) => {
   return capacity;
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/options/metrics.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/options/metrics.js
 var metricsOptions = ["NONE", "SIZE"];
 var metricsOptionsSet = new Set(metricsOptions);
 var parseMetricsOption = (metrics) => {
@@ -31962,7 +31194,7 @@ var parseMetricsOption = (metrics) => {
   return metrics;
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/options/rejectExtraOptions.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/options/rejectExtraOptions.js
 var rejectExtraOptions = (extraOptions) => {
   const [extraOption] = Object.keys(extraOptions);
   if (extraOption !== void 0) {
@@ -31973,7 +31205,7 @@ var rejectExtraOptions = (extraOptions) => {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/options/returnValues.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/options/returnValues.js
 var parseReturnValuesOption = (allowedReturnValuesOptions, returnValues) => {
   if (!allowedReturnValuesOptions.has(returnValues)) {
     throw new DynamoDBToolboxError("options.invalidReturnValuesOption", {
@@ -31984,7 +31216,7 @@ var parseReturnValuesOption = (allowedReturnValuesOptions, returnValues) => {
   return returnValues;
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/options/returnValuesOnConditionFalse.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/options/returnValuesOnConditionFalse.js
 var returnValuesOnConditionFalseOptions = /* @__PURE__ */ new Set([
   "NONE",
   "ALL_OLD"
@@ -31999,7 +31231,7 @@ var parseReturnValuesOnConditionFalseOption = (returnValues) => {
   return returnValues;
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/options/tableName.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/options/tableName.js
 var parseTableNameOption = (tableName) => {
   if (!isString(tableName)) {
     throw new DynamoDBToolboxError("options.invalidTableNameOption", {
@@ -32010,17 +31242,17 @@ var parseTableNameOption = (tableName) => {
   return tableName;
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/utils/isEmpty.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/utils/isEmpty.js
 var isEmpty = (input) => Object.keys(input).length === 0;
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/put/options.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/put/options.js
 var putItemCommandReturnValuesOptions = [
   "NONE",
   "ALL_OLD"
 ];
 var putItemCommandReturnValuesOptionsSet = new Set(putItemCommandReturnValuesOptions);
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/put/putItemParams/parsePutItemOptions.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/put/putItemParams/parsePutItemOptions.js
 var parsePutItemOptions = (entity, putItemOptions) => {
   const commandOptions = {};
   const { capacity, metrics, returnValues, returnValuesOnConditionFalse, condition, tableName, ...extraOptions } = putItemOptions;
@@ -32053,7 +31285,7 @@ var parsePutItemOptions = (entity, putItemOptions) => {
   return commandOptions;
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/put/putItemParams/putItemParams.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/put/putItemParams/putItemParams.js
 var putItemParams = (entity, input, options = {}) => {
   var _a2;
   const { parsedItem, item: item2 } = entity.build(EntityParser).parse(input);
@@ -32066,7 +31298,7 @@ var putItemParams = (entity, input, options = {}) => {
   };
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/put/putItemCommand.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/put/putItemCommand.js
 var __decorate2 = function(decorators, target, key, desc) {
   var c3 = arguments.length, r3 = c3 < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d3;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r3 = Reflect.decorate(decorators, target, key, desc);
@@ -32113,14 +31345,14 @@ __decorate2([
   interceptable()
 ], PutItemCommand.prototype, "send", null);
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/get/getItemCommand.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/get/getItemCommand.js
 var import_lib_dynamodb2 = __toESM(require_dist_cjs58(), 1);
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/get/constants.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/get/constants.js
 var $key = Symbol("$key");
 var $options2 = Symbol("$options");
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parsePaths/expressPaths.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parsePaths/expressPaths.js
 var expressPaths = (paths) => {
   let ProjectionExpression = "";
   const ExpressionAttributeNames = {};
@@ -32151,7 +31383,7 @@ var expressPaths = (paths) => {
   return { ProjectionExpression, ExpressionAttributeNames };
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parsePaths/transformPaths.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parsePaths/transformPaths.js
 var transformPaths = (schema, paths, { strict = true } = {}) => {
   const transformedPaths = new Deduper({ serializer: (value) => value });
   const finder = new Finder(schema);
@@ -32170,7 +31402,7 @@ var transformPaths = (schema, paths, { strict = true } = {}) => {
   return transformedPaths.values;
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parsePaths/pathParser.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/schema/actions/parsePaths/pathParser.js
 var PathParser = class _PathParser extends SchemaAction {
   static express(paths) {
     return expressPaths(paths);
@@ -32184,10 +31416,10 @@ var PathParser = class _PathParser extends SchemaAction {
 };
 PathParser.actionName = "parsePath";
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/parsePaths/constants.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/parsePaths/constants.js
 var $pathParser = Symbol("$pathParser");
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/parsePaths/entityPathParser.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/parsePaths/entityPathParser.js
 var EntityPathParser = class extends EntityAction {
   static express(paths) {
     return PathParser.express(paths);
@@ -32204,7 +31436,7 @@ var EntityPathParser = class extends EntityAction {
   }
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/options/consistent.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/options/consistent.js
 var parseConsistentOption = (consistent, index) => {
   if (!isBoolean(consistent)) {
     throw new DynamoDBToolboxError("options.invalidConsistentOption", {
@@ -32221,7 +31453,7 @@ var parseConsistentOption = (consistent, index) => {
   return consistent;
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/get/getItemParams/parseGetItemOptions.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/get/getItemParams/parseGetItemOptions.js
 var parseGetItemOptions = (entity, getItemOptions) => {
   const commandOptions = {};
   const { capacity, consistent, attributes, tableName, ...extraOptions } = getItemOptions;
@@ -32245,7 +31477,7 @@ var parseGetItemOptions = (entity, getItemOptions) => {
   return commandOptions;
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/get/getItemParams/getItemParams.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/get/getItemParams/getItemParams.js
 var getItemParams = (entity, input, options = {}) => {
   var _a2;
   const { key } = entity.build(EntityParser).parse(input, { mode: "key" });
@@ -32257,7 +31489,7 @@ var getItemParams = (entity, input, options = {}) => {
   };
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/get/getItemCommand.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/get/getItemCommand.js
 var __decorate3 = function(decorators, target, key, desc) {
   var c3 = arguments.length, r3 = c3 < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d3;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r3 = Reflect.decorate(decorators, target, key, desc);
@@ -32307,21 +31539,21 @@ __decorate3([
   interceptable()
 ], GetItemCommand.prototype, "send", null);
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/delete/deleteItemCommand.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/delete/deleteItemCommand.js
 var import_lib_dynamodb3 = __toESM(require_dist_cjs58(), 1);
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/delete/constants.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/delete/constants.js
 var $key2 = Symbol("$key");
 var $options3 = Symbol("$options");
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/delete/options.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/delete/options.js
 var deleteItemCommandReturnValuesOptions = [
   "NONE",
   "ALL_OLD"
 ];
 var deleteItemCommandReturnValuesOptionsSet = new Set(deleteItemCommandReturnValuesOptions);
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/delete/deleteItemParams/parseDeleteItemOptions.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/delete/deleteItemParams/parseDeleteItemOptions.js
 var parseDeleteItemOptions = (entity, deleteItemOptions) => {
   const commandOptions = {};
   const { capacity, metrics, returnValues, returnValuesOnConditionFalse, condition, tableName, ...extraOptions } = deleteItemOptions;
@@ -32354,7 +31586,7 @@ var parseDeleteItemOptions = (entity, deleteItemOptions) => {
   return commandOptions;
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/delete/deleteItemParams/deleteItemParams.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/delete/deleteItemParams/deleteItemParams.js
 var deleteItemParams = (entity, input, options = {}) => {
   var _a2;
   const { key } = entity.build(EntityParser).parse(input, { mode: "key" });
@@ -32366,7 +31598,7 @@ var deleteItemParams = (entity, input, options = {}) => {
   };
 };
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/entity/actions/delete/deleteItemCommand.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/entity/actions/delete/deleteItemCommand.js
 var __decorate4 = function(decorators, target, key, desc) {
   var c3 = arguments.length, r3 = c3 < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d3;
   if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r3 = Reflect.decorate(decorators, target, key, desc);
@@ -32415,10 +31647,10 @@ __decorate4([
   interceptable()
 ], DeleteItemCommand.prototype, "send", null);
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/transformers/utils.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/transformers/utils.js
 var isSerializableTransformer = (transformer) => isObject(transformer) && "transformerId" in transformer && "toJSON" in transformer;
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/transformers/pipe.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/transformers/pipe.js
 var composeLeft = (left, right) => (arg) => right(left(arg));
 var composeRight = (left, right) => (arg) => left(right(arg));
 var identity = (arg) => arg;
@@ -32446,7 +31678,7 @@ var SerializablePipe = class extends Pipe {
 };
 var pipe = (...transformers) => transformers.every(isSerializableTransformer) ? new SerializablePipe(transformers) : new Pipe(transformers);
 
-// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0/node_modules/dynamodb-toolbox/dist/esm/transformers/prefix.js
+// node_modules/.pnpm/dynamodb-toolbox@2.6.4_@aws-sdk+client-dynamodb@3.844.0_@aws-sdk+lib-dynamodb@3.844.0_@aws-sdk+client-dynamodb@3.844.0_/node_modules/dynamodb-toolbox/dist/esm/transformers/prefix.js
 var Prefixer = class {
   constructor(prefix2, { delimiter = "#" } = {}) {
     this.transformerId = "prefix";
@@ -32473,7 +31705,6 @@ var Prefixer = class {
 var prefix = (prefix2, { delimiter = "#" } = {}) => new Prefixer(prefix2, { delimiter });
 
 // handler.ts
-var import_client_apigatewaymanagementapi = __toESM(require_dist_cjs59());
 var isLocal = process.env.AWS_SAM_LOCAL === "true" || process.env.DYNAMODB_ENDPOINT;
 var dynamoDBClient = new import_client_dynamodb.DynamoDBClient(
   isLocal ? {
@@ -32489,34 +31720,19 @@ var dynamoDBClient = new import_client_dynamodb.DynamoDBClient(
     region: process.env.AWS_REGION || "me-central-1"
   }
 );
-var connection = item({
-  id: string().key().transform(prefix("CONNECTION")).savedAs("pk"),
-  connectionId: string().key().savedAs("sk"),
-  // Remove prefix for sk
-  userId: string(),
-  connectedAt: string(),
+var userConnection = item({
+  phoneNumberId: string().key().transform(prefix("USER")).savedAs("pk"),
+  phoneNumberIdRaw: string().key().savedAs("sk"),
+  connectionId: string(),
+  // Remove prefix for sk\
   domain: string(),
   stage: string()
-});
-var userConnection = item({
-  /**
-   * User id
-   */
-  id: string().key().transform(prefix("USER")).savedAs("pk"),
-  userId: string().key().savedAs("sk"),
-  // Remove prefix for sk
-  connectionId: string()
 });
 var WeTable = new Table({
   name: process.env.DYNAMODB_TABLE_NAME || "WeTable",
   partitionKey: { name: "pk", type: "string" },
   sortKey: { name: "sk", type: "string" },
   documentClient: import_lib_dynamodb4.DynamoDBDocumentClient.from(dynamoDBClient)
-});
-var Connection = new Entity({
-  name: "CONNECTION",
-  table: WeTable,
-  schema: connection
 });
 var UserConnection = new Entity({
   name: "USER_CONNECTION",
@@ -32529,30 +31745,20 @@ var onconnect = async (event) => {
     const connectionId = event.requestContext.connectionId;
     const domain = event.requestContext.domainName;
     const stage = event.requestContext.stage;
-    const userId = event.queryStringParameters?.userId || "anonymous";
-    console.log("Connecting user:", userId, "with connectionId:", connectionId);
+    const phoneNumberId = event.queryStringParameters?.phoneNumberId || "";
+    console.log(
+      "Connecting phone number:",
+      phoneNumberId,
+      "with connectionId:",
+      connectionId
+    );
     console.log("Table name:", process.env.DYNAMODB_TABLE_NAME);
-    const connectionItem = {
-      id: connectionId,
+    const userConnectionItem = {
+      phoneNumberId,
+      phoneNumberIdRaw: phoneNumberId,
       connectionId,
-      connectedAt: (/* @__PURE__ */ new Date()).toISOString(),
-      userId,
       domain,
       stage
-    };
-    console.log(
-      "Connection item to store:",
-      JSON.stringify(connectionItem, null, 2)
-    );
-    const connectionResult = await Connection.build(PutItemCommand).item(connectionItem).send();
-    console.log(
-      "Connection stored result:",
-      JSON.stringify(connectionResult, null, 2)
-    );
-    const userConnectionItem = {
-      id: userId,
-      userId,
-      connectionId
     };
     console.log(
       "UserConnection item to store:",
@@ -32563,107 +31769,17 @@ var onconnect = async (event) => {
       "UserConnection stored result:",
       JSON.stringify(userConnectionResult, null, 2)
     );
-    console.log("Successfully stored connection for user:", userId);
+    console.log("Successfully stored connection for user:", phoneNumberId);
     return { statusCode: 200 };
   } catch (error) {
     console.error("Error in onconnect:", error);
     return { statusCode: 500 };
   }
 };
-var ondisconnect = async (event) => {
-  try {
-    console.log("OnDisconnect event:", JSON.stringify(event, null, 2));
-    const connectionId = event.requestContext.connectionId;
-    console.log("Disconnecting connectionId:", connectionId);
-    console.log("Looking up connection with keys:", {
-      id: connectionId,
-      connectionId
-    });
-    const { Item } = await Connection.build(GetItemCommand).key({ id: connectionId, connectionId }).send();
-    console.log("Found connection item:", JSON.stringify(Item, null, 2));
-    console.log("Deleting connection with keys:", {
-      id: connectionId,
-      connectionId
-    });
-    const deleteConnectionResult = await Connection.build(DeleteItemCommand).key({
-      id: connectionId,
-      connectionId
-    }).send();
-    console.log(
-      "Connection delete result:",
-      JSON.stringify(deleteConnectionResult, null, 2)
-    );
-    if (Item?.userId) {
-      console.log("Deleting user connection with keys:", {
-        id: Item.userId,
-        userId: Item.userId
-      });
-      const deleteUserConnectionResult = await UserConnection.build(
-        DeleteItemCommand
-      ).key({ id: Item.userId, userId: Item.userId }).send();
-      console.log(
-        "UserConnection delete result:",
-        JSON.stringify(deleteUserConnectionResult, null, 2)
-      );
-    } else {
-      console.log(
-        "No userId found in connection item, skipping user connection deletion"
-      );
-    }
-    console.log("Successfully disconnected:", connectionId);
-    return { statusCode: 200 };
-  } catch (error) {
-    console.error("Error in ondisconnect:", error);
-    return { statusCode: 500 };
-  }
-};
-var onmessage = async (event) => {
-  console.log("onmessage", JSON.stringify(event, null, 2));
-  const connectionId = event.requestContext.connectionId;
-  const domain = event.requestContext.domainName;
-  const stage = event.requestContext.stage;
-  const message = JSON.parse(event.body);
-  const apiGwClient = new import_client_apigatewaymanagementapi.ApiGatewayManagementApiClient({
-    endpoint: isLocal ? `http://127.0.0.1:3001` : `https://${domain}/${stage}`
-  });
-  await apiGwClient.send(
-    new import_client_apigatewaymanagementapi.PostToConnectionCommand({
-      ConnectionId: connectionId,
-      Data: new TextEncoder().encode(
-        JSON.stringify({
-          from: connectionId,
-          message
-        })
-      )
-    })
-  );
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: `Message received: ${JSON.stringify(message)}`
-    })
-  };
-};
-var ondefault = async (event) => {
-  const connectionId = event.requestContext.connectionId;
-  console.log("default", JSON.stringify(event, null, 2));
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: "Default route",
-      connectionId
-    })
-  };
-};
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  Connection,
   UserConnection,
   WeTable,
-  connection,
   onconnect,
-  ondefault,
-  ondisconnect,
-  onmessage,
   userConnection
 });

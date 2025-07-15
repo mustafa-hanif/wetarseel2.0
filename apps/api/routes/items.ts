@@ -9,6 +9,7 @@ export default {
     const expandParam = url.searchParams.get("expand") || "";
     const filterParam = url.searchParams.get("filter") || "";
     const limit = parseInt(url.searchParams.get("limit") || "1000");
+    const skipAccountCheck = url.searchParams.get("skipAccountCheck") || "";
 
     // if (typeof table !== "string" || !allowedTables.includes(table)) {
     if (typeof table !== "string") {
@@ -23,7 +24,10 @@ export default {
     const expansions = expandParam.split(",").map((e) => e.trim());
 
     // Build conditional query using Zapatos SQL builder
-    let whereConditions = db.sql`${db.raw(table)}.account = ${db.param(accountId)}`;
+    let whereConditions =
+      skipAccountCheck === "true"
+        ? db.sql`1 = 1`
+        : db.sql`${db.raw(table)}.account = ${db.param(accountId)}`;
 
     if (filters.length > 0 && columnName && value) {
       whereConditions = db.sql`${whereConditions} AND ${db.raw(table)}.${db.raw(columnName)} = ${db.param(value)}`;

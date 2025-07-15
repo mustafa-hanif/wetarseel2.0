@@ -50,7 +50,7 @@ function RouteComponent() {
     "messages",
     () => ({
       filter: `convo_id.=.` + chatState.selectedConversation()?.id,
-      limit: 10,
+      limit: 1000,
     }),
     () => [chatState.selectedConversation()?.id ?? "0"], // Dependencies array
     {
@@ -101,7 +101,7 @@ function RouteComponent() {
         />
 
         <ConversationList
-          conversations={chatState.filteredConversations() ?? []}
+          conversations={chatState.filteredConversations ?? []}
           selectedConversation={chatState.selectedConversation()}
           onConversationSelect={chatState.setSelectedConversation}
         />

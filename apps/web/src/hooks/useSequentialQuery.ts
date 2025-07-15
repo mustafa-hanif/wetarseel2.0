@@ -23,7 +23,7 @@ export function useSequentialConversations() {
     "conversations",
     {
       expand: "from.leads,message.messages",
-      limit: 1000,
+      limit: 100000,
     },
     () => [],
     {

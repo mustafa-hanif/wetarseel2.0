@@ -33,7 +33,10 @@ const formatDate = (dateString: string) => {
 };
 
 function RouteComponent() {
-  const query = fetchQuery<"users">(["agents"], "/api/accounts/users");
+  const query = fetchQuery<"users">(
+    ["agents"],
+    `${import.meta.env.VITE_API_URL}/api/accounts/users`
+  );
   // Mock user data - replace with actual auth
   const user = { type: "admin" };
   const isDisabled = false;

@@ -1,6 +1,7 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as aws from "@pulumi/aws";
 import * as command from "@pulumi/command";
+import * as docker_build from "@pulumi/docker-build";
 
 // Install @pulumi/command for build automation
 // Run: npm install @pulumi/command
@@ -1032,6 +1033,33 @@ const ecrLifecyclePolicy = new aws.ecr.LifecyclePolicy("api-ecr-lifecycle", {
   }),
 });
 
+// Build and push Docker image to ECR using modern docker-build provider
+const imageTag = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`;
+
+// Get ECR auth credentials
+const authToken = aws.ecr.getAuthorizationTokenOutput({
+  registryId: ecrRepository.registryId,
+});
+
+const apiImage = new docker_build.Image("api-image", {
+  tags: [pulumi.interpolate`${ecrRepository.repositoryUrl}:${imageTag}`],
+  context: {
+    location: "../api",
+  },
+  // Build for ARM64 (cheaper Fargate instances)
+  platforms: ["linux/arm64"],
+  // Push the final result to ECR
+  push: true,
+  // Provide ECR credentials
+  registries: [
+    {
+      address: ecrRepository.repositoryUrl,
+      password: authToken.password,
+      username: authToken.userName,
+    },
+  ],
+});
+
 // ECS Cluster
 const ecsCluster = new aws.ecs.Cluster("api-cluster", {
   name: `${projectName}-${environment}-cluster`,
@@ -1135,34 +1163,46 @@ const ecsTaskRole = new aws.iam.Role("ecs-task-role", {
   },
 });
 
-// Policy for ECS task to access RDS and DynamoDB
+// Policy for ECS task to access RDS, DynamoDB, and SQS
 const ecsTaskPolicy = new aws.iam.Policy("ecs-task-policy", {
   name: `${projectName}-${environment}-ecs-task-policy`,
   description: "Policy for ECS tasks to access AWS services",
-  policy: pulumi.all([dynamoTable.arn]).apply(([tableArn]) =>
-    JSON.stringify({
-      Version: "2012-10-17",
-      Statement: [
-        {
-          Effect: "Allow",
-          Action: [
-            "dynamodb:GetItem",
-            "dynamodb:PutItem",
-            "dynamodb:UpdateItem",
-            "dynamodb:DeleteItem",
-            "dynamodb:Query",
-            "dynamodb:Scan",
-          ],
-          Resource: [tableArn, `${tableArn}/index/*`],
-        },
-        {
-          Effect: "Allow",
-          Action: ["rds:DescribeDBInstances", "rds:DescribeDBClusters"],
-          Resource: "*",
-        },
-      ],
-    })
-  ),
+  policy: pulumi
+    .all([dynamoTable.arn, whatsappQueue.arn, whatsappDlq.arn])
+    .apply(([tableArn, queueArn, dlqArn]) =>
+      JSON.stringify({
+        Version: "2012-10-17",
+        Statement: [
+          {
+            Effect: "Allow",
+            Action: [
+              "dynamodb:GetItem",
+              "dynamodb:PutItem",
+              "dynamodb:UpdateItem",
+              "dynamodb:DeleteItem",
+              "dynamodb:Query",
+              "dynamodb:Scan",
+            ],
+            Resource: [tableArn, `${tableArn}/index/*`],
+          },
+          {
+            Effect: "Allow",
+            Action: ["rds:DescribeDBInstances", "rds:DescribeDBClusters"],
+            Resource: "*",
+          },
+          {
+            Effect: "Allow",
+            Action: [
+              "sqs:ReceiveMessage",
+              "sqs:DeleteMessage",
+              "sqs:GetQueueAttributes",
+              "sqs:GetQueueUrl",
+            ],
+            Resource: [queueArn, dlqArn],
+          },
+        ],
+      })
+    ),
   tags: {
     ...commonTags,
     Purpose: "ECSTaskPermissions",
@@ -1235,11 +1275,10 @@ const ecsTaskDefinition = new aws.ecs.TaskDefinition("api-task", {
     cpuArchitecture: "ARM64",
     operatingSystemFamily: "LINUX",
   },
-  containerDefinitions: JSON.stringify([
+  containerDefinitions: pulumi.jsonStringify([
     {
       name: "api",
-      image:
-        "147997141811.dkr.ecr.me-central-1.amazonaws.com/wetarseel-dev-api:latest",
+      image: apiImage.ref,
       essential: true,
       portMappings: [
         {
@@ -1264,6 +1303,15 @@ const ecsTaskDefinition = new aws.ecs.TaskDefinition("api-task", {
         {
           name: "AWS_REGION",
           value: region,
+        },
+        {
+          name: "WHATSAPP_SQS_QUEUE_URL",
+          value:
+            "https://sqs.me-central-1.amazonaws.com/147997141811/wetarseel-dev-whatsapp-events",
+        },
+        {
+          name: "FORCE_UPDATE",
+          value: "2025-07-14-v2",
         },
       ],
       logConfiguration: {
@@ -1434,6 +1482,81 @@ const ecsService = new aws.ecs.Service(
 );
 
 // ============================================================================
+// CLOUDWATCH DASHBOARD
+// ============================================================================
+
+// CloudWatch Dashboard for monitoring
+const dashboard = new aws.cloudwatch.Dashboard("wetarseel-dashboard", {
+  dashboardName: `${projectName}-${environment}-dashboard`,
+  dashboardBody: JSON.stringify({
+    widgets: [
+      {
+        type: "metric",
+        x: 0,
+        y: 0,
+        width: 12,
+        height: 6,
+        properties: {
+          metrics: [
+            [
+              "AWS/ECS",
+              "CPUUtilization",
+              "ServiceName",
+              ecsService.name,
+              "ClusterName",
+              ecsCluster.name,
+            ],
+            [".", "MemoryUtilization", ".", ".", ".", "."],
+          ],
+          view: "timeSeries",
+          stacked: false,
+          region: region,
+          title: "ECS Service Metrics",
+          period: 300,
+        },
+      },
+      {
+        type: "metric",
+        x: 12,
+        y: 0,
+        width: 12,
+        height: 6,
+        properties: {
+          metrics: [
+            [
+              "AWS/SQS",
+              "NumberOfMessagesSent",
+              "QueueName",
+              whatsappQueue.name,
+            ],
+            [".", "NumberOfMessagesReceived", ".", "."],
+            [".", "ApproximateNumberOfVisibleMessages", ".", "."],
+          ],
+          view: "timeSeries",
+          stacked: false,
+          region: region,
+          title: "WhatsApp SQS Queue Metrics",
+          period: 300,
+        },
+      },
+      {
+        type: "log",
+        x: 0,
+        y: 6,
+        width: 24,
+        height: 6,
+        properties: {
+          query: `SOURCE '/ecs/${projectName}-${environment}-api'\n| fields @timestamp, @message\n| filter @message like /ERROR/\n| sort @timestamp desc\n| limit 20`,
+          region: region,
+          title: "Recent Errors",
+          view: "table",
+        },
+      },
+    ],
+  }),
+});
+
+// ============================================================================
 // ECS OUTPUTS
 // ============================================================================
 
@@ -1448,3 +1571,4 @@ export const applicationLoadBalancerDns = applicationLoadBalancer.dnsName;
 export const applicationLoadBalancerArn = applicationLoadBalancer.arn;
 export const apiUrl = pulumi.interpolate`http://${applicationLoadBalancer.dnsName}`;
 export const apiHealthUrl = pulumi.interpolate`http://${applicationLoadBalancer.dnsName}/health`;
+export const dashboardUrl = pulumi.interpolate`https://${region}.console.aws.amazon.com/cloudwatch/home?region=${region}#dashboards:name=${dashboard.dashboardName}`;

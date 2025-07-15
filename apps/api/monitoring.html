@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wetarseel API Monitoring v2 - Auto Deploy Test</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .header {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        .status-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+        .status-dot.green { background: #22c55e; }
+        .status-dot.red { background: #ef4444; }
+        .status-dot.yellow { background: #eab308; }
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            margin: 10px 0;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 4px;
+        }
+        .logs {
+            background: #1a1a1a;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 4px;
+            font-family: 'Monaco', 'Menlo', monospace;
+            font-size: 12px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .refresh-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .refresh-btn:hover {
+            background: #2563eb;
+        }
+        .timestamp {
+            color: #666;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🚀 Wetarseel API Monitoring v3 (Auto-Deploy Test #2)</h1>
+            <button class="refresh-btn" onclick="refreshAll()">🔄 Refresh All</button>
+            <div class="timestamp">Last updated: <span id="lastUpdate">-</span></div>
+        </div>
+
+        <div class="grid">
+            <!-- API Health -->
+            <div class="card">
+                <h3>🏥 API Health</h3>
+                <div class="status">
+                    <div class="status-dot" id="apiStatus"></div>
+                    <span id="apiStatusText">Checking...</span>
+                </div>
+                <div class="metric">
+                    <span>Response Time</span>
+                    <span id="apiResponseTime">-</span>
+                </div>
+                <div class="metric">
+                    <span>Last Check</span>
+                    <span id="apiLastCheck">-</span>
+                </div>
+            </div>
+
+            <!-- WhatsApp Consumer -->
+            <div class="card">
+                <h3>📱 WhatsApp Consumer</h3>
+                <div class="status">
+                    <div class="status-dot" id="whatsappStatus"></div>
+                    <span id="whatsappStatusText">Checking...</span>
+                </div>
+                <div class="metric">
+                    <span>Queue URL</span>
+                    <span id="whatsappQueueUrl">-</span>
+                </div>
+                <div class="metric">
+                    <span>Is Running</span>
+                    <span id="whatsappRunning">-</span>
+                </div>
+            </div>
+
+            <!-- System Metrics -->
+            <div class="card">
+                <h3>📊 System Info</h3>
+                <div class="metric">
+                    <span>Environment</span>
+                    <span id="environment">-</span>
+                </div>
+                <div class="metric">
+                    <span>Region</span>
+                    <span>me-central-1</span>
+                </div>
+                <div class="metric">
+                    <span>ECS Service</span>
+                    <span>wetarseel-dev-api</span>
+                </div>
+            </div>
+
+            <!-- Quick Links -->
+            <div class="card">
+                <h3>🔗 Quick Links</h3>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <a href="https://me-central-1.console.aws.amazon.com/cloudwatch/home?region=me-central-1#dashboards:name=wetarseel-dev-dashboard" target="_blank">📈 CloudWatch Dashboard</a>
+                    <a href="https://me-central-1.console.aws.amazon.com/cloudwatch/home?region=me-central-1#logsV2:log-groups/log-group/$252Fecs$252Fwetarseel-dev-api" target="_blank">📋 CloudWatch Logs</a>
+                    <a href="https://me-central-1.console.aws.amazon.com/ecs/v2/clusters/wetarseel-dev/services/wetarseel-dev-api/health" target="_blank">🏗️ ECS Service</a>
+                    <a href="https://me-central-1.console.aws.amazon.com/sqs/v2/home?region=me-central-1#/queues/https%3A%2F%2Fsqs.me-central-1.amazonaws.com%2F147997141811%2Fwetarseel-dev-whatsapp-events" target="_blank">📬 SQS Queue</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recent Logs -->
+        <div class="card" style="margin-top: 20px;">
+            <h3>📜 Recent Logs</h3>
+            <div class="logs" id="recentLogs">
+                Loading logs...
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function checkApiHealth() {
+            try {
+                const start = Date.now();
+                const response = await fetch('/health');
+                const responseTime = Date.now() - start;
+                
+                if (response.ok) {
+                    document.getElementById('apiStatus').className = 'status-dot green';
+                    document.getElementById('apiStatusText').textContent = 'Healthy';
+                } else {
+                    document.getElementById('apiStatus').className = 'status-dot red';
+                    document.getElementById('apiStatusText').textContent = 'Unhealthy';
+                }
+                
+                document.getElementById('apiResponseTime').textContent = `${responseTime}ms`;
+                document.getElementById('apiLastCheck').textContent = new Date().toLocaleTimeString();
+            } catch (error) {
+                document.getElementById('apiStatus').className = 'status-dot red';
+                document.getElementById('apiStatusText').textContent = 'Error';
+                document.getElementById('apiResponseTime').textContent = 'Error';
+            }
+        }
+
+        async function checkWhatsAppStatus() {
+            try {
+                const response = await fetch('/api/whatsapp/status');
+                const data = await response.json();
+                
+                if (data.whatsappConsumer.isRunning) {
+                    document.getElementById('whatsappStatus').className = 'status-dot green';
+                    document.getElementById('whatsappStatusText').textContent = 'Running';
+                } else {
+                    document.getElementById('whatsappStatus').className = 'status-dot red';
+                    document.getElementById('whatsappStatusText').textContent = 'Stopped';
+                }
+                
+                document.getElementById('whatsappQueueUrl').textContent = data.whatsappConsumer.queueUrl || 'Not set';
+                document.getElementById('whatsappRunning').textContent = data.whatsappConsumer.isRunning ? 'Yes' : 'No';
+            } catch (error) {
+                document.getElementById('whatsappStatus').className = 'status-dot red';
+                document.getElementById('whatsappStatusText').textContent = 'Error';
+            }
+        }
+
+        function updateSystemInfo() {
+            // This would typically come from an API endpoint
+            document.getElementById('environment').textContent = 'Development';
+        }
+
+        function simulateRecentLogs() {
+            // In a real implementation, this would fetch from CloudWatch or your logging endpoint
+            const logs = [
+                '[INFO] 2024-07-14T15:30:00.000Z - API server started {"port":4000,"environment":"development"}',
+                '[INFO] 2024-07-14T15:30:01.000Z - WhatsApp SQS consumer started successfully',
+                '[INFO] 2024-07-14T15:30:15.000Z - Received 1 WhatsApp messages from SQS',
+                '[INFO] 2024-07-14T15:30:15.000Z - Successfully processed and deleted message from SQS',
+                '[DEBUG] 2024-07-14T15:30:30.000Z - session cache hit',
+            ];
+            
+            document.getElementById('recentLogs').innerHTML = logs.join('\n');
+        }
+
+        function refreshAll() {
+            document.getElementById('lastUpdate').textContent = new Date().toLocaleString();
+            checkApiHealth();
+            checkWhatsAppStatus();
+            updateSystemInfo();
+            simulateRecentLogs();
+        }
+
+        // Auto-refresh every 30 seconds
+        setInterval(refreshAll, 30000);
+
+        // Initial load
+        refreshAll();
+    </script>
+</body>
+</html>

@@ -31,7 +31,6 @@ export const auth = betterAuth({
     customSession(async ({ user, session }) => {
       let accountId = "";
       if (cache.has(user.email)) {
-        console.log("session cache hit");
         accountId = cache.get(user.email) as string;
       } else {
         const account = await getAccountFromUser(user.email);

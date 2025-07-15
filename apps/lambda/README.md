@@ -71,7 +71,11 @@ When you are done developing, don't forget to run `serverless deploy` to deploy 
 // how to build
 cd apps/lambda && pnpm run build
 cp dist/handler.js handler.js && zip lambda-code-fixed.zip handler.js
-aws lambda update-function-code --function-name wetarseel-dev-onmessage --zip-file fileb://lambda-code-fixed.zip && aws lambda update-function-code --function-name wetarseel-dev-ondefault --zip-file fileb://lambda-code-fixed.zip
+
+aws lambda update-function-code --function-name wetarseel-dev-onmessage --zip-file fileb://lambda-code-fixed.zip && aws lambda update-function-code --function-name wetarseel-dev-ondefault --zip-file fileb://lambda-code-fixed.zip && aws lambda update-function-code --function-name wetarseel-dev-onconnect --zip-file fileb://lambda-code-fixed.zip
+
+// deploy webhook
+bunx esbuild webhook.ts --bundle --platform=node --target=node20 --outfile=dist/webhook.js --external:aws-lambda && cp dist/webhook.js webhook.js && zip lambda-code-fixed.zip webhook.js && aws lambda update-function-code --function-name wetarseel-dev-whatsapp-webhook --zip-file fileb://lambda-code-fixed.zip
 
 // to deploy api
 aws ecs update-service --cluster wetarseel-dev-cluster --service wetarseel-dev-api-service --force-new-deployment

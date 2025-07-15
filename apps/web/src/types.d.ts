@@ -2,6 +2,16 @@
 
 import "solid-js"; // Import solid-js to ensure JSX types are available
 
+// Vite environment variables
+interface ImportMetaEnv {
+  readonly VITE_API_URL: string;
+  // Add other VITE_ prefixed environment variables here as needed
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}
+
 declare module "solid-js" {
   namespace JSX {
     interface Directives {

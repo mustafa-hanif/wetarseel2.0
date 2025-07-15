@@ -10,6 +10,7 @@ type FetchOptions = {
   filter?: string;
   expand?: string;
   limit?: number;
+  skipAccountCheck?: boolean;
 };
 
 type AdditionalQueryOptions = {
@@ -34,15 +35,20 @@ export function dbquery<T extends TableName>(
 
     // Create fresh query options with current deps in the key
     const tableQueryOptions = queryOptions({
-      queryKey: [table, opts, currentDeps],
+      queryKey: [table, currentOpts, currentDeps],
       queryFn: async (): Promise<s.SelectableForTable<T>[]> => {
         const params = new URLSearchParams();
         if (currentOpts.filter) params.set("filter", currentOpts.filter);
         if (currentOpts.expand) params.set("expand", currentOpts.expand);
         if (currentOpts.limit) params.set("limit", String(currentOpts.limit));
+        if (currentOpts.skipAccountCheck)
+          params.set("skipAccountCheck", String(currentOpts.skipAccountCheck));
 
         const url = `/api/items/${table}?${params.toString()}`;
-        const res = await fetch(url);
+        console.log(import.meta.env.VITE_API_URL);
+        const res = await fetch(`${import.meta.env.VITE_API_URL}${url}`, {
+          credentials: "include",
+        });
 
         if (!res.ok) throw new Error(await res.text());
 
