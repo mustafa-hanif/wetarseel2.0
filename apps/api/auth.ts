@@ -46,7 +46,7 @@ export const auth = betterAuth({
       };
     }),
   ],
-  trustedOrigins: ["http://localhost:3000"],
+  trustedOrigins: [process.env.FRONTEND_URL ?? "https://uae.wetarseel.ai"],
   database: new Pool({
     connectionString: process.env.ZAPATOS_DB_URL,
     ssl: {
@@ -64,6 +64,6 @@ export const auth = betterAuth({
 });
 
 export const authClient = createAuthClient({
-  baseURL: "http://localhost:4000",
+  baseURL: process.env.BETTER_AUTH_URL,
   plugins: [adminClient()],
 });

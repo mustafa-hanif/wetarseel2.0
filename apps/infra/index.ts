@@ -641,22 +641,10 @@ const onDefaultPermission = new aws.lambda.Permission("ondefault-permission", {
   sourceArn: pulumi.interpolate`${webSocketApi.executionArn}/*/*`,
 });
 
-// API Gateway deployment
-const webSocketDeployment = new aws.apigatewayv2.Deployment(
-  "websocket-deployment",
-  {
-    apiId: webSocketApi.id,
-    description: `Deployment for ${environment} environment`,
-  },
-  {
-    dependsOn: [connectRoute, disconnectRoute, messageRoute, defaultRoute],
-  }
-);
-
 // API Gateway stage
 const webSocketStage = new aws.apigatewayv2.Stage("websocket-stage", {
   apiId: webSocketApi.id,
-  deploymentId: webSocketDeployment.id,
+  autoDeploy: true,
   name: environment,
   tags: {
     ...commonTags,
@@ -939,24 +927,11 @@ const webhookPermission = new aws.lambda.Permission("webhook-permission", {
   sourceArn: pulumi.interpolate`${httpApi.executionArn}/*/*`,
 });
 
-// HTTP API deployment
-const httpApiDeployment = new aws.apigatewayv2.Deployment(
-  "webhook-deployment",
-  {
-    apiId: httpApi.id,
-    description: `WhatsApp webhook deployment for ${environment}`,
-  },
-  {
-    dependsOn: [webhookGetRoute, webhookPostRoute],
-  }
-);
-
 // HTTP API stage
 const httpApiStage = new aws.apigatewayv2.Stage("webhook-stage", {
   apiId: httpApi.id,
-  deploymentId: httpApiDeployment.id,
-  name: environment,
   autoDeploy: true,
+  name: environment,
   tags: {
     ...commonTags,
     Purpose: "WhatsAppWebhookStage",
@@ -1294,6 +1269,10 @@ const ecsTaskDefinition = new aws.ecs.TaskDefinition("api-task", {
         {
           name: "FRONTEND_URL",
           value: "https://uae.wetarseel.ai",
+        },
+        {
+          name: "BETTER_AUTH_URL",
+          value: "https://api.uae.wetarseel.ai"
         },
         {
           name: "ZAPATOS_DB_URL",
