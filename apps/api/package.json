@@ -16,6 +16,7 @@
     "typescript": "^5"
   },
   "dependencies": {
+    "@aws-sdk/client-apigatewaymanagementapi": "^3.846.0",
     "@aws-sdk/client-dynamodb": "^3.840.0",
     "@aws-sdk/client-sqs": "^3.844.0",
     "@aws-sdk/lib-dynamodb": "^3.840.0",
