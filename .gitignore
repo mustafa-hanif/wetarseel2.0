@@ -8,3 +8,4 @@ apps/web/dist
 # sst
 .sst
 apps/legacy-wetarseel
+apps/web/dist/index.html

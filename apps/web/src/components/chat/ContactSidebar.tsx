@@ -22,6 +22,7 @@ interface ContactSidebarProps {
 }
 
 export function ContactSidebar(props: ContactSidebarProps) {
+  const contact = props.conversation.leads;
   return (
     <div class="w-80 bg-white border-l border-gray-200 flex flex-col">
       {/* Header */}
@@ -40,9 +41,9 @@ export function ContactSidebar(props: ContactSidebarProps) {
             <User size={32} class="text-gray-600" />
           </div>
           <h4 class="text-xl font-semibold text-gray-900">
-            {props.conversation.name}
+            {contact.name}
           </h4>
-          <p class="text-gray-500">{props.conversation.phone_number}</p>
+          <p class="text-gray-500">{contact.phone_number}</p>
         </div>
 
         {/* Contact Information */}
@@ -51,13 +52,13 @@ export function ContactSidebar(props: ContactSidebarProps) {
             Contact Information
           </h5>
 
-          <Show when={props.conversation.email}>
+          <Show when={contact.phone_number}>
             <div class="flex items-center gap-3">
               <Mail size={16} class="text-gray-400" />
               <div>
-                <p class="text-sm text-gray-600">Email</p>
+                <p class="text-sm text-gray-600">Phone</p>
                 <p class="text-sm font-medium text-gray-900">
-                  {props.conversation.email}
+                  {contact.phone_number}
                 </p>
               </div>
             </div>
@@ -68,35 +69,35 @@ export function ContactSidebar(props: ContactSidebarProps) {
             <div>
               <p class="text-sm text-gray-600">Phone</p>
               <p class="text-sm font-medium text-gray-900">
-                {props.conversation.phone}
+                {contact.phone_number}
               </p>
             </div>
           </div>
 
-          <Show when={props.conversation.company}>
+          {/* <Show when={contact.company}>
             <div class="flex items-center gap-3">
               <Building size={16} class="text-gray-400" />
               <div>
                 <p class="text-sm text-gray-600">Company</p>
                 <p class="text-sm font-medium text-gray-900">
-                  {props.conversation.company}
+                  {contact.company}
                 </p>
               </div>
             </div>
-          </Show>
+          </Show> */}
 
-          <Show when={props.conversation.location}>
+          {/* <Show when={contact.location}>
             <div class="flex items-center gap-3">
               <MapPin size={16} class="text-gray-400" />
               <div>
                 <p class="text-sm text-gray-600">Location</p>
                 <p class="text-sm font-medium text-gray-900">
-                  {props.conversation.location}
+                  {contact.location}
                 </p>
               </div>
             </div>
-          </Show>
-        </div>
+          </Show> */}
+        </div> 
 
         {/* Assignment Information */}
         <div class="space-y-4">
@@ -104,33 +105,33 @@ export function ContactSidebar(props: ContactSidebarProps) {
             Assignment
           </h5>
 
-          <Show when={props.conversation.assignedAgent}>
+          <Show when={props.conversation.assigned_agent}>
             <div class="flex items-center gap-3">
               <UserCheck size={16} class="text-gray-400" />
               <div>
                 <p class="text-sm text-gray-600">Assigned Agent</p>
                 <p class="text-sm font-medium text-gray-900">
                   {props.agents.find(
-                    (agent) => agent.id === props.conversation.assignedAgent
+                    (agent) => agent.id === props.conversation.assigned_agent
                   )?.name || "Unknown Agent"}
                 </p>
               </div>
             </div>
           </Show>
 
-          <Show when={props.conversation.teamId}>
+          {/* <Show when={props.conversation.teamId}>
             <div class="flex items-center gap-3">
               <Users size={16} class="text-gray-400" />
               <div>
                 <p class="text-sm text-gray-600">Team</p>
                 <p class="text-sm font-medium text-gray-900">
                   {props.teams.find(
-                    (team) => team.id === props.conversation.teamId
+                    (team) => team.id === contact.teamId
                   )?.name || "Unknown Team"}
                 </p>
               </div>
             </div>
-          </Show>
+          </Show> */}
         </div>
 
         {/* Tags */}
@@ -139,7 +140,7 @@ export function ContactSidebar(props: ContactSidebarProps) {
             Tags
           </h5>
           <div class="flex flex-wrap gap-2">
-            <For each={props.conversation.tags}>
+            <For each={contact.tags as string[]}>
               {(tag) => (
                 <span class="inline-flex items-center gap-1 px-2 py-1 text-xs bg-blue-100 text-blue-700 rounded">
                   <Tag size={10} />
@@ -161,33 +162,33 @@ export function ContactSidebar(props: ContactSidebarProps) {
             <div>
               <p class="text-sm text-gray-600">Created</p>
               <p class="text-sm font-medium text-gray-900">
-                {formatDate(props.conversation.createdAt)}
+                {formatDate(contact.created ?? '')}
               </p>
             </div>
           </div>
 
-          <div class="flex items-center gap-3">
+          {/* <div class="flex items-center gap-3">
             <Clock size={16} class="text-gray-400" />
             <div>
               <p class="text-sm text-gray-600">Last Activity</p>
               <p class="text-sm font-medium text-gray-900">
-                {formatDate(props.conversation.lastActivity)}
+                {formatDate(contact.lastActivity)}
               </p>
             </div>
-          </div>
+          </div> */}
         </div>
 
         {/* Notes */}
-        <Show when={props.conversation.notes}>
+        {/* <Show when={contact.notes}>
           <div class="space-y-4">
             <h5 class="text-sm font-medium text-gray-900 uppercase tracking-wide">
               Notes
             </h5>
             <div class="bg-gray-50 rounded-lg p-3">
-              <p class="text-sm text-gray-700">{props.conversation.notes}</p>
+              <p class="text-sm text-gray-700">{contact.notes}</p>
             </div>
           </div>
-        </Show>
+        </Show> */}
       </div>
     </div>
   );

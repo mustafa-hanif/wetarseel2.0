@@ -8,12 +8,7 @@ import {
   Show,
   Suspense,
 } from "solid-js";
-import {
-  mockTeams,
-  mockAgents,
-  mockConversations,
-  mockMessages,
-} from "@/data/mockData";
+
 import { useChatState } from "@/hooks/useChatState";
 
 // Components
@@ -64,7 +59,7 @@ function RouteComponent() {
   return (
     <div class="flex h-full bg-gray-100">
       {/* Left Sidebar - Teams and Agents */}
-      <TeamAgentSidebar
+      {/* <TeamAgentSidebar
         teams={mockTeams}
         agents={mockAgents}
         selectedTeam={chatState.selectedTeam()}
@@ -72,7 +67,7 @@ function RouteComponent() {
         conversationCount={chatState.conversations()?.data?.length ?? 0}
         onTeamSelect={chatState.selectTeam}
         onAgentSelect={chatState.selectAgent}
-      />
+      /> */}
 
       {/* Conversations List */}
       <div class="w-80 bg-white border-r border-gray-200 flex flex-col">
@@ -130,7 +125,7 @@ function RouteComponent() {
       </div>
 
       {/* Right Sidebar - Conversation Details */}
-      <Show
+      {/* <Show
         when={chatState.showRightSidebar() && chatState.selectedConversation()}
       >
         <ContactSidebar
@@ -139,7 +134,7 @@ function RouteComponent() {
           agents={mockAgents}
           onClose={() => chatState.setShowRightSidebar(false)}
         />
-      </Show>
+      </Show> */}
     </div>
   );
 }

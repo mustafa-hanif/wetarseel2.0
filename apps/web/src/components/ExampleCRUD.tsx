@@ -20,7 +20,8 @@ export function ExampleCRUDComponent() {
   });
 
   // Get users data using your existing query system
-  const usersQuery = dbquery("users");
+  const _usersQuery = dbquery("users");
+  const usersQuery = _usersQuery();
 
   // Set up CRUD operations with the new mutation system
   const userCRUD = useTableCRUD("users", {
