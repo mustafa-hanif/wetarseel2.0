@@ -366,7 +366,7 @@ const installDeps = new command.local.Command("install-deps", {
 const buildSite = new command.local.Command(
   "build",
   {
-    create: "cd ../web && VITE_API_URL=https://api.uae.wetarseel.ai pnpm run build",
+    create: "cd ../web && pnpm install && VITE_API_URL=https://api.uae.wetarseel.ai pnpm run build",
   },
   { dependsOn: [installDeps] }
 );
