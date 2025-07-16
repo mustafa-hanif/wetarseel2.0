@@ -367,6 +367,7 @@ const buildSite = new command.local.Command(
   "build",
   {
     create: "cd ../web && pnpm install && VITE_API_URL=https://api.uae.wetarseel.ai pnpm run build",
+    update: "cd ../web && pnpm install && VITE_API_URL=https://api.uae.wetarseel.ai pnpm run build",
   },
   { dependsOn: [installDeps] }
 );
@@ -679,6 +680,7 @@ const deploySite = new command.local.Command(
   "deploy",
   {
     create: pulumi.interpolate`aws s3 sync ../web/dist s3://${websiteBucket.bucket} --delete --acl public-read`,
+    update: pulumi.interpolate`aws s3 sync ../web/dist s3://${websiteBucket.bucket} --delete --acl public-read`,
   },
   {
     dependsOn: [
