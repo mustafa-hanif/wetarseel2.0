@@ -1273,6 +1273,10 @@ const ecsTaskDefinition = new aws.ecs.TaskDefinition("api-task", {
           value: "https://uae.wetarseel.ai",
         },
         {
+          name: "BETTER_AUTH_SECRET",
+          value: "abcd"
+        },
+        {
           name: "BETTER_AUTH_URL",
           value: "https://api.uae.wetarseel.ai"
         },
