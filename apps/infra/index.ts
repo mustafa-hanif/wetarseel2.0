@@ -366,7 +366,7 @@ const installDeps = new command.local.Command("install-deps", {
 const buildSite = new command.local.Command(
   "build",
   {
-    create: "cd ../web && pnpm run build",
+    create: "cd ../web && VITE_API_URL=https://api.uae.wetarseel.ai pnpm run build",
   },
   { dependsOn: [installDeps] }
 );
@@ -1289,7 +1289,11 @@ const ecsTaskDefinition = new aws.ecs.TaskDefinition("api-task", {
       environment: [
         {
           name: "NODE_ENV",
-          value: environment,
+          value: "production",
+        },
+        {
+          name: "FRONTEND_URL",
+          value: "https://uae.wetarseel.ai",
         },
         {
           name: "ZAPATOS_DB_URL",

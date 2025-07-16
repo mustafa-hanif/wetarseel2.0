@@ -54,7 +54,7 @@ const app = new Hono<{
 app.use(
   "/api/*", // Enable CORS for all API routes
   cors({
-    origin: "http://localhost:3000", // replace with your origin
+    origin: process.env.FRONTEND_URL || "https://uae.wetarseel.ai", // replace with your origin
     allowHeaders: ["Content-Type", "Authorization"],
     allowMethods: ["POST", "GET", "OPTIONS", "PUT", "DELETE"],
     exposeHeaders: ["Content-Length"],

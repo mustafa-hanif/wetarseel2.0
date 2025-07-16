@@ -10,7 +10,8 @@ import {
   PostToConnectionCommand,
 } from "@aws-sdk/client-apigatewaymanagementapi";
 import { GetItemCommand } from "dynamodb-toolbox/entity/actions/get";
-import { UserConnection } from "dynamodb/entities";
+import { QueryCommand, type Query } from "dynamodb-toolbox/table/actions/query";
+import { UserConnection, WeTable } from "dynamodb/entities";
 import { db, type s, pool } from "../../db";
 
 interface WMessage {
@@ -64,6 +65,15 @@ interface Contact {
   wa_id: string;
 }
 
+interface UserConnectionItem {
+  phoneNumberId: string;
+  userId: string;
+  connectionId: string;
+  domain: string;
+  stage: string;
+  // Add other properties as needed
+}
+
 export class WhatsAppSQSConsumer {
   private sqsClient: SQSClient;
   private queueUrl: string;
@@ -71,8 +81,6 @@ export class WhatsAppSQSConsumer {
   private pollingInterval = 5000; // 5 seconds
   private maxMessages = 10; // Process up to 10 messages at once
   private waitTimeSeconds = 20; // Long polling
-
-  private apiGwClient: ApiGatewayManagementApiClient | undefined;
 
   constructor() {
     this.sqsClient = new SQSClient({
@@ -219,6 +227,46 @@ export class WhatsAppSQSConsumer {
     }
   }
 
+  private async sendWebSocketMessage(
+    connection: UserConnectionItem,
+    message: any,
+    metadata: { display_phone_number: string; phone_number_id: string }
+  ): Promise<void> {
+    if (!connection.connectionId || !connection.domain || !connection.stage) {
+      console.log("Incomplete connection info:", connection);
+      return;
+    }
+
+    try {
+      const apiGwClient = new ApiGatewayManagementApiClient({
+        endpoint: `https://${connection.domain}/${connection.stage}`,
+      });
+
+      await apiGwClient.send(
+        new PostToConnectionCommand({
+          ConnectionId: connection.connectionId,
+          Data: new TextEncoder().encode(
+            JSON.stringify({
+              type: "message_received",
+              from: connection.connectionId,
+              message,
+              metadata,
+              timestamp: new Date().toISOString(),
+            })
+          ),
+        })
+      );
+
+      console.log(
+        `Successfully sent live update to connection: ${connection.connectionId}`
+      );
+    } catch (e) {
+      console.log(
+        `Unable to send live update to connection ${connection.connectionId}:`
+      );
+      // Optionally clean up stale connections here
+    }
+  }
   /**
    * Handle incoming WhatsApp message
    */
@@ -235,41 +283,28 @@ export class WhatsAppSQSConsumer {
       phoneNumberId: metadata.phone_number_id,
     });
 
-    const userConnectionItem = {
-      phoneNumberId: metadata.phone_number_id,
-      phoneNumberIdRaw: metadata.phone_number_id,
+    // QueryCommand
+
+    const query: Query<typeof WeTable> = {
+      partition: `PHONE#${metadata.phone_number_id}`,
+      range: {
+        beginsWith: "USER#",
+      },
     };
 
-    const userConnectionResult = await UserConnection.build(GetItemCommand)
-      .key(userConnectionItem)
-      .send();
+    const queryCommand = WeTable.build(QueryCommand);
 
-    const r = userConnectionResult.Item;
-    if (r?.connectionId) {
-      this.apiGwClient = new ApiGatewayManagementApiClient({
-        endpoint: `https://${r.domain}/${r.stage}`,
-      });
-      try {
-        console.log("Send live update");
-        await this.apiGwClient.send(
-          new PostToConnectionCommand({
-            ConnectionId: r.connectionId,
-            Data: new TextEncoder().encode(
-              JSON.stringify({
-                from: r.connectionId,
-                message,
-              })
-            ),
-          })
-        );
-      } catch (e) {
-        console.log("unable to send live update");
+    const response = await queryCommand.query(query).send();
+    const Items = response.Items as UserConnectionItem[] | undefined;
+    if (Items && Items.length > 0) {
+      // Process connections sequentially to avoid overwhelming API Gateway
+      for (const connection of Items) {
+        await this.sendWebSocketMessage(connection, message, metadata);
       }
     }
 
     // TODO: Implement your business logic here
     // Examples:
-    // - Save message to database
     // - Send auto-reply
     // - Trigger notifications
     // - Update conversation state

@@ -79,9 +79,9 @@ export const Message = new Entity({
 });
 
 export const userConnection = item({
-  phoneNumberId: string().key().transform(prefix("USER")).savedAs("pk"),
-  phoneNumberIdRaw: string().key().savedAs("sk"),
-  connectionId: string(), // Remove prefix for sk
+  phoneNumberId: string().key().transform(prefix("PHONE")).savedAs("pk"),
+  userId: string().key().transform(prefix("USER")).savedAs("sk"),
+  connectionId: string(), // Remove prefix for sk\
   domain: string(),
   stage: string(),
 });

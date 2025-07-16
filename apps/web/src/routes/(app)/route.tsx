@@ -130,7 +130,7 @@ function RouteComponent() {
       console.log("User is authenticated:", data.data.email);
       if (data.data.accountId && !websocket && account().data) {
         websocket = new WebSocket(
-          `wss://vxgv2qg8ae.execute-api.me-central-1.amazonaws.com/dev?phoneNumberId=${account().data?.[0]?.phone_id}`
+          `wss://vxgv2qg8ae.execute-api.me-central-1.amazonaws.com/dev?phoneNumberId=${account().data?.[0]?.phone_id}&userId=${data.data?.email}`
         );
         websocket.onmessage = (event) => {
           // console.log("Received message:", event.data);

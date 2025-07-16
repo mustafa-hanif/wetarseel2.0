@@ -3,15 +3,9 @@ import { DynamoDBDocumentClient } from "@aws-sdk/lib-dynamodb";
 import { Table } from "dynamodb-toolbox/table";
 import { Entity } from "dynamodb-toolbox/entity";
 import { PutItemCommand } from "dynamodb-toolbox/entity/actions/put";
-import { GetItemCommand } from "dynamodb-toolbox/entity/actions/get";
-import { DeleteItemCommand } from "dynamodb-toolbox/entity/actions/delete";
 import { item } from "dynamodb-toolbox/schema/item";
 import { string } from "dynamodb-toolbox/schema/string";
 import { prefix } from "dynamodb-toolbox/transformers/prefix";
-import {
-  ApiGatewayManagementApiClient,
-  PostToConnectionCommand,
-} from "@aws-sdk/client-apigatewaymanagementapi";
 
 // Environment-aware DynamoDB client configuration
 const isLocal =
@@ -33,8 +27,8 @@ const dynamoDBClient = new DynamoDBClient(
 );
 
 export const userConnection = item({
-  phoneNumberId: string().key().transform(prefix("USER")).savedAs("pk"),
-  phoneNumberIdRaw: string().key().savedAs("sk"),
+  phoneNumberId: string().key().transform(prefix("PHONE")).savedAs("pk"),
+  userId: string().key().transform(prefix("USER")).savedAs("sk"),
   connectionId: string(), // Remove prefix for sk\
   domain: string(),
   stage: string(),
@@ -61,6 +55,7 @@ interface OnConnectEvent {
   };
   queryStringParameters: {
     phoneNumberId: string;
+    userId: string;
   };
 }
 
@@ -76,6 +71,7 @@ const onconnect = async (event: OnConnectEvent): Promise<OnConnectResponse> => {
     const domain = event.requestContext.domainName;
     const stage = event.requestContext.stage;
     const phoneNumberId = event.queryStringParameters?.phoneNumberId || "";
+    const userId = event.queryStringParameters?.userId || "";
 
     console.log(
       "Connecting phone number:",
@@ -87,7 +83,7 @@ const onconnect = async (event: OnConnectEvent): Promise<OnConnectResponse> => {
 
     const userConnectionItem = {
       phoneNumberId,
-      phoneNumberIdRaw: phoneNumberId,
+      userId,
       connectionId,
       domain,
       stage,
@@ -111,52 +107,6 @@ const onconnect = async (event: OnConnectEvent): Promise<OnConnectResponse> => {
     console.error("Error in onconnect:", error);
     return { statusCode: 500 };
   }
-};
-
-const onmessage = async (event: {
-  requestContext: { connectionId: string; domainName: string; stage: string };
-  body: string;
-}) => {
-  console.log("onmessage", JSON.stringify(event, null, 2));
-  const connectionId = event.requestContext.connectionId;
-  const domain = event.requestContext.domainName;
-  const stage = event.requestContext.stage;
-  const message = JSON.parse(event.body);
-
-  // Skip API Gateway call for local testing
-  // if (isLocal) {
-  //   console.log("Local testing - skipping API Gateway call");
-  //   return {
-  //     statusCode: 200,
-  //     body: JSON.stringify({
-  //       message: `Message received locally: ${JSON.stringify(message)}`,
-  //     }),
-  //   };
-  // }
-
-  // Use environment-aware API Gateway endpoint
-  const apiGwClient = new ApiGatewayManagementApiClient({
-    endpoint: isLocal ? `http://127.0.0.1:3001` : `https://${domain}/${stage}`,
-  });
-
-  await apiGwClient.send(
-    new PostToConnectionCommand({
-      ConnectionId: connectionId,
-      Data: new TextEncoder().encode(
-        JSON.stringify({
-          from: connectionId,
-          message,
-        })
-      ),
-    })
-  );
-
-  return {
-    statusCode: 200,
-    body: JSON.stringify({
-      message: `Message received: ${JSON.stringify(message)}`,
-    }),
-  };
 };
 
 export { onconnect };
