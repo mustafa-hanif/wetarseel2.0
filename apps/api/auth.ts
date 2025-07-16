@@ -8,6 +8,7 @@ import { admin } from "better-auth/plugins";
 import { EmailTemplate } from "./templates/emailTemplate";
 import { getAccountFromUser } from "queries/getAccountFromUser";
 import { cache } from "index";
+import { pool } from "pool";
 
 const resend = new Resend(`re_2soPDivu_HVen2oemd51PwNbnx7Xaa7ui`);
 
@@ -47,12 +48,7 @@ export const auth = betterAuth({
     }),
   ],
   trustedOrigins: [process.env.FRONTEND_URL ?? "https://uae.wetarseel.ai"],
-  database: new Pool({
-    connectionString: process.env.ZAPATOS_DB_URL,
-    ssl: {
-      rejectUnauthorized: false,
-    },
-  }),
+  database: pool,
   user: {
     additionalFields: {
       accountId: {

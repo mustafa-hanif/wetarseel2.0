@@ -1269,6 +1269,10 @@ const ecsTaskDefinition = new aws.ecs.TaskDefinition("api-task", {
           value: "production",
         },
         {
+          name: "NODE_TLS_REJECT_UNAUTHORIZED",
+          value: "0",
+        },
+        {
           name: "FRONTEND_URL",
           value: "https://uae.wetarseel.ai",
         },
