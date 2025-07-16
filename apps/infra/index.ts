@@ -1283,7 +1283,7 @@ const ecsTaskDefinition = new aws.ecs.TaskDefinition("api-task", {
         {
           name: "ZAPATOS_DB_URL",
           value:
-            "postgresql://dbadmin:Jojo.3344@wetarseel-dev-postgres-v2.c78288muwwks.me-central-1.rds.amazonaws.com:5432/wetarseel?sslmode=require&rejectUnauthorized=false",
+            "postgresql://dbadmin:Jojo.3344@wetarseel-dev-postgres-v2.c78288muwwks.me-central-1.rds.amazonaws.com:5432/wetarseel?sslmode=require",
         },
         {
           name: "DYNAMODB_TABLE_NAME",
