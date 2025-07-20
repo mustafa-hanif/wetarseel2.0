@@ -1,6 +1,5 @@
 // routes/items.ts
 import { db, type s, pool } from "../db";
-import { expand } from "../expand";
 
 export default {
   async fetch(req: Request, accountId: string) {

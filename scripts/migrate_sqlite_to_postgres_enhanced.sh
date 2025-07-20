@@ -84,7 +84,7 @@ else
     PG_DATABASE="wetarseel"
     PG_USER="dbadmin"
     PG_PASSWORD="Jojo.3344"
-    EXCLUDE_TABLES="_litestream_lock _litestream_seq _migrations"
+    EXCLUDE_TABLES="_litestream_lock _collections _litestream_seq _migrations _otps _mfas _authOrigins _externalAuths"
     SKIP_EMPTY_TABLES=false
     CREATE_INDEXES=true
     VERBOSE=true
@@ -230,8 +230,8 @@ export_table_to_csv() {
     mkdir -p "$WORK_DIR"
     
     log_progress "Exporting table '$table' to CSV..." >&2
-    log_debug "CSV file path: $csv_file" >&2
-    log_debug "Working directory: $WORK_DIR" >&2
+    # log_debug "CSV file path: $csv_file" >&2
+    # log_debug "Working directory: $WORK_DIR" >&2
     
     # Determine the SQL query based on date filtering
     local sql_query
@@ -340,19 +340,19 @@ EOF
     fi
 }
 
-# Function to import CSV to PostgreSQL with progress
+# Function to import CSV to PostgreSQL with duplicate handling
 import_csv_to_postgres() {
     local table=$1
     local csv_file=$2
     
     log_progress "Importing CSV data for table '$table'..."
-    log_debug "Import CSV file path: $csv_file"
-    log_debug "Current working directory: $(pwd)"
-    log_debug "WORK_DIR variable: $WORK_DIR"
-    log_debug "Absolute CSV path: $(realpath "$csv_file" 2>/dev/null || echo "Cannot resolve path")"
-    log_debug "Working directory contents: $(ls -la "$WORK_DIR" 2>/dev/null | grep -v '^total' || echo 'Directory not accessible')"
-    log_debug "CSV file exists: $(if [[ -f "$csv_file" ]]; then echo "YES"; else echo "NO"; fi)"
-    log_debug "CSV file size: $(if [[ -f "$csv_file" ]]; then ls -lh "$csv_file" | awk '{print $5}'; else echo "N/A"; fi)"
+    # log_debug "Import CSV file path: $csv_file"
+    # log_debug "Current working directory: $(pwd)"
+    # log_debug "WORK_DIR variable: $WORK_DIR"
+    # log_debug "Absolute CSV path: $(realpath "$csv_file" 2>/dev/null || echo "Cannot resolve path")"
+    # log_debug "Working directory contents: $(ls -la "$WORK_DIR" 2>/dev/null | grep -v '^total' || echo 'Directory not accessible')"
+    # log_debug "CSV file exists: $(if [[ -f "$csv_file" ]]; then echo "YES"; else echo "NO"; fi)"
+    # log_debug "CSV file size: $(if [[ -f "$csv_file" ]]; then ls -lh "$csv_file" | awk '{print $5}'; else echo "N/A"; fi)"
     
     # Check if we can read the file
     if [[ ! -f "$csv_file" ]]; then
@@ -367,18 +367,263 @@ import_csv_to_postgres() {
     
     # Convert to absolute path to ensure psql can find it
     local abs_csv_path=$(realpath "$csv_file")
-    log_debug "Absolute CSV path for psql: $abs_csv_path"
+    # log_debug "Absolute CSV path for psql: $abs_csv_path"
     
-    # Import using PostgreSQL COPY command
-    local copy_result
-    if copy_result=$(PGSSLMODE=prefer psql "postgresql://$PG_USER:$PG_PASSWORD@$PG_HOST:$PG_PORT/$PG_DATABASE" -c "\\COPY \"$table\" FROM '$abs_csv_path' WITH (FORMAT csv, HEADER true);" 2>&1); then
-        local rows_imported=$(echo "$copy_result" | grep "COPY" | awk '{print $2}')
-        log_success "Imported $rows_imported rows into table '$table'"
-        return 0
+    # Get the primary key or unique columns for conflict resolution
+    local primary_key_cols=$(PGSSLMODE=prefer psql "postgresql://$PG_USER:$PG_PASSWORD@$PG_HOST:$PG_PORT/$PG_DATABASE" -t -c "
+        SELECT string_agg(a.attname, ', ' ORDER BY a.attnum)
+        FROM pg_index i
+        JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey)
+        WHERE i.indrelid = '$table'::regclass AND i.indisprimary;
+    " 2>/dev/null | xargs)
+    
+    # ALWAYS get unique constraints (even if we have a primary key)
+    # Try both named constraints and unique indexes
+    local unique_constraints=$(PGSSLMODE=prefer psql "postgresql://$PG_USER:$PG_PASSWORD@$PG_HOST:$PG_PORT/$PG_DATABASE" -t -c "
+        SELECT c.conname
+        FROM pg_constraint c
+        WHERE c.conrelid = '$table'::regclass AND c.contype = 'u'
+        UNION
+        SELECT i.indexname
+        FROM pg_indexes i
+        WHERE i.tablename = '$table' AND i.indexdef LIKE '%UNIQUE%'
+        ORDER BY 1;
+    " 2>/dev/null)
+    
+    log_debug "Raw unique constraints result: '$unique_constraints'"
+    
+    # If no named constraints, try to get the failing constraint name from error patterns
+    if [[ -z "$unique_constraints" ]]; then
+        log_debug "No named constraints found, will try direct constraint names"
+        # For conversations table, we know the constraint is "account_from"
+        if [[ "$table" == "conversations" ]]; then
+            unique_constraints="account_from"
+            log_debug "Using known constraint for conversations table: account_from"
+        fi
+    fi
+    
+    # Get the first unique constraint details for fallback
+    local unique_constraint_name=""
+    local unique_constraint_cols=""
+    if [[ -n "$unique_constraints" ]]; then
+        unique_constraint_name=$(echo "$unique_constraints" | head -n1 | xargs)
+        log_debug "Selected unique constraint name: '$unique_constraint_name'"
+        
+        # Try to get columns from constraint
+        unique_constraint_cols=$(PGSSLMODE=prefer psql "postgresql://$PG_USER:$PG_PASSWORD@$PG_HOST:$PG_PORT/$PG_DATABASE" -t -c "
+            SELECT string_agg(
+                CASE WHEN a.attname = ANY(ARRAY['from', 'to', 'order', 'user', 'group', 'table']) 
+                     THEN '\"' || a.attname || '\"' 
+                     ELSE a.attname 
+                END, 
+                ', ' ORDER BY array_position(c.conkey, a.attnum)
+            )
+            FROM pg_constraint c
+            JOIN pg_attribute a ON a.attrelid = c.conrelid AND a.attnum = ANY(c.conkey)
+            WHERE c.conrelid = '$table'::regclass AND c.contype = 'u' AND c.conname = '$unique_constraint_name'
+            GROUP BY c.conname, c.conkey;
+        " 2>/dev/null | xargs)
+        
+        # If constraint query failed, try getting from unique index
+        if [[ -z "$unique_constraint_cols" ]]; then
+            unique_constraint_cols=$(PGSSLMODE=prefer psql "postgresql://$PG_USER:$PG_PASSWORD@$PG_HOST:$PG_PORT/$PG_DATABASE" -t -c "
+                SELECT string_agg(
+                    CASE WHEN a.attname = ANY(ARRAY['from', 'to', 'order', 'user', 'group', 'table']) 
+                         THEN '\"' || a.attname || '\"' 
+                         ELSE a.attname 
+                    END, 
+                    ', ' ORDER BY a.attnum
+                )
+                FROM pg_index i
+                JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey)
+                WHERE i.indrelid = '$table'::regclass AND i.indisunique AND NOT i.indisprimary
+                  AND (SELECT relname FROM pg_class WHERE oid = i.indexrelid) = '$unique_constraint_name'
+                GROUP BY i.indexrelid;
+            " 2>/dev/null | xargs)
+        fi
+        
+        # For account_from constraint, we know the correct order from the error message
+        if [[ "$unique_constraint_name" == "account_from" ]] && [[ "$table" == "conversations" ]]; then
+            # The error shows: Key (account, "from") so this is the correct order
+            unique_constraint_cols='account, "from"'
+            log_debug "Using corrected column order for conversations.account_from based on error message"
+        fi
+        
+        log_debug "Unique constraint columns: '$unique_constraint_cols'"
+    fi
+    
+    # Method 1: Use temporary table approach for better control
+    local temp_table="${table}_temp_import"
+    
+    log_debug "Using temporary table approach for duplicate handling"
+    log_debug "Primary key columns: ${primary_key_cols:-"none found"}"
+    log_debug "Unique constraints found: ${unique_constraints:-"none found"}"
+    log_debug "First unique constraint: ${unique_constraint_name:-"none"} with columns: ${unique_constraint_cols:-"none"}"
+    
+    # Create temporary table with same structure but WITHOUT constraints/indexes
+    local create_temp_result
+    if create_temp_result=$(PGSSLMODE=prefer psql "postgresql://$PG_USER:$PG_PASSWORD@$PG_HOST:$PG_PORT/$PG_DATABASE" -c "
+        DROP TABLE IF EXISTS \"$temp_table\";
+        CREATE TABLE \"$temp_table\" (LIKE \"$table\" INCLUDING DEFAULTS INCLUDING IDENTITY INCLUDING GENERATED);
+    " 2>&1); then
+        log_debug "Created temporary table without constraints: $temp_table"
     else
-        log_error "Failed to import data for table '$table': $copy_result"
+        log_error "Failed to create temporary table: $create_temp_result"
         return 1
     fi
+    
+    # Import to temporary table
+    local copy_result
+    if copy_result=$(PGSSLMODE=prefer psql "postgresql://$PG_USER:$PG_PASSWORD@$PG_HOST:$PG_PORT/$PG_DATABASE" -c "\\COPY \"$temp_table\" FROM '$abs_csv_path' WITH (FORMAT csv, HEADER true);" 2>&1); then
+        local rows_loaded=$(echo "$copy_result" | grep "COPY" | awk '{print $2}')
+        log_debug "Loaded $rows_loaded rows into temporary table"
+    else
+        log_error "Failed to load data into temporary table: $copy_result"
+        # Clean up temp table
+        PGSSLMODE=prefer psql "postgresql://$PG_USER:$PG_PASSWORD@$PG_HOST:$PG_PORT/$PG_DATABASE" -c "DROP TABLE IF EXISTS \"$temp_table\";" >/dev/null 2>&1
+        return 1
+    fi
+    
+    # Insert from temporary table with conflict handling
+    local insert_result
+    local success=false
+    
+    # Strategy 1: Try primary key conflict resolution
+    if [[ -n "$primary_key_cols" ]] && [[ "$success" == "false" ]]; then
+        log_debug "Trying Strategy 1: ON CONFLICT with primary key columns: $primary_key_cols"
+        insert_result=$(PGSSLMODE=prefer psql "postgresql://$PG_USER:$PG_PASSWORD@$PG_HOST:$PG_PORT/$PG_DATABASE" -c "
+            INSERT INTO \"$table\" 
+            SELECT * FROM \"$temp_table\"
+            ON CONFLICT ($primary_key_cols) DO NOTHING;
+        " 2>&1)
+        
+        if ! echo "$insert_result" | grep -q "ERROR"; then
+            success=true
+            log_debug "Strategy 1 succeeded"
+        else
+            log_debug "Strategy 1 failed: $insert_result"
+        fi
+    fi
+    
+    # Strategy 2: Try unique constraint by constraint/index name
+    if [[ -n "$unique_constraint_name" ]] && [[ "$success" == "false" ]]; then
+        # First try as a constraint name
+        log_debug "Trying Strategy 2a: ON CONFLICT ON CONSTRAINT: $unique_constraint_name"
+        insert_result=$(PGSSLMODE=prefer psql "postgresql://$PG_USER:$PG_PASSWORD@$PG_HOST:$PG_PORT/$PG_DATABASE" -c "
+            INSERT INTO \"$table\" 
+            SELECT * FROM \"$temp_table\"
+            ON CONFLICT ON CONSTRAINT \"$unique_constraint_name\" DO NOTHING;
+        " 2>&1)
+        
+        if ! echo "$insert_result" | grep -q "ERROR"; then
+            success=true
+            log_debug "Strategy 2a succeeded"
+        else
+            log_debug "Strategy 2a failed: $insert_result"
+            
+            # Try as an index name (remove any idx_ prefix patterns)
+            local clean_index_name="$unique_constraint_name"
+            if [[ "$unique_constraint_name" =~ ^idx_[0-9]+_ ]]; then
+                clean_index_name=$(echo "$unique_constraint_name" | sed 's/^idx_[0-9]*_//')
+            fi
+            
+            if [[ "$clean_index_name" != "$unique_constraint_name" ]]; then
+                log_debug "Trying Strategy 2b: ON CONFLICT using cleaned index name: $clean_index_name"
+                insert_result=$(PGSSLMODE=prefer psql "postgresql://$PG_USER:$PG_PASSWORD@$PG_HOST:$PG_PORT/$PG_DATABASE" -c "
+                    INSERT INTO \"$table\" 
+                    SELECT * FROM \"$temp_table\"
+                    ON CONFLICT ON CONSTRAINT \"$clean_index_name\" DO NOTHING;
+                " 2>&1)
+                
+                if ! echo "$insert_result" | grep -q "ERROR"; then
+                    success=true
+                    log_debug "Strategy 2b succeeded"
+                else
+                    log_debug "Strategy 2b failed: $insert_result"
+                fi
+            fi
+        fi
+    fi
+    
+    # Strategy 3: Try unique constraint by columns
+    if [[ -n "$unique_constraint_cols" ]] && [[ "$success" == "false" ]]; then
+        log_debug "Trying Strategy 3: ON CONFLICT with unique constraint columns: $unique_constraint_cols"
+        insert_result=$(PGSSLMODE=prefer psql "postgresql://$PG_USER:$PG_PASSWORD@$PG_HOST:$PG_PORT/$PG_DATABASE" -c "
+            INSERT INTO \"$table\" 
+            SELECT * FROM \"$temp_table\"
+            ON CONFLICT ($unique_constraint_cols) DO NOTHING;
+        " 2>&1)
+        
+        if ! echo "$insert_result" | grep -q "ERROR"; then
+            success=true
+            log_debug "Strategy 3 succeeded"
+        else
+            log_debug "Strategy 3 failed: $insert_result"
+        fi
+    fi
+    
+    # Strategy 4: Fallback to NOT EXISTS approach
+    if [[ "$success" == "false" ]]; then
+        log_debug "Trying Strategy 4: NOT EXISTS approach (fallback)"
+        
+        # Get all column names with proper quoting for reserved words
+        local all_columns=$(PGSSLMODE=prefer psql "postgresql://$PG_USER:$PG_PASSWORD@$PG_HOST:$PG_PORT/$PG_DATABASE" -t -c "
+            SELECT string_agg(
+                CASE WHEN column_name IN ('from', 'to', 'order', 'user', 'group', 'table', 'select', 'where', 'insert', 'update', 'delete') 
+                     THEN '\"' || column_name || '\"' 
+                     ELSE column_name 
+                END, 
+                ', ' ORDER BY ordinal_position
+            )
+            FROM information_schema.columns 
+            WHERE table_name = '$table' AND table_schema = 'public';
+        " 2>/dev/null | xargs)
+        
+        log_debug "Strategy 4 column list: '$all_columns'"
+        
+        # Use a more conservative approach - check if exact row exists
+        insert_result=$(PGSSLMODE=prefer psql "postgresql://$PG_USER:$PG_PASSWORD@$PG_HOST:$PG_PORT/$PG_DATABASE" -c "
+            INSERT INTO \"$table\" ($all_columns)
+            SELECT $all_columns FROM \"$temp_table\" t1
+            WHERE NOT EXISTS (
+                SELECT 1 FROM \"$table\" t2 
+                WHERE (t1.id IS NOT NULL AND t2.id IS NOT NULL AND t1.id = t2.id) 
+                   OR (t1.created IS NOT NULL AND t2.created IS NOT NULL AND t1.created = t2.created AND coalesce(t1.id, 0) = coalesce(t2.id, 0))
+            );
+        " 2>&1)
+        
+        if ! echo "$insert_result" | grep -q "ERROR"; then
+            success=true
+            log_debug "Strategy 4 succeeded"
+        else
+            log_debug "Strategy 4 failed: $insert_result"
+        fi
+    fi
+    
+    # Check insert result
+    if [[ "$success" == "true" ]] && echo "$insert_result" | grep -q "INSERT"; then
+        local rows_inserted=$(echo "$insert_result" | grep "INSERT" | awk '{print $3}')
+        local rows_loaded_num=$(echo "$copy_result" | grep "COPY" | awk '{print $2}')
+        local duplicates_skipped=$((rows_loaded_num - rows_inserted))
+        
+        if [[ $duplicates_skipped -gt 0 ]]; then
+            log_success "Imported $rows_inserted rows into table '$table' (skipped $duplicates_skipped duplicates)"
+        else
+            log_success "Imported $rows_inserted rows into table '$table'"
+        fi
+    elif [[ "$success" == "true" ]]; then
+        log_success "Import completed for table '$table' (couldn't parse exact row count)"
+    else
+        log_error "All import strategies failed for table '$table'. Last error: $insert_result"
+        return 1
+    fi
+    
+    # Clean up temporary table
+    local cleanup_result
+    cleanup_result=$(PGSSLMODE=prefer psql "postgresql://$PG_USER:$PG_PASSWORD@$PG_HOST:$PG_PORT/$PG_DATABASE" -c "DROP TABLE IF EXISTS \"$temp_table\";" 2>&1)
+    log_debug "Cleaned up temporary table: $cleanup_result"
+    
+    return 0
 }
 
 # Function to create indexes

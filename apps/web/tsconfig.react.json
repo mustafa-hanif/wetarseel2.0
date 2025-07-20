@@ -1,0 +1,12 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "jsxImportSource": "react",
+    "types": ["react", "react-dom"]
+  },
+  "include": [
+    "src/components/react/**/*.tsx",
+    "src/components/ReactBridge.tsx"
+  ]
+}
