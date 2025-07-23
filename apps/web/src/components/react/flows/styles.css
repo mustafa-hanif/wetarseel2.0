@@ -1,0 +1,36 @@
+.react-flow__handle {
+  width: 0.75rem;
+  height: 0.75rem;
+  background-color: #3b82f6;
+}
+
+.react-flow__node {
+  background-color: rgba(255, 255, 255, 0.5);
+  border: 1px solid #d1d5db;
+  border-radius: 0.375rem;
+}
+
+.react-flow__edge-path {
+  stroke: #9ca3af;
+  stroke-width: 2;
+}
+
+.react-flow__minimap {
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+.react-flow__controls {
+  border-radius: 0.375rem;
+  overflow: hidden;
+}
+
+.react-flow__controls-button {
+  background-color: white;
+  color: #374151;
+  border-color: #d1d5db;
+}
+
+.react-flow__controls-button:hover {
+  background-color: #f3f4f6;
+}
