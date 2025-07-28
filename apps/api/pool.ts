@@ -8,6 +8,13 @@ export const pool = new Pool({
   ssl: {
     rejectUnauthorized: false,
   },
+  max: 20,
+  min: 5,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 5000,
+  keepAlive: true,
+  keepAliveInitialDelayMillis: 10000,
+  application_name: "wetarseel-api",
   // Enable query logging for development
   ...(process.env.NODE_ENV === "development" && {
     log: (message: string) => {

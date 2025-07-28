@@ -41,6 +41,11 @@ import { account, conversation, message, conversationMeta } from "./mySchema";
 
 export const dynamoDBClient = new DynamoDBClient({
   region: process.env.AWS_REGION || "me-central-1",
+  requestHandler: {
+    maxSockets: 50,
+    connectionTimeout: 5000,
+    socketTimeout: 10000,
+  },
 });
 
 export const WeTable = new Table({

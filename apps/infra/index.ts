@@ -18,7 +18,7 @@ const isProduction = stackName === "prod" || stackName === "production";
 // Environment-specific configuration
 const dbPassword = config.requireSecret("dbPassword");
 const environment = config.get("environment") ?? stackName;
-const region = config.get("aws:region") ?? "me-central-1";
+const region = "me-central-1";
 
 // Safety warning for production
 if (isProduction) {
@@ -153,8 +153,43 @@ const dbParameterGroup = new aws.rds.ParameterGroup("db-parameter-group", {
       applyMethod: "immediate",
     },
     {
+      name: "shared_buffers",
+      value: "{DBInstanceClassMemory/32768}", // 25% of available memory
+      applyMethod: "pending-reboot", // Requires restart
+    },
+    {
+      name: "effective_cache_size",
+      value: "{DBInstanceClassMemory/16384}", // 75% of available memory
+      applyMethod: "immediate",
+    },
+    {
+      name: "maintenance_work_mem",
+      value: "64MB",
+      applyMethod: "immediate",
+    },
+    {
+      name: "checkpoint_completion_target",
+      value: "0.9",
+      applyMethod: "immediate",
+    },
+    {
+      name: "wal_buffers",
+      value: "16MB",
+      applyMethod: "pending-reboot",
+    },
+    {
+      name: "default_statistics_target",
+      value: "100",
+      applyMethod: "immediate",
+    },
+    {
+      name: "random_page_cost",
+      value: "1.1", // For SSD storage
+      applyMethod: "immediate",
+    },
+    {
       name: "work_mem",
-      value: "4096", // 4MB work memory (dynamic parameter)
+      value: "8MB", // Increased from 4MB
       applyMethod: "immediate",
     },
   ],
@@ -800,6 +835,7 @@ const invalidateCloudFront = new command.local.Command(
   "invalidate",
   {
     create: pulumi.interpolate`aws cloudfront create-invalidation --distribution-id ${cloudfrontDistributionId} --paths "/*"`,
+    triggers: [buildTrigger],
   },
   { dependsOn: [deploySite] }
 );
