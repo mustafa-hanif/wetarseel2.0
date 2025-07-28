@@ -163,11 +163,6 @@ const dbParameterGroup = new aws.rds.ParameterGroup("db-parameter-group", {
       applyMethod: "immediate",
     },
     {
-      name: "maintenance_work_mem",
-      value: "64MB",
-      applyMethod: "immediate",
-    },
-    {
       name: "checkpoint_completion_target",
       value: "0.9",
       applyMethod: "immediate",
