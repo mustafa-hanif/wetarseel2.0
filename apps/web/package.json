@@ -4,7 +4,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npx vite build && tsc --noEmit",
+    "build": "npx rolldown-vite build && tsc --noEmit",
     "serve": "vite preview",
     "start": "vite"
   },
@@ -44,6 +44,11 @@
     "vite": "npm:rolldown-vite@latest",
     "zapatos": "^6.5.0",
     "zod": "latest"
+  },
+  "pnpm": {
+    "overrides": {
+      "vite": "npm:rolldown-vite@latest"
+    }
   },
   "devDependencies": {
     "@tanstack/router-plugin": "latest",
