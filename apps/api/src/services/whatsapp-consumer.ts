@@ -10,9 +10,11 @@ import {
   PostToConnectionCommand,
 } from "@aws-sdk/client-apigatewaymanagementapi";
 import { GetItemCommand } from "dynamodb-toolbox/entity/actions/get";
+import { DeleteItemCommand } from "dynamodb-toolbox/entity/actions/delete";
 import { QueryCommand, type Query } from "dynamodb-toolbox/table/actions/query";
 import { UserConnection, WeTable } from "dynamodb/entities";
 import { db, type s, pool } from "../../db";
+import { ConversationMetaService } from "./conversation-meta";
 
 interface WMessage {
   from: string;
@@ -67,7 +69,7 @@ interface Contact {
 
 interface UserConnectionItem {
   phoneNumberId: string;
-  userId: string;
+  userId: string; // Required again since entity parsing ensures proper attributes
   connectionId: string;
   domain: string;
   stage: string;
@@ -170,13 +172,6 @@ export class WhatsAppSQSConsumer {
       }
 
       const webhookMessage: WhatsAppWebhookMessage = JSON.parse(message.Body);
-      console.log("Processing WhatsApp webhook message:", {
-        timestamp: webhookMessage.timestamp,
-        source: webhookMessage.source,
-        messageCount:
-          webhookMessage.data.entry?.[0]?.changes?.[0]?.value?.messages
-            ?.length || 0,
-      });
 
       // Process the WhatsApp webhook data
       await this.handleWhatsAppWebhook(webhookMessage);
@@ -188,6 +183,11 @@ export class WhatsAppSQSConsumer {
       }
     } catch (error) {
       console.error("Error processing WhatsApp message:", error);
+      console.error("Message Body:", message.Body);
+      console.error(
+        "Full error stack:",
+        error instanceof Error ? error.stack : error
+      );
       // Message will remain in queue and be retried
       // After max retries, it will go to the dead letter queue
     }
@@ -201,26 +201,66 @@ export class WhatsAppSQSConsumer {
   ): Promise<void> {
     const { data } = webhookMessage;
 
+    // Add validation for webhook data structure
+    if (!data || !data.entry) {
+      console.error("Invalid webhook data structure:", { data });
+      return;
+    }
+
+    if (!Array.isArray(data.entry)) {
+      console.error("data.entry is not an array:", { entry: data.entry });
+      return;
+    }
+
     // Process each entry in the webhook
     for (const entry of data.entry) {
+      if (!entry || !entry.changes) {
+        console.error("Invalid entry structure:", { entry });
+        continue;
+      }
+
+      if (!Array.isArray(entry.changes)) {
+        console.error("entry.changes is not an array:", {
+          changes: entry.changes,
+        });
+        continue;
+      }
+
       for (const change of entry.changes) {
+        if (!change || !change.value || !change.field) {
+          console.error("Invalid change structure:", { change });
+          continue;
+        }
+
         const { value, field } = change;
 
         if (field === "messages" && value.messages) {
           // Handle incoming messages
           for (const message of value.messages) {
-            await this.handleIncomingMessage(
-              message,
-              value.contacts,
-              value.metadata
-            );
+            try {
+              await this.handleIncomingMessage(
+                message,
+                value.contacts,
+                value.metadata
+              );
+            } catch (error) {
+              console.error("Error handling incoming message:", error, {
+                message,
+              });
+            }
           }
         }
 
         if (field === "message_status" && value.statuses) {
           // Handle message status updates
           for (const status of value.statuses) {
-            await this.handleMessageStatus(status, value.metadata);
+            try {
+              await this.handleMessageStatus(status, value.metadata);
+            } catch (error) {
+              console.error("Error handling message status:", error, {
+                status,
+              });
+            }
           }
         }
       }
@@ -230,7 +270,8 @@ export class WhatsAppSQSConsumer {
   private async sendWebSocketMessage(
     connection: UserConnectionItem,
     message: any,
-    metadata: { display_phone_number: string; phone_number_id: string }
+    metadata: { display_phone_number: string; phone_number_id: string },
+    currentUnreadCount: number
   ): Promise<void> {
     if (!connection.connectionId || !connection.domain || !connection.stage) {
       console.log("Incomplete connection info:", connection);
@@ -251,6 +292,7 @@ export class WhatsAppSQSConsumer {
               from: connection.connectionId,
               message,
               metadata,
+              currentUnreadCount,
               timestamp: new Date().toISOString(),
             })
           ),
@@ -261,10 +303,32 @@ export class WhatsAppSQSConsumer {
         `Successfully sent live update to connection: ${connection.connectionId}`
       );
     } catch (e) {
+      console.log(e);
       console.log(
-        `Unable to send live update to connection ${connection.connectionId}:`
+        `Unable to send live update to connection ${connection.connectionId}: User likely disconnected, cleaning up connection`
       );
-      // Optionally clean up stale connections here
+
+      // Clean up stale connection from DynamoDB
+      try {
+        console.log("Attempting to delete connection with:", connection);
+
+        await UserConnection.build(DeleteItemCommand)
+          .key({
+            phoneNumberId: metadata.phone_number_id,
+            userId: connection.userId,
+          })
+          .send();
+
+        console.log(
+          `Successfully deleted stale connection: ${connection.connectionId}`
+        );
+      } catch (deleteError) {
+        console.error(
+          `Failed to delete connection ${connection.connectionId}:`,
+          deleteError
+        );
+        console.error("Connection object was:", connection);
+      }
     }
   }
   /**
@@ -283,46 +347,84 @@ export class WhatsAppSQSConsumer {
       phoneNumberId: metadata.phone_number_id,
     });
 
-    // QueryCommand
+    // Use table query with UserConnection entity filtering
+    try {
+      // Query using the table but only return UserConnection entities
+      const response = await WeTable.build(QueryCommand)
+        .query({
+          partition: `PHONE#${metadata.phone_number_id}`,
+          range: { beginsWith: "USER#" },
+        })
+        .entities(UserConnection) // This ensures only UserConnection entities are returned with proper parsing
+        .send();
 
-    const query: Query<typeof WeTable> = {
-      partition: `PHONE#${metadata.phone_number_id}`,
-      range: {
-        beginsWith: "USER#",
-      },
-    };
+      const Items = response.Items;
 
-    const queryCommand = WeTable.build(QueryCommand);
+      console.log("Query response Items:", Items);
+      console.log("Sample connection item:", Items?.[0]);
 
-    const response = await queryCommand.query(query).send();
-    const Items = response.Items as UserConnectionItem[] | undefined;
-    if (Items && Items.length > 0) {
-      // Process connections sequentially to avoid overwhelming API Gateway
-      for (const connection of Items) {
-        await this.sendWebSocketMessage(connection, message, metadata);
+      // Filter out invalid connections
+      const validConnections =
+        Items?.filter((connection: any) => {
+          const isValid =
+            connection.connectionId &&
+            connection.domain &&
+            connection.stage &&
+            connection.userId;
+          if (!isValid) {
+            console.log("Found invalid connection item:", connection);
+          }
+          return isValid;
+        }) || [];
+
+      console.log(
+        `Found ${validConnections.length} valid connections out of ${Items?.length || 0} total`
+      );
+
+      // TODO: Implement your business logic here
+      // Examples:
+      // - Send auto-reply
+      // - Trigger notifications
+      // - Update conversation state
+
+      // Example: Save to database (you'll need to implement this)
+      const dbResult = await this.saveMessageToDatabase(
+        message,
+        contacts,
+        metadata
+      );
+
+      // Send WebSocket updates with accurate unread count from database
+      if (validConnections.length > 0) {
+        // Process connections sequentially to avoid overwhelming API Gateway
+        for (const connection of validConnections) {
+          await this.sendWebSocketMessage(
+            connection,
+            message,
+            metadata,
+            dbResult.currentUnreadCount
+          );
+        }
+      } else {
+        console.log(
+          "No valid connections found for phone number:",
+          metadata.phone_number_id
+        );
       }
+    } catch (error) {
+      console.error("Error querying connections or processing message:", error);
     }
-
-    // TODO: Implement your business logic here
-    // Examples:
-    // - Send auto-reply
-    // - Trigger notifications
-    // - Update conversation state
-
-    // Example: Save to database (you'll need to implement this)
-    await this.saveMessageToDatabase(message, contacts, metadata);
-
-    // Example: Send auto-reply for specific keywords
-    // if (message.text?.body?.toLowerCase().includes('hello')) {
-    //   await this.sendAutoReply(message.from, metadata.phone_number_id);
-    // }
   }
 
   private async saveMessageToDatabase(
     message: WMessage,
     contacts: Contact[],
     metadata: { display_phone_number: string; phone_number_id: string }
-  ): Promise<void> {
+  ): Promise<{
+    conversation: any;
+    account: any;
+    currentUnreadCount: number;
+  }> {
     console.log("Saving message to database:", {
       from: message.from,
       messageId: message.id,
@@ -365,17 +467,21 @@ export class WhatsAppSQSConsumer {
 
     console.log("insert message2");
     const message2 = await db
-      .insert("messages", {
-        id: message.id,
-        convo_id: conversation.id,
-        message: message.text?.body,
-        from: "user",
-        user: lead.id,
-        account: account.id,
-        wamid: message.id,
-        updated: new Date().toISOString(),
-        created: new Date().toISOString(),
-      })
+      .upsert(
+        "messages",
+        {
+          id: message.id,
+          convo_id: conversation.id,
+          message: message.text?.body,
+          from: "user",
+          user: lead.id,
+          account: account.id,
+          wamid: message.id,
+          updated: new Date().toISOString(),
+          created: new Date().toISOString(),
+        },
+        ["id"]
+      )
       .run(pool);
 
     console.log("update convo");
@@ -386,6 +492,23 @@ export class WhatsAppSQSConsumer {
         { id: conversation.id }
       )
       .run(pool);
+
+    // Increment unread count for conversation metadata
+    await ConversationMetaService.incrementUnreadCount(
+      account.id.toString(),
+      conversation.id.toString()
+    );
+    console.log("Updated conversation metadata with unread count");
+
+    // Return the current unread count for WebSocket updates
+    return {
+      conversation,
+      account,
+      currentUnreadCount: await ConversationMetaService.getTotalUnreadCount(
+        account.id.toString(),
+        conversation.id.toString()
+      ),
+    };
   }
 
   /**

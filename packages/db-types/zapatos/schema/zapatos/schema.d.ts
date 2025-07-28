@@ -218,7 +218,7 @@ declare module 'zapatos/schema' {
       */
       updated?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment>;
     }
-    export type UniqueIndex = 'idx_20100_idx_authorigins_unique_pairs' | 'idx_20100_sqlite_autoindex__authorigins_1';
+    export type UniqueIndex = 'idx_493389_idx_authorigins_unique_pairs' | 'idx_493389_sqlite_autoindex__authorigins_1';
     export type Column = keyof Selectable;
     export type OnlyCols<T extends readonly Column[]> = Pick<Selectable, T[number]>;
     export type SQLExpression = Table | db.ColumnNames<Updatable | (keyof Updatable)[]> | db.ColumnValues<Updatable> | Whereable | Column | db.ParentColumn | db.GenericSQLExpression;
@@ -894,7 +894,7 @@ declare module 'zapatos/schema' {
       */
       updated?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment>;
     }
-    export type UniqueIndex = 'idx_20065_idx_externalauths_collection_provider' | 'idx_20065_idx_externalauths_record_provider' | 'idx_20065_sqlite_autoindex__externalauths_1';
+    export type UniqueIndex = 'idx_493418_idx_externalauths_collection_provider' | 'idx_493418_idx_externalauths_record_provider' | 'idx_493418_sqlite_autoindex__externalauths_1';
     export type Column = keyof Selectable;
     export type OnlyCols<T extends readonly Column[]> = Pick<Selectable, T[number]>;
     export type SQLExpression = Table | db.ColumnNames<Updatable | (keyof Updatable)[]> | db.ColumnValues<Updatable> | Whereable | Column | db.ParentColumn | db.GenericSQLExpression;
@@ -1955,7 +1955,7 @@ declare module 'zapatos/schema' {
       */
       verified?: boolean | db.Parameter<boolean> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, boolean | db.Parameter<boolean> | null | db.DefaultType | db.SQLFragment>;
     }
-    export type UniqueIndex = 'idx_20034_idx_email_pbc_3142635823' | 'idx_20034_idx_tokenkey_pbc_3142635823' | 'idx_20034_sqlite_autoindex__superusers_1';
+    export type UniqueIndex = 'idx_20034_idx_email_pbc_3142635823' | 'idx_20034_idx_tokenkey_pbc_3142635823' | 'idx_20034_sqlite_autoindex__superusers_1' | 'idx_email_pbc_3142635823' | 'idx_tokenkey_pbc_3142635823';
     export type Column = keyof Selectable;
     export type OnlyCols<T extends readonly Column[]> = Pick<Selectable, T[number]>;
     export type SQLExpression = Table | db.ColumnNames<Updatable | (keyof Updatable)[]> | db.ColumnValues<Updatable> | Whereable | Column | db.ParentColumn | db.GenericSQLExpression;
@@ -6418,6 +6418,12 @@ declare module 'zapatos/schema' {
       */
       unread_count: db.NumericString | null;
       /**
+      * **conversations.unread_object**
+      * - `jsonb` in database
+      * - Nullable, no default
+      */
+      unread_object: db.JSONValue | null;
+      /**
       * **conversations.updated**
       * - `text` in database
       * - Nullable, default: `'strftime(''%Y-%m-%d %H:%M:%fZ'')'::text`
@@ -6503,6 +6509,12 @@ declare module 'zapatos/schema' {
       * - Nullable, default: `'0'::numeric`
       */
       unread_count: number | null;
+      /**
+      * **conversations.unread_object**
+      * - `jsonb` in database
+      * - Nullable, no default
+      */
+      unread_object: db.JSONValue | null;
       /**
       * **conversations.updated**
       * - `text` in database
@@ -6590,6 +6602,12 @@ declare module 'zapatos/schema' {
       */
       unread_count?: (number | db.NumericString) | db.Parameter<(number | db.NumericString)> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, (number | db.NumericString) | db.Parameter<(number | db.NumericString)> | db.SQLFragment | db.ParentColumn>;
       /**
+      * **conversations.unread_object**
+      * - `jsonb` in database
+      * - Nullable, no default
+      */
+      unread_object?: db.JSONValue | db.Parameter<db.JSONValue> | db.SQLFragment | db.ParentColumn | db.SQLFragment<any, db.JSONValue | db.Parameter<db.JSONValue> | db.SQLFragment | db.ParentColumn>;
+      /**
       * **conversations.updated**
       * - `text` in database
       * - Nullable, default: `'strftime(''%Y-%m-%d %H:%M:%fZ'')'::text`
@@ -6675,6 +6693,12 @@ declare module 'zapatos/schema' {
       * - Nullable, default: `'0'::numeric`
       */
       unread_count?: (number | db.NumericString) | db.Parameter<(number | db.NumericString)> | null | db.DefaultType | db.SQLFragment;
+      /**
+      * **conversations.unread_object**
+      * - `jsonb` in database
+      * - Nullable, no default
+      */
+      unread_object?: db.JSONValue | db.Parameter<db.JSONValue> | null | db.DefaultType | db.SQLFragment;
       /**
       * **conversations.updated**
       * - `text` in database
@@ -6762,13 +6786,19 @@ declare module 'zapatos/schema' {
       */
       unread_count?: (number | db.NumericString) | db.Parameter<(number | db.NumericString)> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, (number | db.NumericString) | db.Parameter<(number | db.NumericString)> | null | db.DefaultType | db.SQLFragment>;
       /**
+      * **conversations.unread_object**
+      * - `jsonb` in database
+      * - Nullable, no default
+      */
+      unread_object?: db.JSONValue | db.Parameter<db.JSONValue> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, db.JSONValue | db.Parameter<db.JSONValue> | null | db.DefaultType | db.SQLFragment>;
+      /**
       * **conversations.updated**
       * - `text` in database
       * - Nullable, default: `'strftime(''%Y-%m-%d %H:%M:%fZ'')'::text`
       */
       updated?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment>;
     }
-    export type UniqueIndex = 'idx_255614_sqlite_autoindex_conversations_1';
+    export type UniqueIndex = 'account_from' | 'idx_255614_sqlite_autoindex_conversations_1';
     export type Column = keyof Selectable;
     export type OnlyCols<T extends readonly Column[]> = Pick<Selectable, T[number]>;
     export type SQLExpression = Table | db.ColumnNames<Updatable | (keyof Updatable)[]> | db.ColumnValues<Updatable> | Whereable | Column | db.ParentColumn | db.GenericSQLExpression;
@@ -9036,7 +9066,7 @@ declare module 'zapatos/schema' {
       */
       updated_by?: string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment | db.SQLFragment<any, string | db.Parameter<string> | null | db.DefaultType | db.SQLFragment>;
     }
-    export type UniqueIndex = 'idx_255752_idx_bzgel9uwqm' | 'idx_255752_sqlite_autoindex_leads_1';
+    export type UniqueIndex = 'idx_255752_idx_bzgel9uwqm' | 'idx_255752_idx_qsgwc4xgw4' | 'idx_255752_sqlite_autoindex_leads_1';
     export type Column = keyof Selectable;
     export type OnlyCols<T extends readonly Column[]> = Pick<Selectable, T[number]>;
     export type SQLExpression = Table | db.ColumnNames<Updatable | (keyof Updatable)[]> | db.ColumnValues<Updatable> | Whereable | Column | db.ParentColumn | db.GenericSQLExpression;

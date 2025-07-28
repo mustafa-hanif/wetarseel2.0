@@ -8,13 +8,21 @@ import {
   useRouter,
   useLocation,
 } from "@tanstack/solid-router";
-import { createEffect, Show, For, Accessor } from "solid-js";
+import {
+  createEffect,
+  Show,
+  For,
+  Accessor,
+  createSignal,
+  createMemo,
+} from "solid-js";
 import { Icon } from "@iconify-icon/solid";
 import { dbquery } from "@/lib/useQueryTable";
-import { useSequentialConversations } from "@/hooks/useSequentialQuery";
+
 import { UseQueryResult } from "@tanstack/solid-query";
 import { Conversation } from "@/types/chat";
 import { queryClient } from "@/hooks/useQuery";
+import { useSequentialConversations } from "@/hooks/useSequentialConversationsWithMeta";
 
 export const Route = createFileRoute("/(app)")({
   component: RouteComponent,
@@ -31,71 +39,57 @@ const getMenuList = () => {
       href: "/dashboard",
     },
     {
-      name: "live-chat",
-      text: "Live Chat",
-      icon: "mdi:conversation-outline",
-      iconActive: "mdi:conversation",
-      href: "/chat",
+      name: "leads",
+      text: "Leads",
+      icon: "material-symbols:groups-outline",
+      iconActive: "material-symbols:groups",
+      href: "/leads",
     },
     {
-      name: "lead-management",
-      text: "Contacts",
-      icon: "mdi:account",
-      iconActive: "mdi:account",
-      href: "/contacts",
+      name: "conversations",
+      text: "Conversations",
+      icon: "material-symbols:chat-outline",
+      iconActive: "material-symbols:chat",
+      href: "/conversations",
     },
     {
-      name: "templates",
-      text: "Templates",
-      icon: "mdi:file-document-outline",
-      iconActive: "mdi:file-document",
-      href: "/templates",
+      name: "broadcast",
+      text: "Broadcast",
+      icon: "material-symbols:campaign-outline",
+      iconActive: "material-symbols:campaign",
+      href: "/broadcast",
     },
     {
-      name: "campaigns",
-      text: "Campaigns",
-      icon: "mdi:bullhorn-outline",
-      iconActive: "mdi:bullhorn",
-      href: "/campaigns",
+      name: "automation",
+      text: "Automation",
+      icon: "material-symbols:smart-toy-outline",
+      iconActive: "material-symbols:smart-toy",
+      href: "/automation",
     },
     {
-      name: "reports",
-      text: "Reports",
-      icon: "mdi:chart-line",
-      iconActive: "mdi:chart-line",
-      href: "/reports",
+      name: "analytics",
+      text: "Analytics",
+      icon: "material-symbols:analytics-outline",
+      iconActive: "material-symbols:analytics",
+      href: "/analytics",
     },
     {
-      name: "agents",
-      text: "Agents",
-      icon: "mdi:account-group-outline",
-      iconActive: "mdi:account-group",
-      href: "/agents",
+      name: "integrations",
+      text: "Integrations",
+      icon: "material-symbols:extension-outline",
+      iconActive: "material-symbols:extension",
+      href: "/integrations",
     },
     {
-      name: "flows",
-      text: "Flows",
-      icon: "mdi:workflow",
-      iconActive: "mdi:workflow",
-      href: "/flows",
-    },
-    {
-      name: "messaging-limits",
-      text: "Messaging Limits",
-      icon: "mdi:message-settings-outline",
-      iconActive: "mdi:message-settings",
-      href: "/messaging-limits",
-    },
-    {
-      name: "api-settings",
-      text: "API Settings",
-      icon: "mdi:api",
-      iconActive: "mdi:api",
-      href: "/api-settings",
+      name: "team",
+      text: "Team",
+      icon: "material-symbols:people-outline",
+      iconActive: "material-symbols:people",
+      href: "/team",
     },
     {
       name: "office-settings",
-      text: "Office Settings",
+      text: "Settings",
       icon: "ph:gear",
       iconActive: "ph:gear-fill",
       href: "/office-settings",
@@ -107,89 +101,125 @@ let websocket: WebSocket | undefined;
 
 function RouteComponent() {
   const data = useAuth();
-  const router = useRouter();
+  const currentData2 = useSequentialConversations(
+    data.data?.email ?? "icemelt7@gmail.com"
+  );
   const location = useLocation();
 
-  const account = dbquery(
-    "accounts",
-    () => ({
-      filter: `id.=.` + data.data?.accountId,
-      limit: 1,
-      skipAccountCheck: true,
-    }),
-    () => [data.data?.accountId ?? "0"], // Dependencies array
-    {
-      enabled: () => !!data.data?.accountId,
-    }
-  );
-
-  const conversationsState = useSequentialConversations();
+  const account = dbquery("accounts", () => ({
+    filter: `id.=.` + data.data?.accountId,
+    limit: 1,
+    skipAccountCheck: true,
+  }));
 
   createEffect(() => {
-    if (data.data) {
-      console.log("User is authenticated:", data.data.email);
-      if (data.data.accountId && !websocket && account().data) {
-        websocket = new WebSocket(
-          `wss://vxgv2qg8ae.execute-api.me-central-1.amazonaws.com/dev?phoneNumberId=${account().data?.[0]?.phone_id}&userId=${data.data?.email}`
-        );
-        websocket.onmessage = (event) => {
-          // console.log("Received message:", event.data);
-          const data = JSON.parse(event.data) as {
-            from: string;
-            message: {
-              from: string;
-              text: {
-                body: string;
-              };
-            };
-          };
-          const from = data.message.from;
-          // find convoId
-          const convoQuery = conversationsState.query as Accessor<
-            UseQueryResult<Conversation[], Error>
-          >;
-          const convo = convoQuery().data?.find(
-            (convo) => convo.leads.phone_number === from
-          );
-          if (convo) {
-            console.log("Found convo:", convo.id);
-            queryClient.setQueryData(
-              [
-                "conversations",
-                { expand: "from.leads,message.messages", limit: 100000 },
-                [],
-              ],
-              (dataA: Conversation[] | undefined) => {
-                if (!dataA) return dataA;
+    const accountId = data.data?.accountId;
+    const currentData = currentData2.query();
+    // Access current conversation state at message time (not closure time)
+    if (accountId && account().data?.[0]?.phone_id) {
+      // Only create WebSocket if we don't have one
+      if (!websocket && currentData.status === "success") {
+        console.log(currentData.status);
+        console.log("Creating WebSocket connection for account:", accountId);
 
-                return dataA.map((conversation, index) => {
-                  if (conversation.id === convo.id) {
-                    return {
-                      ...conversation, // Create new conversation object
-                      messages: {
-                        ...conversation.messages, // Create new messages object
-                        message: data.message.text.body,
-                        created: new Date().toISOString(),
-                        type: "text",
-                      },
-                    };
-                  }
-                  return conversation; // Keep other conversations as-is
-                });
+        const wsUrl = `wss://vxgv2qg8ae.execute-api.me-central-1.amazonaws.com/dev?phoneNumberId=${account().data?.[0]?.phone_id}&userId=${data.data?.email}`;
+        websocket = new WebSocket(wsUrl);
+
+        websocket.onopen = () => {
+          console.log("WebSocket connected successfully");
+        };
+
+        websocket.onerror = (error) => {
+          console.error("WebSocket error:", error);
+        };
+
+        websocket.onmessage = (event) => {
+          try {
+            const wsData = JSON.parse(event.data);
+            console.log("Raw WebSocket data received:", wsData);
+
+            if (wsData.type === "message_received") {
+              const from = wsData.message.from;
+              console.log("WebSocket message received:", {
+                from,
+                currentUnreadCount: wsData.currentUnreadCount,
+              });
+
+              console.log("Current conversation state at message time:", {
+                isLoading: currentData.isLoading,
+                isPending: currentData.isPending,
+                isSuccess: currentData.isSuccess,
+                dataLength: currentData.data?.length,
+              });
+
+              const convo = currentData.data?.find(
+                (convo) => convo.leads.phone_number === from
+              );
+
+              if (convo && data.data?.email) {
+                console.log("Found convo:", convo.id);
+                console.log(
+                  "WebSocket currentUnreadCount:",
+                  wsData.currentUnreadCount
+                );
+
+                // Update both small and large query keys for the new metadata API
+                const updateQueryData = (limit: number) => {
+                  const params = {
+                    userId: data.data.email, // Use email to match the hook
+                    filter: "all" as const,
+                    limit,
+                  };
+                  const queryKey = ["conversations", params];
+
+                  console.log("Updating query key:", queryKey);
+
+                  queryClient.setQueryData(
+                    queryKey,
+                    (dataA: Conversation[] | undefined) => {
+                      if (!dataA) return dataA;
+
+                      return dataA.map((conversation) => {
+                        if (conversation.id === convo.id) {
+                          console.log(
+                            "Updating conversation:",
+                            conversation.id,
+                            "with unread count:",
+                            wsData.currentUnreadCount
+                          );
+                          return {
+                            ...conversation,
+                            messages: {
+                              ...conversation.messages,
+                              message: wsData.message.text.body,
+                              created: new Date().toISOString(),
+                              type: "text",
+                            },
+                            unreadCount: wsData.currentUnreadCount,
+                          };
+                        }
+                        return conversation;
+                      });
+                    }
+                  );
+                };
+
+                // Update both small (10) and large (100000) query caches
+                updateQueryData(100000);
+              } else {
+                console.log("No convo found for:", from, "or no user email");
               }
-            );
-          } else {
-            console.log("No convo found for:", from);
+            }
+          } catch (err) {
+            console.error("Error handling WebSocket message:", err);
           }
         };
-      }
-    }
-    if (data.isError) {
-      router.history.push("/auth/sign-in");
-    }
+      } // Close the if (!websocket) block
+    } // Close the if (accountId) block
   });
 
   const navItems = getMenuList();
+
   return (
     <Show when={data.data}>
       <div class="flex h-screen">
@@ -226,10 +256,9 @@ function RouteComponent() {
                         >
                           <Icon
                             icon={isActive() ? item.iconActive : item.icon}
-                            width={20}
-                            height={20}
+                            class="w-6 h-6"
                           />
-                          <div class="text-xs">{item.text}</div>
+                          <span class="text-xs font-medium">{item.text}</span>
                         </div>
                       </div>
                     </Link>
@@ -240,7 +269,7 @@ function RouteComponent() {
           </div>
         </div>
 
-        {/* Main content */}
+        {/* Main Content */}
         <main class="flex-1 bg-gray-100 dark:bg-gray-900">
           <Outlet />
         </main>

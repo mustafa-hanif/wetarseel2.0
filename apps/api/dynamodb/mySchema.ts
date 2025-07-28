@@ -32,3 +32,17 @@ export const message = item({
   accountId: string().key(),
   content: string(),
 });
+
+export const conversationMeta = item({
+  accountId: string().key().transform(prefix("ACCOUNT")).savedAs("pk"),
+  conversationId: string()
+    .key()
+    .transform(prefix("CONVERSATION"))
+    .savedAs("sk"),
+  assignedAgents: record(string(), number()).optional(), // userId -> unreadCount mapping
+  isAccountWide: boolean().default(false), // true if conversation is with entire account
+  lastUpdated: string(),
+  totalUnreadCount: number().default(0), // total unread messages across all agents
+  lastMessageTime: string().optional(), // For sorting by recent activity
+  priority: string().optional().default("normal"), // normal, high, urgent
+});

@@ -24,7 +24,7 @@ import { dbquery } from "@/lib/useQueryTable";
 import { Conversation, Message } from "@/types/chat";
 import { UseQueryResult } from "@tanstack/solid-query";
 import { useMessageState } from "@/hooks/useMessageState";
-import { useSequentialConversations } from "@/hooks/useSequentialQuery";
+import { useSequentialConversations } from "@/hooks/useSequentialConversationsWithMeta";
 
 export const Route = createFileRoute("/(app)/chat")({
   component: RouteComponent,
@@ -36,7 +36,12 @@ export const Route = createFileRoute("/(app)/chat")({
 });
 
 function RouteComponent() {
-  const conversationsState = useSequentialConversations();
+  const auth = useAuth();
+
+  // Use the metadata version with user email as userId
+  const conversationsState = useSequentialConversations(
+    auth.data?.email ?? "icemelt7@gmail.com"
+  );
 
   const chatState = useChatState(
     conversationsState.query as Accessor<UseQueryResult<Conversation[], Error>>
@@ -96,7 +101,7 @@ function RouteComponent() {
         />
 
         <ConversationList
-          conversations={chatState.filteredConversations ?? []}
+          conversations={chatState.filteredConversations() ?? []}
           selectedConversation={chatState.selectedConversation()}
           onConversationSelect={chatState.setSelectedConversation}
         />

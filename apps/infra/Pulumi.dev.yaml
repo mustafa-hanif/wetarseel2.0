@@ -1,15 +1,2 @@
-config:
-  aws:region: me-central-1
-  # Import ESC environment for centralized configuration
-  pulumi:environment: wetarseel/dev
-  # Development-specific overrides
-  wetarseel:environment: dev
-  wetarseel:dbInstanceClass: db.t3.micro
-  wetarseel:publiclyAccessible: "true"
-  wetarseel:multiAz: "false"
-  wetarseel:backupRetentionDays: "3"
-  wetarseel:skipFinalSnapshot: "true"
-  wetarseel:deletionProtection: "false"
-  # Database configuration
-  wetarseel:dbPassword:
-    secure: AAABABE9LBgTptiWF59iugK7sMbyXUxT6FsO4+hvJuqRKhs9dFHRYUQ=
+environment:
+  - wetarseel/dev

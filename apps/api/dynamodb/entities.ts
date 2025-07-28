@@ -22,7 +22,7 @@ import {
 import { Entity } from "dynamodb-toolbox/entity";
 import { item } from "dynamodb-toolbox/schema/item";
 import { string } from "dynamodb-toolbox/schema/string";
-import { account, conversation, message } from "./mySchema";
+import { account, conversation, message, conversationMeta } from "./mySchema";
 
 // export const dynamoDBClient = new DynamoDBClient(
 //   process.env.NODE_ENV === "development"
@@ -90,4 +90,10 @@ export const UserConnection = new Entity({
   name: "USER_CONNECTION",
   table: WeTable,
   schema: userConnection,
+});
+
+export const ConversationMeta = new Entity({
+  name: "CONVERSATION_META",
+  table: WeTable,
+  schema: conversationMeta,
 });

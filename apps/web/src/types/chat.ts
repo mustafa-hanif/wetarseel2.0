@@ -3,6 +3,14 @@ import { conversations, leads, messages } from "zapatos/schema";
 export interface Conversation extends conversations.Selectable {
   leads: leads.Selectable;
   messages: messages.Selectable;
+  // Metadata fields from ConversationWithMeta
+  unreadCount: number;
+  isAssignedToMe: boolean;
+  isAccountWide: boolean;
+  assignedAgents: string[];
+  totalUnreadCount: number;
+  lastMessageTime?: string;
+  priority: string;
 }
 
 // Chat-related type definitions

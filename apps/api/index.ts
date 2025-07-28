@@ -7,6 +7,7 @@ import { db, type s, pool } from "./db";
 import { migrateUsers } from "./migrate-users";
 import items from "./routes/items";
 import mutations from "./routes/mutations"; // Add this import
+import conversations from "./routes/conversations"; // Add this import
 import { whatsappConsumer } from "./src/services/whatsapp-consumer";
 import { Hono } from "hono";
 import { cors } from "hono/cors";
@@ -113,6 +114,40 @@ app.on(["GET", "POST", "PUT", "DELETE"], "/api/items/**", async (c) => {
     return response;
   } catch (error) {
     logger.error("Error handling items request:", error);
+    return c.json({ error: "Internal Server Error" }, 500);
+  }
+});
+
+app.on(["GET"], "/api/conversations", async (c) => {
+  const user = c.get("user");
+  // Optional: Check authentication
+  if (!user || !user?.accountId) {
+    console.log("conversations unauthorized", user);
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  try {
+    const response = await conversations.fetch(c.req.raw, user.accountId);
+    return response;
+  } catch (error) {
+    logger.error("Error handling conversations request:", error);
+    return c.json({ error: "Internal Server Error" }, 500);
+  }
+});
+
+app.on(["GET", "POST", "PUT", "DELETE"], "/api/conversations/**", async (c) => {
+  const user = c.get("user");
+  // Optional: Check authentication
+  if (!user || !user?.accountId) {
+    console.log("conversations unauthorized", user);
+    return c.json({ error: "Unauthorized" }, 401);
+  }
+
+  try {
+    const response = await conversations.fetch(c.req.raw, user.accountId);
+    return response;
+  } catch (error) {
+    logger.error("Error handling conversations request:", error);
     return c.json({ error: "Internal Server Error" }, 500);
   }
 });

@@ -36,7 +36,7 @@ export function useChatState(
 
   const filteredConversations = createMemo(() => {
     let filtered = conversations().data ?? [];
-
+    console.log(conversations().data?.length);
     if (searchQuery()) {
       filtered = filtered.filter(
         (conv) =>
@@ -67,7 +67,7 @@ export function useChatState(
     }
 
     if (showUnreadOnly()) {
-      filtered = filtered.filter((conv) => Number(conv.unread_count) > 0);
+      filtered = filtered.filter((conv) => Number(conv.unreadCount) > 0);
     }
 
     if (dateFilterEnabled()) {
