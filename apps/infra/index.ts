@@ -358,6 +358,7 @@ const buildLambda = new command.local.Command("build-lambda", {
 // ============================================================================
 // STATIC WEBSITE INFRASTRUCTURE
 // ============================================================================
+const buildTrigger = Date.now().toString(); // Forces rebuild every time
 
 const installDeps = new command.local.Command("install-deps", {
   create: "cd ../web && pnpm install",
@@ -366,8 +367,11 @@ const installDeps = new command.local.Command("install-deps", {
 const buildSite = new command.local.Command(
   "build",
   {
-    create: "cd ../web && pnpm install && VITE_API_URL=https://api.uae.wetarseel.ai pnpm run build",
-    update: "cd ../web && pnpm install && VITE_API_URL=https://api.uae.wetarseel.ai pnpm run build",
+    create:
+      "cd ../web && pnpm install && VITE_API_URL=https://api.uae.wetarseel.ai pnpm run build",
+    update:
+      "cd ../web && pnpm install && VITE_API_URL=https://api.uae.wetarseel.ai pnpm run build",
+    triggers: [buildTrigger],
   },
   { dependsOn: [installDeps] }
 );
@@ -681,6 +685,7 @@ const deploySite = new command.local.Command(
   {
     create: pulumi.interpolate`aws s3 sync ../web/dist s3://${websiteBucket.bucket} --delete --acl public-read`,
     update: pulumi.interpolate`aws s3 sync ../web/dist s3://${websiteBucket.bucket} --delete --acl public-read`,
+    triggers: [buildTrigger],
   },
   {
     dependsOn: [
@@ -1278,11 +1283,11 @@ const ecsTaskDefinition = new aws.ecs.TaskDefinition("api-task", {
         },
         {
           name: "BETTER_AUTH_SECRET",
-          value: "abcd"
+          value: "abcd",
         },
         {
           name: "BETTER_AUTH_URL",
-          value: "https://api.uae.wetarseel.ai"
+          value: "https://api.uae.wetarseel.ai",
         },
         {
           name: "ZAPATOS_DB_URL",
