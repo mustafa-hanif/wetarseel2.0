@@ -12,6 +12,9 @@ export default defineConfig({
     outDir: 'dist',
     emptyOutDir: true,
   },
+  experimental: {
+    enableNativePlugins: true, // Enable native plugins for better performance
+  },
   server: {
     port: 3000,
   },

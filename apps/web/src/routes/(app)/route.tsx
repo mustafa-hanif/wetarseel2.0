@@ -153,7 +153,7 @@ function RouteComponent() {
               });
 
               const convo = currentData.data?.find(
-                (convo) => convo.leads.phone_number === from
+                (convo: Conversation) => convo.leads.phone_number === from
               );
 
               if (convo && data.data?.email) {
