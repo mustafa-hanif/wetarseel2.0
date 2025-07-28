@@ -1491,7 +1491,7 @@ const ecsService = new aws.ecs.Service(
     networkConfiguration: {
       subnets: subnets.then((s) => s.ids),
       securityGroups: [ecsSecurityGroup.id],
-      assignPublicIp: true,
+      assignPublicIp: false, // 🚀 PERFORMANCE FIX: Use private VPC routing
     },
     loadBalancers: [
       {

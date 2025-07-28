@@ -35,22 +35,34 @@ export class ConversationListService {
     try {
       const p1 = performance.now();
       // Step 1: Get conversations from PostgreSQL with expansions
+      // OPTIMIZED: Uses compound index on (account, updated DESC) for fast filtering + sorting
       const conversations = await db.sql`
         SELECT 
-          c.*,
+          c.id,
+          c.account,
+          c.from,
+          c.message,
+          c.created,
+          c.updated,
+          c.assigned_agent,
+          c.state,
+          c.notes,
+          c.unread_count,
+          -- Only fetch leads data if needed (not NULL)
           CASE 
-            WHEN l.id IS NOT NULL 
+            WHEN c.from IS NOT NULL AND l.id IS NOT NULL 
             THEN row_to_json(l.*)
             ELSE NULL
           END as leads,
+          -- Only fetch message data if needed (not NULL)
           CASE 
-            WHEN m.id IS NOT NULL 
+            WHEN c.message IS NOT NULL AND m.id IS NOT NULL 
             THEN row_to_json(m.*)
             ELSE NULL
           END as messages
         FROM conversations c
-        LEFT JOIN leads l ON c.from = l.id
-        LEFT JOIN messages m ON c.message = m.id
+        LEFT JOIN leads l ON c.from = l.id AND c.from IS NOT NULL
+        LEFT JOIN messages m ON c.message = m.id AND c.message IS NOT NULL
         WHERE c.account = ${db.param(accountId)}
         ORDER BY c.updated DESC
         LIMIT ${db.param(limit)}
